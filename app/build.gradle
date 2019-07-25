@@ -1,0 +1,59 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 29
+    defaultConfig {
+        applicationId "com.artf.chatapp"
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+    implementation "androidx.appcompat:appcompat:$versions.support"
+    implementation "androidx.core:core-ktx:$versions.core_ktx"
+    implementation "androidx.constraintlayout:constraintlayout:$versions.constraint_layout"
+    implementation "androidx.fragment:fragment:$versions.fragment"
+    implementation "com.google.android.material:material:$versions.material"
+
+    //Firebase
+    implementation "com.google.firebase:firebase-database:$versions.firebase_database"
+    implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
+    implementation "com.google.firebase:firebase-messaging:$versions.firebase_messaging"
+    implementation "com.google.firebase:firebase-config:$versions.firebase_config"
+    implementation "com.google.firebase:firebase-auth:$versions.firebase_auth"
+    implementation "com.firebaseui:firebase-ui-auth:$versions.firebase_ui_auth"
+    implementation 'com.facebook.android:facebook-android-sdk:5.1.1'
+
+    //Glide
+    implementation "com.github.bumptech.glide:glide:$versions.glide"
+
+    //Test
+    testImplementation "junit:junit:$versions.junit"
+    androidTestImplementation "androidx.test:runner:$versions.atsl_runner"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+}
+apply plugin: 'com.google.gms.google-services'
