@@ -55,5 +55,6 @@ dependencies {
     testImplementation "junit:junit:$versions.junit"
     androidTestImplementation "androidx.test:runner:$versions.atsl_runner"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+    compile "org.jetbrains.kotlin:kotlin-reflect:1.3.41"
 }
 apply plugin: 'com.google.gms.google-services'
