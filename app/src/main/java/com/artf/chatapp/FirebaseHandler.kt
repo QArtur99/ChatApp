@@ -4,8 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.artf.chatapp.model.Message
+import com.artf.chatapp.model.User
+import com.artf.chatapp.utils.*
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -13,11 +17,12 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 
-class FirebaseHandler(private val activity: Activity) {
+class FirebaseHandler(private val activity: AppCompatActivity) {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -28,29 +33,35 @@ class FirebaseHandler(private val activity: Activity) {
     }
 
     private val TAG = FirebaseHandler::class.java.simpleName
-    private var mUsername: String? = null
+    private var mUser: User? = null
+    private var usernameDialog: UsernameDialog? = null
 
     private val firebaseDatabase by lazy { FirebaseDatabase.getInstance() }
+    private val firebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val firebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
-    val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
+    private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
-    val usersReference by lazy { firebaseDatabase.reference.child("users") }
+    val usersReference by lazy { firebaseFirestore.collection("users") }
+    val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
     val databaseReference by lazy { firebaseDatabase.reference.child("messages") }
     val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
 
     private var childEventListener: ChildEventListener? = null
     private var authStateListener: FirebaseAuth.AuthStateListener? = null
 
-    private val _msgData = MutableLiveData<List<FriendlyMessage>>()
-    val msgData: LiveData<List<FriendlyMessage>> = _msgData
+    private val _msgData = MutableLiveData<List<Message>>()
+    val msgData: LiveData<List<Message>> = _msgData
 
     private val _msgLength = MutableLiveData<Int>()
     val msgLength: LiveData<Int> = _msgLength
 
+    private val _userNameAvailable = MutableLiveData<Boolean>().apply { postValue(false) }
+    val userNameAvailable: LiveData<Boolean> = _userNameAvailable
+
     init {
         _msgData.value = arrayListOf()
-        mUsername = ANONYMOUS
+        this.mUser = null
         FirebaseApp.initializeApp(activity)
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         authStateListener = getAuthStateListener()
@@ -112,12 +123,12 @@ class FirebaseHandler(private val activity: Activity) {
         if (childEventListener == null) {
             childEventListener = object : ChildEventListener {
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-                    val friendlyMessage = dataSnapshot.getValue(FriendlyMessage::class.java)
+                    val friendlyMessage = dataSnapshot.getValue(Message::class.java)
                     _msgData.add(friendlyMessage!!)
                 }
 
                 override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-                    val friendlyMessage = dataSnapshot.getValue(FriendlyMessage::class.java)
+                    val friendlyMessage = dataSnapshot.getValue(Message::class.java)
                     _msgData.remove(_msgData.get(_msgData.count() - 1))
                     _msgData.add(friendlyMessage!!)
                 }
@@ -140,19 +151,64 @@ class FirebaseHandler(private val activity: Activity) {
     }
 
     private fun onSignedInInitialize(userId: String, username: String?) {
-        mUsername = username
+        mUser = User(userId)
+        getUser(userId)
         attachDatabaseReadListener()
     }
 
     private fun onSignedOutCleanup() {
-        mUsername = ANONYMOUS
+        this.mUser = null
         _msgData.clear()
         detachDatabaseReadListener()
     }
 
     fun pushMsg(msg: String, photoUrl: String?) {
-        val friendlyMessage = FriendlyMessage(msg, mUsername!!, photoUrl)
+        val friendlyMessage = Message(msg, this.mUser!!.userName, photoUrl)
         databaseReference.push().setValue(friendlyMessage)
+    }
+
+    fun addUser(username: String) {
+        mUser?.let { user ->
+            user.userName = username
+            usersReference.document(user.userId!!).set(user)
+                .addOnSuccessListener {
+                    usernameDialog!!.dismiss()
+                }
+                .addOnFailureListener {
+
+                }
+            usernamesReference.document(user.userName!!).set(user)
+        }
+    }
+
+    private fun getUser(userId: String) {
+        usersReference.document(userId).get()
+            //usersReference.whereEqualTo("userId", userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) this.mUser = document.toObject(User::class.java)
+                if (mUser!!.userName == null) startUsernameDialog()
+            }
+            .addOnFailureListener {
+                startUsernameDialog()
+            }
+    }
+
+    private fun isUsernameAvailable(username: String) {
+        usernamesReference.document(username).get()
+            .addOnSuccessListener { document ->
+                _userNameAvailable.value = !document.exists()
+            }
+            .addOnFailureListener {
+                _userNameAvailable.value = false
+            }
+    }
+
+    private fun startUsernameDialog() {
+        usernameDialog = UsernameDialog()
+        usernameDialog!!.clickListener = { addUser(it) }
+        usernameDialog!!.isUserNameAvailable = { isUsernameAvailable(it) }
+        usernameDialog!!.userNameAvailable = userNameAvailable
+        usernameDialog!!.show(activity.supportFragmentManager, UsernameDialog::class.simpleName)
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -170,7 +226,8 @@ class FirebaseHandler(private val activity: Activity) {
                 .addOnSuccessListener(activity) { taskSnapshot ->
                     val urlTask = taskSnapshot.storage.downloadUrl
                     urlTask.addOnSuccessListener { uri ->
-                        val friendlyMessage = FriendlyMessage(null, mUsername!!, uri.toString())
+                        val friendlyMessage =
+                            Message(null, this.mUser!!.userName, uri.toString())
                         databaseReference.push().setValue(friendlyMessage)
                     }
                 }

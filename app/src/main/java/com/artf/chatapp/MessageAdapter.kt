@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.artf.chatapp.model.Message
 import com.bumptech.glide.Glide
 
-class MessageAdapter(context: Context, resource: Int, objects: List<FriendlyMessage>) :
-    ArrayAdapter<FriendlyMessage>(context, resource, objects) {
+class MessageAdapter(context: Context, resource: Int, objects: List<Message>) :
+    ArrayAdapter<Message>(context, resource, objects) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.ActivityMainBinding
+import com.artf.chatapp.model.Message
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         binding.firebaseHandler = firebaseHandler
 
         // Initialize message ListView and its adapter
-        val friendlyMessages = ArrayList<FriendlyMessage>()
+        val friendlyMessages = ArrayList<Message>()
         mMessageAdapter = MessageAdapter(this, R.layout.item_message, friendlyMessages)
         binding.messageListView.adapter = mMessageAdapter
         firebaseHandler.msgData.observe(this, Observer {msgList ->
@@ -89,6 +90,9 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
                 AuthUI.getInstance().signOut(this)
+                true
+            }
+            R.id.change_username -> {
                 true
             }
             else -> super.onOptionsItemSelected(item)

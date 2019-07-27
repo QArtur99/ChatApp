@@ -3,4 +3,12 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="colorWhite">#FFFFFF</color>
+
+    //Dialog
+    <color name="dialogTitleBackground">#bbdefb</color>
+    <color name="dialogTitleTextColor">#212121</color>
+    <color name="dialogButtonTextColor">#212121</color>
+    <color name="arrowColor">#757575</color>
 </resources>

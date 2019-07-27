@@ -40,11 +40,12 @@ dependencies {
     implementation "com.google.android.material:material:$versions.material"
 
     //Firebase
-    implementation "com.google.firebase:firebase-database:$versions.firebase_database"
-    implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
-    implementation "com.google.firebase:firebase-messaging:$versions.firebase_messaging"
-    implementation "com.google.firebase:firebase-config:$versions.firebase_config"
     implementation "com.google.firebase:firebase-auth:$versions.firebase_auth"
+    implementation "com.google.firebase:firebase-config:$versions.firebase_config"
+    implementation "com.google.firebase:firebase-database:$versions.firebase_database"
+    implementation "com.google.firebase:firebase-firestore:$versions.firebase_firestore"
+    implementation "com.google.firebase:firebase-messaging:$versions.firebase_messaging"
+    implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
     implementation "com.firebaseui:firebase-ui-auth:$versions.firebase_ui_auth"
     implementation 'com.facebook.android:facebook-android-sdk:5.1.1'
 
