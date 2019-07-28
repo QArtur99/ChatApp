@@ -7,6 +7,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="5dp"
+            app:cardElevation="4dp"
             app:cardUseCompatPadding="true">
 
         <LinearLayout
@@ -16,6 +17,7 @@
 
             <TextView
                     android:id="@+id/titleDialogSearch"
+                    android:text="Pick username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/dialogTitleBackground"
@@ -44,24 +46,6 @@
                     android:orientation="horizontal">
 
                 <Button
-                        android:id="@+id/cancelButton"
-                        android:layout_weight="1"
-                        android:textColor="@color/dialogButtonTextColor"
-                        android:textSize="16sp"
-                        android:textAllCaps="false"
-                        android:textStyle="normal"
-                        android:background="@color/colorWhite"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/cancel"/>
-
-                <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/arrowColor"/>
-
-                <Button
                         android:id="@+id/searchButton"
                         android:layout_weight="1"
                         android:textColor="@color/dialogButtonTextColor"
@@ -69,10 +53,10 @@
                         android:textAllCaps="false"
                         android:textStyle="normal"
                         android:background="@color/colorWhite"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="@string/search"/>
+                        android:text="@string/next"/>
 
             </LinearLayout>
         </LinearLayout>

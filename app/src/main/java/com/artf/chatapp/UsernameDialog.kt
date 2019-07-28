@@ -1,15 +1,16 @@
 package com.artf.chatapp
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.DialogUsernameBinding
+import com.artf.chatapp.utils.afterTextChanged
 
 class UsernameDialog : DialogFragment() {
 
@@ -21,25 +22,20 @@ class UsernameDialog : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DialogUsernameBinding.inflate(LayoutInflater.from(activity))
         binding.searchButton.setOnClickListener { clickListener?.invoke(binding.usernameEditText.text.toString()) }
-
-        binding.usernameEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                val text = charSequence.toString().trim { it <= ' ' }
-                    if(text.isNotEmpty() && text.length > 3) {
-                        isUserNameAvailable?.let { it(charSequence.toString()) }
-                    }else{
-                        binding.searchButton.isEnabled = false
-                    }
+        binding.usernameEditText.afterTextChanged { text ->
+            if (text.isNotEmpty() && text.length > 3) {
+                isUserNameAvailable?.let { it(text) }
+            } else {
+                binding.searchButton.isEnabled = false
             }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
+        }
 
         userNameAvailable?.observe(this, Observer {
             binding.searchButton.isEnabled = it
+            if (it.not()) binding.usernameEditText.error = "This username is not available."
         })
+        dialog!!.window?.decorView?.background =
+            ColorDrawable(ContextCompat.getColor(requireContext(), R.color.transparent))
         return binding.root
     }
 }

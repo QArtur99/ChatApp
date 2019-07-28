@@ -2,8 +2,6 @@ package com.artf.chatapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ProgressBar
@@ -12,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.model.Message
+import com.artf.chatapp.utils.afterTextChanged
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -19,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mMessageAdapter: MessageAdapter
     private lateinit var binding: ActivityMainBinding
-    private val firebaseHandler by lazy {FirebaseHandler(this)}
+    private val firebaseHandler by lazy { FirebaseHandler(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         val friendlyMessages = ArrayList<Message>()
         mMessageAdapter = MessageAdapter(this, R.layout.item_message, friendlyMessages)
         binding.messageListView.adapter = mMessageAdapter
-        firebaseHandler.msgData.observe(this, Observer {msgList ->
+        firebaseHandler.msgData.observe(this, Observer { msgList ->
             mMessageAdapter.clear()
             mMessageAdapter.addAll(msgList)
         })
@@ -44,18 +43,15 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/jpeg"
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-            startActivityForResult(Intent.createChooser(intent, "Complete action using"), FirebaseHandler.RC_PHOTO_PICKER)
+            startActivityForResult(
+                Intent.createChooser(intent, "Complete action using"),
+                FirebaseHandler.RC_PHOTO_PICKER
+            )
         }
 
-        binding.messageEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                sendButton.isEnabled = charSequence.toString().trim { it <= ' ' }.isNotEmpty()
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
+        binding.messageEditText.afterTextChanged { text ->
+            sendButton.isEnabled = text.isNotEmpty()
+        }
 
         sendButton.setOnClickListener {
             firebaseHandler.pushMsg(binding.messageEditText.text.toString(), null)
