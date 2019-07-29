@@ -16,7 +16,7 @@ class UsernameDialog : DialogFragment() {
 
     var clickListener: ((string: String) -> Unit)? = null
     var isUserNameAvailable: ((string: String) -> Unit)? = null
-    var userNameAvailable: LiveData<Boolean>? = null
+    var usernameStatus: LiveData<NetworkState>? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -30,9 +30,15 @@ class UsernameDialog : DialogFragment() {
             }
         }
 
-        userNameAvailable?.observe(this, Observer {
-            binding.searchButton.isEnabled = it
-            if (it.not()) binding.usernameEditText.error = "This username is not available."
+        usernameStatus?.observe(this, Observer {
+            when(it.status){
+                Status.RUNNING -> {}
+                Status.SUCCESS -> {binding.searchButton.isEnabled = true}
+                Status.FAILED -> {
+                    binding.searchButton.isEnabled = false
+                    binding.usernameEditText.error = "This username is not available."
+                }
+            }
         })
         dialog!!.window?.decorView?.background =
             ColorDrawable(ContextCompat.getColor(requireContext(), R.color.transparent))

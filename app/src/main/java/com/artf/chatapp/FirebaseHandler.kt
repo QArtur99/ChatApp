@@ -56,8 +56,8 @@ class FirebaseHandler(private val activity: AppCompatActivity) {
     private val _msgLength = MutableLiveData<Int>()
     val msgLength: LiveData<Int> = _msgLength
 
-    private val _userNameAvailable = MutableLiveData<Boolean>().apply { postValue(false) }
-    val userNameAvailable: LiveData<Boolean> = _userNameAvailable
+    private val _usernameStatus = MutableLiveData<NetworkState>()
+    val usernameStatus: LiveData<NetworkState> = _usernameStatus
 
     init {
         _msgData.value = arrayListOf()
@@ -167,17 +167,26 @@ class FirebaseHandler(private val activity: AppCompatActivity) {
         databaseReference.push().setValue(friendlyMessage)
     }
 
-    fun addUser(username: String) {
+    fun addUser() {
+        usersReference.document(mUser!!.userId!!).set(mUser!!)
+            .addOnSuccessListener {
+                usernameDialog!!.dismiss()
+            }
+            .addOnFailureListener {
+
+            }
+    }
+
+    fun addUsername(username: String) {
         mUser?.let { user ->
-            user.userName = username
-            usersReference.document(user.userId!!).set(user)
+            user.userName = username.toLowerCase()
+            usernamesReference.document(user.userName!!).set(user)
                 .addOnSuccessListener {
-                    usernameDialog!!.dismiss()
+                    addUser()
                 }
                 .addOnFailureListener {
 
                 }
-            usernamesReference.document(user.userName!!).set(user)
         }
     }
 
@@ -194,20 +203,21 @@ class FirebaseHandler(private val activity: AppCompatActivity) {
     }
 
     private fun isUsernameAvailable(username: String) {
-        usernamesReference.document(username).get()
+        _usernameStatus.value = NetworkState.LOADING
+        usernamesReference.document(username.toLowerCase()).get()
             .addOnSuccessListener { document ->
-                _userNameAvailable.value = !document.exists()
+                _usernameStatus.value = if(document.exists()) NetworkState.FAILED else NetworkState.LOADED
             }
             .addOnFailureListener {
-                _userNameAvailable.value = false
+                _usernameStatus.value = NetworkState.FAILED
             }
     }
 
     private fun startUsernameDialog() {
         usernameDialog = UsernameDialog()
-        usernameDialog!!.clickListener = { addUser(it) }
+        usernameDialog!!.clickListener = { addUsername(it) }
         usernameDialog!!.isUserNameAvailable = { isUsernameAvailable(it) }
-        usernameDialog!!.userNameAvailable = userNameAvailable
+        usernameDialog!!.usernameStatus = usernameStatus
         usernameDialog!!.show(activity.supportFragmentManager, UsernameDialog::class.simpleName)
     }
 
