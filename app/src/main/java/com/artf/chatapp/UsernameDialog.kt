@@ -21,25 +21,35 @@ class UsernameDialog : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DialogUsernameBinding.inflate(LayoutInflater.from(activity))
-        binding.searchButton.setOnClickListener { clickListener?.invoke(binding.usernameEditText.text.toString()) }
+        binding.usernameButton.setOnClickListener { clickListener?.invoke(binding.usernameEditText.text.toString()) }
         binding.usernameEditText.afterTextChanged { text ->
             if (text.isNotEmpty() && text.length > 3) {
                 isUserNameAvailable?.let { it(text) }
             } else {
-                binding.searchButton.isEnabled = false
+                binding.usernameButton.isEnabled = false
             }
         }
 
         usernameStatus?.observe(this, Observer {
             when(it.status){
-                Status.RUNNING -> {}
-                Status.SUCCESS -> {binding.searchButton.isEnabled = true}
+                Status.RUNNING -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.usernameButton.visibility = View.GONE
+                }
+                Status.SUCCESS -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.usernameButton.visibility = View.VISIBLE
+                    binding.usernameButton.isEnabled = true
+                }
                 Status.FAILED -> {
-                    binding.searchButton.isEnabled = false
+                    binding.progressBar.visibility = View.GONE
+                    binding.usernameButton.visibility = View.VISIBLE
+                    binding.usernameButton.isEnabled = false
                     binding.usernameEditText.error = "This username is not available."
                 }
             }
         })
+        dialog!!.setCancelable(false)
         dialog!!.window?.decorView?.background =
             ColorDrawable(ContextCompat.getColor(requireContext(), R.color.transparent))
         return binding.root

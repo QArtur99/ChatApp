@@ -47,6 +47,7 @@
             <EditText
                     android:id="@+id/messageEditText"
                     android:layout_width="0dp"
+                    android:hint="Type a message"
                     android:maxLength="@{firebaseHandler.msgLength}"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

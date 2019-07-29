@@ -40,25 +40,29 @@
                     android:layout_height="1dp"
                     android:background="@color/arrowColor"/>
 
-            <LinearLayout
+            <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
                 <Button
-                        android:id="@+id/searchButton"
-                        android:layout_weight="1"
+                        android:id="@+id/usernameButton"
                         android:textColor="@color/dialogButtonTextColor"
                         android:textSize="16sp"
                         android:textAllCaps="false"
                         android:textStyle="normal"
-                        android:background="@color/colorWhite"
-                        android:layout_width="0dp"
+                        android:background="@drawable/selector_username_button"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="@string/next"/>
 
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

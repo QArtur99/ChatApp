@@ -12,4 +12,7 @@
     <color name="dialogTitleTextColor">#212121</color>
     <color name="dialogButtonTextColor">#212121</color>
     <color name="arrowColor">#757575</color>
+
+    <color name="colorDisable">#DDDDDD</color>
+    <color name="colorEnable">#FFFFFF</color>
 </resources>
