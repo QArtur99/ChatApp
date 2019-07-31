@@ -125,24 +125,27 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         databaseReference.push().setValue(friendlyMessage)
     }
 
-    fun addUser() {
+    fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
         usersReference.document(mUser!!.userId!!).set(mUser!!)
             .addOnSuccessListener {
+                callBack(NetworkState.LOADED)
                 startMainFragment?.invoke()
+
             }
             .addOnFailureListener {
-
+                callBack(NetworkState.FAILED)
             }
     }
 
-    fun addUsername(username: String) {
+    fun addUsername(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
+        callBack(NetworkState.LOADING)
         mUser!!.userName = username.toLowerCase()
         usernamesReference.document(mUser!!.userName!!).set(mUser!!)
             .addOnSuccessListener {
-                addUser()
+                addUser { callBack(it) }
             }
             .addOnFailureListener {
-
+                callBack(NetworkState.FAILED)
             }
     }
 

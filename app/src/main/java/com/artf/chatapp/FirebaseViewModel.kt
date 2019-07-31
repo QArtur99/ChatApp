@@ -58,7 +58,9 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     }
 
     fun addUsername(username: String) {
-        firebaseRepository.addUsername(username)
+        firebaseRepository.addUsername(username){
+            _usernameStatus.value = it
+        }
     }
 
     fun putPicture(data: Intent?) {

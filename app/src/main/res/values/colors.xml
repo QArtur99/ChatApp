@@ -8,11 +8,12 @@
     <color name="transparent">#00000000</color>
 
     //Dialog
-    <color name="dialogTitleBackground">#bbdefb</color>
-    <color name="dialogTitleTextColor">#212121</color>
+    <color name="colorUsernameButton">#4DB6AC</color>
+    <color name="colorText">#212121</color>
     <color name="dialogButtonTextColor">#212121</color>
     <color name="arrowColor">#757575</color>
 
-    <color name="colorDisable">#DDDDDD</color>
+    <color name="colorDisable">#E0E0E0</color>
     <color name="colorEnable">#FFFFFF</color>
+    <color name="colorError">#D50000</color>
 </resources>

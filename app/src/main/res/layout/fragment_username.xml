@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
 >
 
     <data>
@@ -10,67 +9,84 @@
                 type="com.artf.chatapp.FirebaseViewModel"/>
     </data>
 
-    <androidx.cardview.widget.CardView
+
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="5dp"
-            app:cardElevation="4dp"
-            app:cardUseCompatPadding="true">
+            android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+                android:id="@+id/titleDialogSearch"
+                android:text="Username"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:textSize="24sp"
+                android:textStyle="normal|bold"/>
 
-            <TextView
-                    android:id="@+id/titleDialogSearch"
-                    android:text="Pick username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/dialogTitleBackground"
-                    android:gravity="start"
-                    android:padding="10dp"
-                    android:textColor="@color/dialogTitleTextColor"
-                    android:textSize="24sp"
-                    android:textStyle="normal|bold"/>
+        <TextView
+                android:id="@+id/usernameInfo"
+                android:text="Pick username for your account. You can always change it later."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="8dp"
+                android:textColor="@color/colorText"
+                android:textSize="16sp"
+                android:textStyle="normal"/>
 
-            <EditText
-                    android:id="@+id/usernameEditText"
-                    android:hint="@string/enter_username"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
+        <EditText
+                android:id="@+id/usernameEditText"
+                android:hint="@string/enter_username"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:padding="16dp"
+                android:background="@drawable/selector_progressbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:id="@+id/usernameErrorTextView"
+                android:text="Use 4 or more characters."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/colorText"
+                android:textSize="14sp"
+                android:textStyle="normal"/>
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/stroke_progressbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-            <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/arrowColor"/>
-
-            <RelativeLayout
+            <Button
+                    android:id="@+id/usernameButton"
+                    android:textColor="@color/dialogButtonTextColor"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:textStyle="normal"
+                    android:background="@drawable/selector_username_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="16dp"
+                    android:text="@string/next"/>
 
-                <ProgressBar
-                        android:id="@+id/progressBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </LinearLayout>
 
-                <Button
-                        android:id="@+id/usernameButton"
-                        android:textColor="@color/dialogButtonTextColor"
-                        android:textSize="16sp"
-                        android:textAllCaps="false"
-                        android:textStyle="normal"
-                        android:background="@drawable/selector_username_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/next"/>
-
-            </RelativeLayout>
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
 </layout>
