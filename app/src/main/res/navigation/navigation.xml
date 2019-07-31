@@ -3,12 +3,24 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/navigation"
-            app:startDestination="@id/fragment_grid_view">
+            app:startDestination="@id/fragment_start">
 
     <fragment
-            android:id="@+id/fragment_grid_view"
+            android:id="@+id/fragment_start"
             android:name="com.artf.chatapp.StartFragment"
-            android:label="GridViewFragment"
-    >
+            android:label="GridViewFragment">
     </fragment>
+
+    <fragment
+            android:id="@+id/fragment_username"
+            android:name="com.artf.chatapp.UsernameFragment"
+            android:label="GridViewFragment">
+    </fragment>
+
+    <fragment
+            android:id="@+id/fragment_main"
+            android:name="com.artf.chatapp.MainFragment"
+            android:label="GridViewFragment">
+    </fragment>
+
 </navigation>

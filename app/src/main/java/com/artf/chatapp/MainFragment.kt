@@ -12,7 +12,6 @@ import com.artf.chatapp.databinding.FragmentMainBinding
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.utils.afterTextChanged
 import com.artf.chatapp.utils.getVm
-import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment() {
 
@@ -20,7 +19,7 @@ class MainFragment : Fragment() {
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragmentMainBinding.inflate(LayoutInflater.from(activity))
+        val binding = FragmentMainBinding.inflate(LayoutInflater.from(activity!!))
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
@@ -34,10 +33,10 @@ class MainFragment : Fragment() {
         })
 
         // Initialize progress bar
-        progressBar.visibility = ProgressBar.INVISIBLE
+        binding.progressBar.visibility = ProgressBar.INVISIBLE
 
         // ImagePickerButton shows an image picker to upload a image for a message
-        photoPickerButton.setOnClickListener {
+        binding.photoPickerButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/jpeg"
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
@@ -48,10 +47,10 @@ class MainFragment : Fragment() {
         }
 
         binding.messageEditText.afterTextChanged { text ->
-            sendButton.isEnabled = text.isNotEmpty()
+            binding.sendButton.isEnabled = text.isNotEmpty()
         }
 
-        sendButton.setOnClickListener {
+        binding.sendButton.setOnClickListener {
             firebaseVm.pushMsg(binding.messageEditText.text.toString(), null)
             binding.messageEditText.setText("")
         }

@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
                 firebaseVm.setStartSignInActivity(null)
             }
         })
-
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

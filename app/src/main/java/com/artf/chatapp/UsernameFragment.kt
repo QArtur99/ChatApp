@@ -5,31 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.FragmentUsernameBinding
 import com.artf.chatapp.utils.afterTextChanged
+import com.artf.chatapp.utils.getVm
 
 class UsernameFragment : Fragment() {
 
-    var clickListener: ((string: String) -> Unit)? = null
-    var isUserNameAvailable: ((string: String) -> Unit)? = null
-    var usernameStatus: LiveData<NetworkState>? = null
-
+    private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragmentUsernameBinding.inflate(LayoutInflater.from(activity))
-        binding.usernameButton.setOnClickListener { clickListener?.invoke(binding.usernameEditText.text.toString()) }
+        val binding = FragmentUsernameBinding.inflate(LayoutInflater.from(activity!!))
+        binding.usernameButton.setOnClickListener { firebaseVm.addUsername(binding.usernameEditText.text.toString()) }
         binding.usernameEditText.afterTextChanged { text ->
             if (text.isNotEmpty() && text.length > 3) {
-                isUserNameAvailable?.let { it(text) }
+                firebaseVm.isUsernameAvailable(text)
             } else {
                 binding.usernameButton.isEnabled = false
             }
         }
 
-        usernameStatus?.observe(this, Observer {
-            when(it.status){
+        firebaseVm.usernameStatus.observe(this, Observer {
+            when (it.status) {
                 Status.RUNNING -> {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.usernameButton.visibility = View.GONE
@@ -44,6 +42,15 @@ class UsernameFragment : Fragment() {
                     binding.usernameButton.visibility = View.VISIBLE
                     binding.usernameButton.isEnabled = false
                     binding.usernameEditText.error = "This username is not available."
+                }
+            }
+        })
+
+        firebaseVm.fragmentState.observe(this, Observer {
+            it?.let {
+                when (it) {
+                    FragmentState.USERNAME -> return@Observer
+                    FragmentState.MAIN -> binding.root.findNavController().navigate(R.id.fragment_main)
                 }
             }
         })

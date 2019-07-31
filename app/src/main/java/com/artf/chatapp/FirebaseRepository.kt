@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -45,26 +44,23 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
 
     init {
         this.mUser = null
-        FirebaseApp.initializeApp(activity)
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         authStateListener = getAuthStateListener()
+        fetchConfig()
     }
 
     private fun getAuthStateListener(): FirebaseAuth.AuthStateListener {
         return FirebaseAuth.AuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user != null) {
-                val userName = if (user.displayName.isNullOrEmpty()) user.phoneNumber else user.displayName
-                onSignedInInitialize(user.uid, userName)
+                onSignedInInitialize(user.uid)
             } else {
-                // User is signed out
                 onSignedOutCleanup()
                 firebaseCallback?.startSignInActivity()
             }
         }
     }
 
-    fun fetchConfig(callBack: (msgLengh: Int) -> Unit) {
+    private fun fetchConfig() {
         val configSettings = FirebaseRemoteConfigSettings.Builder()
             .setMinimumFetchIntervalInSeconds(3600)
             .build()
@@ -73,7 +69,9 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         val defaultConfigMap = HashMap<String, Any>()
         defaultConfigMap[MSG_LENGTH_KEY] = DEFAULT_MSG_LENGTH_LIMIT
         firebaseRemoteConfig.setDefaults(defaultConfigMap)
+    }
 
+    fun fetchConfigMsgLength(callBack: (msgLengh: Int) -> Unit) {
         firebaseRemoteConfig.fetchAndActivate()
             .addOnSuccessListener {
                 callBack(firebaseRemoteConfig.getLong(MSG_LENGTH_KEY).toInt())
@@ -113,7 +111,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         }
     }
 
-    private fun onSignedInInitialize(userId: String, username: String?) {
+    private fun onSignedInInitialize(userId: String) {
         mUser = User(userId)
         getUser(userId)
         attachDatabaseReadListener()
@@ -134,7 +132,6 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         usersReference.document(mUser!!.userId!!).set(mUser!!)
             .addOnSuccessListener {
                 firebaseCallback?.startMainFragment()
-
             }
             .addOnFailureListener {
 
@@ -157,7 +154,10 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
     private fun getUser(userId: String) {
         usersReference.document(userId).get()
             .addOnSuccessListener { document ->
-                if (document.exists()) this.mUser = document.toObject(User::class.java)
+                if (document.exists()) {
+                    this.mUser = document.toObject(User::class.java)
+                    firebaseCallback?.startMainFragment()
+                } else firebaseCallback?.startUsernameFragment()
             }
             .addOnFailureListener {
                 firebaseCallback?.startUsernameFragment()
@@ -174,7 +174,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             }
     }
 
-    fun putPicture(data: Intent?){
+    fun putPicture(data: Intent?) {
         val selectedImageUri = data!!.data
         storageReference.child(selectedImageUri!!.lastPathSegment!!).putFile(selectedImageUri)
             .addOnSuccessListener { taskSnapshot ->
@@ -198,7 +198,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         detachDatabaseReadListener()
     }
 
-    fun addFirebaseCallback(firebaseCallback: FirebaseCallback){
+    fun addFirebaseCallback(firebaseCallback: FirebaseCallback) {
         this.firebaseCallback = firebaseCallback
     }
 
@@ -207,9 +207,9 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
 
         fun onSignedOut()
 
-        fun onChildAdded(message:Message)
+        fun onChildAdded(message: Message)
 
-        fun onChildChanged(message:Message)
+        fun onChildChanged(message: Message)
 
         fun startUsernameFragment()
 

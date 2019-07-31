@@ -25,10 +25,17 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         _startSignInActivity.value = start
     }
 
+    private val _fragmentState = MutableLiveData<FragmentState>()
+    val fragmentState: LiveData<FragmentState> = _fragmentState
+    fun setFragmentState(fragmentState: FragmentState) {
+        _fragmentState.value = fragmentState
+    }
+
 
     init {
         _msgData.value = arrayListOf()
-        firebaseRepository.fetchConfig { _msgLength.value = it }
+        firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
+        setFireBaseLoginCallback()
     }
 
     fun isUsernameAvailable(username: String) {
@@ -65,18 +72,18 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
             }
 
             override fun startMainFragment() {
-
+                setFragmentState(FragmentState.MAIN)
             }
 
             override fun startUsernameFragment() {
-
-            }
-
-            override fun onChildChanged(message: Message) {
-                _msgData.add(message)
+                setFragmentState(FragmentState.USERNAME)
             }
 
             override fun onChildAdded(message: Message) {
+                _msgData.add(message)
+            }
+
+            override fun onChildChanged(message: Message) {
                 _msgData.remove(_msgData.get(_msgData.count() - 1))
                 _msgData.add(message)
             }
