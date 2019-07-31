@@ -26,7 +26,7 @@ class UsernameFragment : Fragment() {
                 binding.usernameButton.isEnabled = false
                 binding.usernameEditText.isSelected = false
                 binding.usernameErrorTextView.visibility = View.VISIBLE
-                binding.usernameErrorTextView.text = "Use 4 or more characters."
+                binding.usernameErrorTextView.text = getString(R.string.usernameHint)
                 binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(context!!, R.color.colorText))
             }
         }
@@ -51,7 +51,7 @@ class UsernameFragment : Fragment() {
                     binding.usernameButton.isEnabled = false
                     binding.usernameEditText.isSelected = true
                     binding.usernameErrorTextView.visibility = View.VISIBLE
-                    binding.usernameErrorTextView.text = "This username is not available."
+                    binding.usernameErrorTextView.text = getString(R.string.usernameError)
                     binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(activity!!, R.color.colorError))
                 }
             }

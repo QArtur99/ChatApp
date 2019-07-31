@@ -3,6 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+
+def localPropFile = rootProject.file("local.properties")
+def localProp = new Properties()
+localProp.load(new FileInputStream(localPropFile))
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -17,6 +22,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            resValue 'string', "facebook_application_id", localProp['facebook_application_id']
+            resValue 'string', "facebook_login_protocol_scheme", localProp['facebook_login_protocol_scheme']
         }
     }
 

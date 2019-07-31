@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ChatApp</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="send_button_label">Send</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="change_username">Change username</string>
+    <string name="enter_username">Enter username</string>
+    <string name="next">Next</string>
+    <string name="search">Search</string>
+    <string name="username">Username</string>
+    <string name="usernameError">This username is not available.</string>
+    <string name="usernameHint">Use 4 or more characters.</string>
+    <string name="usernameInfo">Pick username for your account. You can always change it later.</string>
+</resources>

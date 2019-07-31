@@ -17,7 +17,7 @@
 
         <TextView
                 android:id="@+id/titleDialogSearch"
-                android:text="Username"
+                android:text="@string/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -28,7 +28,7 @@
 
         <TextView
                 android:id="@+id/usernameInfo"
-                android:text="Pick username for your account. You can always change it later."
+                android:text="@string/usernameInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -51,7 +51,7 @@
 
         <TextView
                 android:id="@+id/usernameErrorTextView"
-                android:text="Use 4 or more characters."
+                android:text="@string/usernameHint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
