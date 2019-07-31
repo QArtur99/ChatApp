@@ -33,6 +33,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        setFragmentStateListener()
+    }
+
+    private fun setFragmentStateListener() {
         Navigation.setViewNavController(binding.root, findNavController(R.id.nav_host_fragment))
         firebaseVm.fragmentState.observe(this, Observer {
             when (it) {
