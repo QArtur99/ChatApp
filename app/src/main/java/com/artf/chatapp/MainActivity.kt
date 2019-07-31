@@ -9,8 +9,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.repository.FirebaseRepository
+import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.getVm
 import com.firebase.ui.auth.AuthUI
 
@@ -24,10 +27,20 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         firebaseVm.startSignInActivity.observe(this, Observer {
-            it?.let{
+            it?.let {
                 startSignInActivity()
                 firebaseVm.setStartSignInActivity(null)
             }
+        })
+
+        Navigation.setViewNavController(binding.root, findNavController(R.id.nav_host_fragment))
+        firebaseVm.fragmentState.observe(this, Observer {
+            when (it) {
+                FragmentState.USERNAME -> binding.root.findNavController().navigate(R.id.fragment_username)
+                FragmentState.MAIN -> binding.root.findNavController().navigate(R.id.fragment_main)
+                else -> binding.root.findNavController().navigate(R.id.fragment_start)
+            }
+
         })
     }
 
@@ -73,6 +86,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
+                firebaseVm.setFragmentState(null)
                 AuthUI.getInstance().signOut(this)
                 true
             }

@@ -28,7 +28,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
 
     private val _fragmentState = MutableLiveData<FragmentState>()
     val fragmentState: LiveData<FragmentState> = _fragmentState
-    fun setFragmentState(fragmentState: FragmentState) {
+    fun setFragmentState(fragmentState: FragmentState?) {
         _fragmentState.value = fragmentState
     }
 

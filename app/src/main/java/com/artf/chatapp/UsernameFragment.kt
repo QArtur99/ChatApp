@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.FragmentUsernameBinding
-import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.Status
 import com.artf.chatapp.utils.afterTextChanged
 import com.artf.chatapp.utils.getVm
@@ -48,14 +46,6 @@ class UsernameFragment : Fragment() {
             }
         })
 
-        firebaseVm.fragmentState.observe(this, Observer {
-            it?.let {
-                when (it) {
-                    FragmentState.USERNAME -> return@Observer
-                    FragmentState.MAIN -> binding.root.findNavController().navigate(R.id.fragment_main)
-                }
-            }
-        })
         return binding.root
     }
 }
