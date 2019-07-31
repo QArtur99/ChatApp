@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.artf.chatapp.model.Message
+import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.*
 
 class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel() {
@@ -35,21 +36,32 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     init {
         _msgData.value = arrayListOf()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
-        setFireBaseLoginCallback()
+        firebaseRepository.startSignInActivity = { setStartSignInActivity(true) }
+        firebaseRepository.signOut = { _msgData.clear() }
+        firebaseRepository.startUsernameFragment = { setFragmentState(FragmentState.USERNAME) }
+        firebaseRepository.startMainFragment = { setFragmentState(FragmentState.MAIN) }
+        setMsgListner()
+    }
+
+    private fun setMsgListner() {
+        firebaseRepository.onChildAdded = { _msgData.add(it) }
+        firebaseRepository.onChildChanged = {
+            _msgData.remove(_msgData.get(_msgData.count() - 1))
+            _msgData.add(it)
+        }
     }
 
     fun isUsernameAvailable(username: String) {
-        _usernameStatus.value = NetworkState.LOADING
         firebaseRepository.isUsernameAvailable(username) {
             _usernameStatus.value = it
         }
     }
 
-    fun addUsername(username: String){
+    fun addUsername(username: String) {
         firebaseRepository.addUsername(username)
     }
 
-    fun putPicture(data: Intent?){
+    fun putPicture(data: Intent?) {
         firebaseRepository.putPicture(data)
     }
 
@@ -57,43 +69,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         firebaseRepository.pushMsg(msg, photoUrl)
     }
 
-    fun onResume() {
-        firebaseRepository.onResume()
+    override fun onCleared() {
+        firebaseRepository.removeListener()
     }
-
-    fun onPause() {
-        firebaseRepository.onPause()
-    }
-
-    fun setFireBaseLoginCallback() {
-        firebaseRepository.addFirebaseCallback(object : FirebaseRepository.FirebaseCallback {
-            override fun onSignedOut() {
-                _msgData.clear()
-            }
-
-            override fun startMainFragment() {
-                setFragmentState(FragmentState.MAIN)
-            }
-
-            override fun startUsernameFragment() {
-                setFragmentState(FragmentState.USERNAME)
-            }
-
-            override fun onChildAdded(message: Message) {
-                _msgData.add(message)
-            }
-
-            override fun onChildChanged(message: Message) {
-                _msgData.remove(_msgData.get(_msgData.count() - 1))
-                _msgData.add(message)
-            }
-
-            override fun startSignInActivity() {
-                setStartSignInActivity(true)
-            }
-
-        })
-
-    }
-
 }

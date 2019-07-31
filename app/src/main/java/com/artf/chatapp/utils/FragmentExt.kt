@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
-import com.artf.chatapp.FirebaseRepository
+import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.ViewModelFactory
 
 

@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.FragmentUsernameBinding
+import com.artf.chatapp.utils.FragmentState
+import com.artf.chatapp.utils.Status
 import com.artf.chatapp.utils.afterTextChanged
 import com.artf.chatapp.utils.getVm
 

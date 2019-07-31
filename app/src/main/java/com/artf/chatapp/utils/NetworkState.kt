@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.artf.chatapp
+package com.artf.chatapp.utils
 
 enum class Status {
     RUNNING,

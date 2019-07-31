@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.FragmentMainBinding
 import com.artf.chatapp.model.Message
+import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.afterTextChanged
 import com.artf.chatapp.utils.getVm
 

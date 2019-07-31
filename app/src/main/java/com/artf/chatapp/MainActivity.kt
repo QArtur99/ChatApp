@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.ActivityMainBinding
+import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.getVm
 import com.firebase.ui.auth.AuthUI
 
@@ -61,16 +62,6 @@ class MainActivity : AppCompatActivity() {
                 .setLogo(R.mipmap.ic_launcher)
                 .build(), FirebaseRepository.RC_SIGN_IN
         )
-    }
-
-    override fun onResume() {
-        super.onResume()
-        firebaseVm.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        firebaseVm.onPause()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

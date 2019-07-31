@@ -1,13 +1,11 @@
-package com.artf.chatapp
+package com.artf.chatapp.repository
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
+import com.artf.chatapp.utils.NetworkState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -38,13 +36,19 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
     val databaseReference by lazy { firebaseDatabase.reference.child("messages") }
     val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
 
-    private var childEventListener: ChildEventListener? = null
+    private var childEventListener: BaseChildEventListener? = null
     private var authStateListener: FirebaseAuth.AuthStateListener? = null
-    private var firebaseCallback: FirebaseCallback? = null
+
+    var startSignInActivity: (() -> Unit)? = null
+    var signOut: (() -> Unit)? = null
+    var startUsernameFragment: (() -> Unit)? = null
+    var startMainFragment: (() -> Unit)? = null
+    var onChildAdded: ((message: Message) -> Unit)? = null
+    var onChildChanged: ((message: Message) -> Unit)? = null
 
     init {
-        this.mUser = null
         authStateListener = getAuthStateListener()
+        firebaseAuth.addAuthStateListener(authStateListener!!)
         fetchConfig()
     }
 
@@ -55,7 +59,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
                 onSignedInInitialize(user.uid)
             } else {
                 onSignedOutCleanup()
-                firebaseCallback?.startSignInActivity()
+                startSignInActivity?.invoke()
             }
         }
     }
@@ -67,7 +71,8 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
 
         val defaultConfigMap = HashMap<String, Any>()
-        defaultConfigMap[MSG_LENGTH_KEY] = DEFAULT_MSG_LENGTH_LIMIT
+        defaultConfigMap[MSG_LENGTH_KEY] =
+            DEFAULT_MSG_LENGTH_LIMIT
         firebaseRemoteConfig.setDefaults(defaultConfigMap)
     }
 
@@ -83,22 +88,14 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
 
     private fun attachDatabaseReadListener() {
         if (childEventListener == null) {
-            childEventListener = object : ChildEventListener {
-                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-                    val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                    firebaseCallback?.onChildAdded(friendlyMessage!!)
-                }
-
-                override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-                    val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                    firebaseCallback?.onChildChanged(friendlyMessage!!)
-                }
-
-                override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
-
-                override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {}
-
-                override fun onCancelled(databaseError: DatabaseError) {}
+            childEventListener = BaseChildEventListener()
+            childEventListener?.onChildAdded = { dataSnapshot, s ->
+                val friendlyMessage = dataSnapshot.getValue(Message::class.java)
+                onChildAdded?.invoke(friendlyMessage!!)
+            }
+            childEventListener?.onChildChanged = { dataSnapshot, s ->
+                val friendlyMessage = dataSnapshot.getValue(Message::class.java)
+                onChildChanged?.invoke(friendlyMessage!!)
             }
             databaseReference.addChildEventListener(childEventListener!!)
         }
@@ -119,7 +116,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
 
     private fun onSignedOutCleanup() {
         this.mUser = null
-        firebaseCallback?.onSignedOut()
+        signOut?.invoke()
         detachDatabaseReadListener()
     }
 
@@ -131,7 +128,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
     fun addUser() {
         usersReference.document(mUser!!.userId!!).set(mUser!!)
             .addOnSuccessListener {
-                firebaseCallback?.startMainFragment()
+                startMainFragment?.invoke()
             }
             .addOnFailureListener {
 
@@ -139,16 +136,14 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
     }
 
     fun addUsername(username: String) {
-        mUser?.let { user ->
-            user.userName = username.toLowerCase()
-            usernamesReference.document(user.userName!!).set(user)
-                .addOnSuccessListener {
-                    addUser()
-                }
-                .addOnFailureListener {
+        mUser!!.userName = username.toLowerCase()
+        usernamesReference.document(mUser!!.userName!!).set(mUser!!)
+            .addOnSuccessListener {
+                addUser()
+            }
+            .addOnFailureListener {
 
-                }
-        }
+            }
     }
 
     private fun getUser(userId: String) {
@@ -156,15 +151,16 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     this.mUser = document.toObject(User::class.java)
-                    firebaseCallback?.startMainFragment()
-                } else firebaseCallback?.startUsernameFragment()
+                    startMainFragment?.invoke()
+                } else startUsernameFragment?.invoke()
             }
             .addOnFailureListener {
-                firebaseCallback?.startUsernameFragment()
+                startUsernameFragment?.invoke()
             }
     }
 
     fun isUsernameAvailable(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
+        callBack(NetworkState.LOADING)
         usernamesReference.document(username.toLowerCase()).get()
             .addOnSuccessListener { document ->
                 callBack(if (document.exists()) NetworkState.FAILED else NetworkState.LOADED)
@@ -186,33 +182,9 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             }
     }
 
-    fun onResume() {
-        firebaseAuth.addAuthStateListener(authStateListener!!)
-    }
-
-    fun onPause() {
-        if (authStateListener != null) {
-            firebaseAuth.removeAuthStateListener(authStateListener!!)
-        }
-        firebaseCallback?.onSignedOut()
+    fun removeListener() {
+        if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
+        signOut?.invoke()
         detachDatabaseReadListener()
-    }
-
-    fun addFirebaseCallback(firebaseCallback: FirebaseCallback) {
-        this.firebaseCallback = firebaseCallback
-    }
-
-    interface FirebaseCallback {
-        fun startSignInActivity()
-
-        fun onSignedOut()
-
-        fun onChildAdded(message: Message)
-
-        fun onChildChanged(message: Message)
-
-        fun startUsernameFragment()
-
-        fun startMainFragment()
     }
 }

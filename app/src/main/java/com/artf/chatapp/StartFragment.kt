@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.FragmentStartBinding
+import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.getVm
 
 class StartFragment : Fragment() {

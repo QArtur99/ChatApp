@@ -2,6 +2,7 @@ package com.artf.chatapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.artf.chatapp.repository.FirebaseRepository
 
 /**
  * Factory for all ViewModels.
