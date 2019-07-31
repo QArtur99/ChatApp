@@ -1,18 +1,16 @@
 package com.artf.chatapp
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.artf.chatapp.databinding.DialogUsernameBinding
+import com.artf.chatapp.databinding.FragmentUsernameBinding
 import com.artf.chatapp.utils.afterTextChanged
 
-class UsernameDialog : DialogFragment() {
+class UsernameFragment : Fragment() {
 
     var clickListener: ((string: String) -> Unit)? = null
     var isUserNameAvailable: ((string: String) -> Unit)? = null
@@ -20,7 +18,7 @@ class UsernameDialog : DialogFragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DialogUsernameBinding.inflate(LayoutInflater.from(activity))
+        val binding = FragmentUsernameBinding.inflate(LayoutInflater.from(activity))
         binding.usernameButton.setOnClickListener { clickListener?.invoke(binding.usernameEditText.text.toString()) }
         binding.usernameEditText.afterTextChanged { text ->
             if (text.isNotEmpty() && text.length > 3) {
@@ -49,9 +47,6 @@ class UsernameDialog : DialogFragment() {
                 }
             }
         })
-        dialog!!.setCancelable(false)
-        dialog!!.window?.decorView?.background =
-            ColorDrawable(ContextCompat.getColor(requireContext(), R.color.transparent))
         return binding.root
     }
 }
