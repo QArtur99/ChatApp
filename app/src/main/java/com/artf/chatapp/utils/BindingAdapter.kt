@@ -1,5 +1,6 @@
 package com.artf.chatapp.utils
 
+import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,10 @@ fun bindMoviesRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
 @BindingAdapter("imageUrl")
 fun bindImage(imgView: ImageView, imgUrl: String?) {
 
-    if (imgUrl.isNullOrEmpty()) return
+    if (imgUrl.isNullOrEmpty()) {
+        imgView.visibility = View.GONE
+        return
+    } else imgView.visibility = View.VISIBLE
 
     Glide.with(imgView.context)
         .load(imgUrl)

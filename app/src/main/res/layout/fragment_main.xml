@@ -44,6 +44,7 @@
                 android:layout_alignParentStart="true"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
+                android:elevation="4dp"
                 android:background="@color/colorWhite"
                 android:orientation="horizontal">
 
