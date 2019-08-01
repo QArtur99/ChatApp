@@ -19,11 +19,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            resValue "string", "facebook_application_id", localProp['facebook_application_id']
+            resValue "string", "facebook_login_protocol_scheme", localProp['facebook_login_protocol_scheme']
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            resValue 'string', "facebook_application_id", localProp['facebook_application_id']
-            resValue 'string', "facebook_login_protocol_scheme", localProp['facebook_login_protocol_scheme']
+            resValue "string", "facebook_application_id", localProp['facebook_application_id']
+            resValue "string", "facebook_login_protocol_scheme", localProp['facebook_login_protocol_scheme']
         }
     }
 

@@ -69,7 +69,8 @@
             <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_margin="16dp"
-                    android:background="@drawable/stroke_progressbar"
+                    android:elevation="2dp"
+                    android:background="@drawable/shape_button_username_off"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
