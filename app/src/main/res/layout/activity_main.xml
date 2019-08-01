@@ -2,15 +2,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorWhite"
             android:orientation="vertical">
         <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                android:layout_height="match_parent">
             <fragment
                     android:id="@+id/nav_host_fragment"
                     android:name="androidx.navigation.fragment.NavHostFragment"
@@ -20,6 +19,6 @@
                     app:navGraph="@navigation/navigation"/>
         </FrameLayout>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </RelativeLayout>
 
 </layout>

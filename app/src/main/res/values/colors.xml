@@ -16,4 +16,5 @@
     <color name="colorDisable">#E0E0E0</color>
     <color name="colorEnable">#FFFFFF</color>
     <color name="colorError">#D50000</color>
+    <color name="colorChat">#DDEEFF</color>
 </resources>

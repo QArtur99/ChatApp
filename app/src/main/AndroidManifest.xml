@@ -14,7 +14,9 @@
             tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <meta-data android:name="com.facebook.sdk.ApplicationId"
                    android:value="@string/facebook_application_id"/>
-        <activity android:name=".MainActivity">
+        <activity
+                android:windowSoftInputMode="adjustResize"
+                android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -1,3 +1,8 @@
 package com.artf.chatapp.model
 
-class Message (var text: String? = null, var name: String? = null, var photoUrl: String? = null)
+class Message(
+    var id: String? = null,
+    var text: String? = null,
+    var name: String? = null,
+    var photoUrl: String? = null
+)

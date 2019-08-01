@@ -120,8 +120,8 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         detachDatabaseReadListener()
     }
 
-    fun pushMsg(msg: String, photoUrl: String?) {
-        val friendlyMessage = Message(msg, this.mUser!!.userName, photoUrl)
+    fun pushMsg(msg: String?, photoUrl: String?) {
+        val friendlyMessage = Message(getMsgId(), msg, this.mUser!!.userName, photoUrl)
         databaseReference.push().setValue(friendlyMessage)
     }
 
@@ -179,8 +179,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             .addOnSuccessListener { taskSnapshot ->
                 val urlTask = taskSnapshot.storage.downloadUrl
                 urlTask.addOnSuccessListener { uri ->
-                    val friendlyMessage = Message(null, this.mUser!!.userName, uri.toString())
-                    databaseReference.push().setValue(friendlyMessage)
+                    pushMsg(null, uri.toString())
                 }
             }
     }
@@ -189,5 +188,9 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         signOut?.invoke()
         detachDatabaseReadListener()
+    }
+
+    fun getMsgId(): String {
+        return this.mUser!!.userId + "_" + System.currentTimeMillis()
     }
 }
