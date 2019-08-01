@@ -14,7 +14,7 @@ import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
-import com.artf.chatapp.utils.getVm
+import com.artf.chatapp.utils.extension.getVm
 import com.firebase.ui.auth.AuthUI
 
 class MainActivity : AppCompatActivity() {

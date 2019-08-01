@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.repository.FirebaseRepository
-import com.artf.chatapp.utils.*
+import com.artf.chatapp.utils.FragmentState
+import com.artf.chatapp.utils.NetworkState
+import com.artf.chatapp.utils.extension.*
 
 class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel() {
 
@@ -40,10 +42,10 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         firebaseRepository.signOut = { _msgData.clear() }
         firebaseRepository.startUsernameFragment = { setFragmentState(FragmentState.USERNAME) }
         firebaseRepository.startMainFragment = { setFragmentState(FragmentState.MAIN) }
-        setMsgListner()
+        setMsgListener()
     }
 
-    private fun setMsgListner() {
+    private fun setMsgListener() {
         firebaseRepository.onChildAdded = { _msgData.add(it) }
         firebaseRepository.onChildChanged = {
             _msgData.remove(_msgData.get(_msgData.count() - 1))

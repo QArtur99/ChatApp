@@ -9,8 +9,8 @@ import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import com.artf.chatapp.databinding.FragmentMainBinding
 import com.artf.chatapp.repository.FirebaseRepository
-import com.artf.chatapp.utils.afterTextChanged
-import com.artf.chatapp.utils.getVm
+import com.artf.chatapp.utils.extension.afterTextChanged
+import com.artf.chatapp.utils.extension.getVm
 
 class MainFragment : Fragment() {
 

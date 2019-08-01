@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.FragmentUsernameBinding
 import com.artf.chatapp.utils.Status
-import com.artf.chatapp.utils.afterTextChangedLowerCase
-import com.artf.chatapp.utils.getVm
+import com.artf.chatapp.utils.extension.afterTextChangedLowerCase
+import com.artf.chatapp.utils.extension.getVm
 
 
 class UsernameFragment : Fragment() {
