@@ -2,29 +2,51 @@ package com.artf.chatapp
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.databinding.ItemMessageBinding
+import com.artf.chatapp.databinding.ItemMessageLeftBinding
+import com.artf.chatapp.databinding.ItemMessageRightBinding
 import com.artf.chatapp.model.Message
 
-class MsgAdapter(private val clickListener: OnClickListener) : ListAdapter<Message,
-        MsgAdapter.ViewHolder>(GridViewDiffCallback) {
+class MsgAdapter(
+    private val clickListener: OnClickListener
+) : ListAdapter<Message, RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val product = getItem(position)
-        holder.bind(clickListener, product)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val msg = getItem(position)
+        (holder as MsgViewHolder<*>).bind(clickListener, msg)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ItemMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            R.layout.item_message_left -> MsgViewHolder(
+                ItemMessageLeftBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
+            R.layout.item_message_right -> MsgViewHolder(
+                ItemMessageRightBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
+            else -> throw IllegalArgumentException("unknown view type $viewType")
+        }
     }
 
-    class ViewHolder constructor(val binding: ItemMessageBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    override fun getItemViewType(position: Int): Int {
+        return if (getItem(position)!!.isOwner!!) R.layout.item_message_right else R.layout.item_message_left
+    }
+
+    class MsgViewHolder<T : ViewDataBinding> constructor(val binding: T) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(clickListener: OnClickListener, item: Message) {
-            binding.message = item
+            when (binding) {
+                is ItemMessageLeftBinding -> {
+                    binding.message = item
+                }
+                is ItemMessageRightBinding -> {
+                    binding.message = item
+                }
+            }
+
             //binding.clickListener = clickListener
             binding.executePendingBindings()
         }

@@ -91,10 +91,13 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             childEventListener = BaseChildEventListener()
             childEventListener?.onChildAdded = { dataSnapshot, s ->
                 val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                onChildAdded?.invoke(friendlyMessage!!)
+                //TODO add userId to object
+                friendlyMessage!!.isOwner = friendlyMessage.id!!.contains(mUser!!.userId.toString())
+                onChildAdded?.invoke(friendlyMessage)
             }
             childEventListener?.onChildChanged = { dataSnapshot, s ->
                 val friendlyMessage = dataSnapshot.getValue(Message::class.java)
+                friendlyMessage!!.isOwner = friendlyMessage.id!!.contains(mUser!!.userId.toString())
                 onChildChanged?.invoke(friendlyMessage!!)
             }
             databaseReference.addChildEventListener(childEventListener!!)
