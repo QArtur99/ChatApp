@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.databinding.ItemMessageLeftBinding
+import com.artf.chatapp.databinding.ItemMessageLeftImgBinding
 import com.artf.chatapp.databinding.ItemMessageRightBinding
+import com.artf.chatapp.databinding.ItemMessageRightImgBinding
 import com.artf.chatapp.model.Message
 
 class MsgAdapter(
@@ -27,12 +29,23 @@ class MsgAdapter(
             R.layout.item_message_right -> MsgViewHolder(
                 ItemMessageRightBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
+            R.layout.item_message_left_img -> MsgViewHolder(
+                ItemMessageLeftImgBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
+            R.layout.item_message_right_img -> MsgViewHolder(
+                ItemMessageRightImgBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position)!!.isOwner!!) R.layout.item_message_right else R.layout.item_message_left
+        val item = getItem(position)!!
+        return if (item.isOwner!!) {
+            if (item.photoUrl == null) R.layout.item_message_right else R.layout.item_message_right_img
+        } else {
+            if (item.photoUrl == null) R.layout.item_message_left else R.layout.item_message_left_img
+        }
     }
 
     class MsgViewHolder<T : ViewDataBinding> constructor(val binding: T) : RecyclerView.ViewHolder(binding.root) {
@@ -43,6 +56,12 @@ class MsgAdapter(
                     binding.message = item
                 }
                 is ItemMessageRightBinding -> {
+                    binding.message = item
+                }
+                is ItemMessageLeftImgBinding -> {
+                    binding.message = item
+                }
+                is ItemMessageRightImgBinding -> {
                     binding.message = item
                 }
             }

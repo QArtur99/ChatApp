@@ -43,3 +43,13 @@ fun bindingTextHourTime(textView: TextView, timestamp: Long) {
     val df = SimpleDateFormat("HH:mm", Locale.getDefault())
     textView.text = df.format(Date(timestamp))
 }
+
+@BindingAdapter("textOrGone")
+fun bindingTextOrGone(textView: TextView, text: String?) {
+    if(text == null){
+        textView.visibility = View.GONE
+    }else{
+        textView.visibility = View.VISIBLE
+        textView.text = text
+    }
+}
