@@ -18,7 +18,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         const val RC_SIGN_IN = 1
         const val RC_PHOTO_PICKER = 2
         const val ANONYMOUS = "anonymous"
-        const val DEFAULT_MSG_LENGTH_LIMIT = 5
+        const val DEFAULT_MSG_LENGTH_LIMIT = 1000
         const val MSG_LENGTH_KEY = "friendly_msg_length"
     }
 
@@ -91,14 +91,13 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             childEventListener = BaseChildEventListener()
             childEventListener?.onChildAdded = { dataSnapshot, s ->
                 val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                //TODO add userId to object
-                friendlyMessage!!.isOwner = friendlyMessage.id!!.contains(mUser!!.userId.toString())
+                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == mUser!!.userId.toString()
                 onChildAdded?.invoke(friendlyMessage)
             }
             childEventListener?.onChildChanged = { dataSnapshot, s ->
                 val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                friendlyMessage!!.isOwner = friendlyMessage.id!!.contains(mUser!!.userId.toString())
-                onChildChanged?.invoke(friendlyMessage!!)
+                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == mUser!!.userId.toString()
+                onChildChanged?.invoke(friendlyMessage)
             }
             databaseReference.addChildEventListener(childEventListener!!)
         }
@@ -124,7 +123,13 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
     }
 
     fun pushMsg(msg: String?, photoUrl: String?) {
-        val friendlyMessage = Message(getMsgId(), msg, this.mUser!!.userName, photoUrl)
+        val friendlyMessage = Message(
+            authorId = this.mUser!!.userId,
+            name = this.mUser!!.userName,
+            photoUrl = photoUrl,
+            text = msg,
+            timestamp = getTimeStamp()
+        )
         databaseReference.push().setValue(friendlyMessage)
     }
 
@@ -193,7 +198,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         detachDatabaseReadListener()
     }
 
-    fun getMsgId(): String {
-        return this.mUser!!.userId + "_" + System.currentTimeMillis()
+    fun getTimeStamp(): Long {
+        return System.currentTimeMillis()
     }
 }

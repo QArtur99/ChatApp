@@ -12,17 +12,18 @@
     </data>
 
     <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_item_message"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
             android:elevation="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
             <ImageView
@@ -40,22 +41,33 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-                android:id="@+id/messageTextView"
-                android:text="@{message.text}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                tools:text="Message"/>
-
-        <TextView
                 android:id="@+id/nameTextView"
+                android:textColor="@color/colorPrimary"
                 android:text="@{message.name}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Name"/>
+                android:textSize="14sp"
+                tools:text="Name" android:padding="0dp"/>
 
+
+            <TextView
+                    android:id="@+id/messageTextView"
+                    android:text="@{message.text}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    tools:text="Message"/>
+
+            <TextView
+                    android:id="@+id/timeTextView"
+                    android:textColor="@color/colorMsgTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textSize="12sp"
+                    android:layout_gravity="end"
+                    app:hourTime="@{message.timestamp}"
+                    tools:text="Name"/>
     </LinearLayout>
+
 </layout>
