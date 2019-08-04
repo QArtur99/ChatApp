@@ -24,7 +24,8 @@
                 android:clipToPadding="false"
                 android:padding="8dp"
                 tools:listitem="@layout/item_message"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:stackFromEnd="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:listData="@{firebaseVm.msgData}"
         />
 

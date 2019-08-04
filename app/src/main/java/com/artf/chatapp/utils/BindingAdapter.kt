@@ -18,6 +18,7 @@ fun bindMoviesRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
     val adapter = recyclerView.adapter as MsgAdapter
     adapter.submitList(data)
     adapter.notifyDataSetChanged()
+    recyclerView.layoutManager!!.scrollToPosition(recyclerView.adapter!!.itemCount-1)
 }
 
 @BindingAdapter("imageUrl")
