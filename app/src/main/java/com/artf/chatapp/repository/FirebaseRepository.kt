@@ -1,10 +1,12 @@
 package com.artf.chatapp.repository
 
+
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.artf.chatapp.utils.NetworkState
+import com.artf.chatapp.utils.Utility
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -12,7 +14,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 
-class FirebaseRepository(private val activity: AppCompatActivity) {
+class FirebaseRepository() {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -31,6 +33,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
+    val chatsReference by lazy { firebaseFirestore.collection("chat") }
     val usersReference by lazy { firebaseFirestore.collection("users") }
     val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
     val databaseReference by lazy { firebaseDatabase.reference.child("messages") }
@@ -128,7 +131,7 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             name = this.mUser!!.userName,
             photoUrl = photoUrl,
             text = msg,
-            timestamp = getTimeStamp()
+            timestamp = Utility.getTimeStamp()
         )
         databaseReference.push().setValue(friendlyMessage)
     }
@@ -170,6 +173,28 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
             }
     }
 
+
+    private fun addUserChats(userId: String) {
+        val chat = Chat("555", "666", "777")
+        firebaseFirestore.collection("userChats").document(userId).set(chat)
+            .addOnSuccessListener {
+
+            }
+            .addOnFailureListener {
+
+            }
+    }
+
+    private fun getUserChats(userId: String) {
+        firebaseFirestore.collection("userChats/$userId").get()
+            .addOnSuccessListener {
+
+            }
+            .addOnFailureListener {
+
+            }
+    }
+
     fun isUsernameAvailable(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
         usernamesReference.document(username.toLowerCase()).get()
@@ -196,9 +221,5 @@ class FirebaseRepository(private val activity: AppCompatActivity) {
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         signOut?.invoke()
         detachDatabaseReadListener()
-    }
-
-    fun getTimeStamp(): Long {
-        return System.currentTimeMillis()
     }
 }

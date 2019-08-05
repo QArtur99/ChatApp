@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
             when (it) {
                 FragmentState.USERNAME -> binding.root.findNavController().navigate(R.id.fragment_username)
                 FragmentState.MAIN -> binding.root.findNavController().navigate(R.id.fragment_main)
+                FragmentState.SEARCH -> binding.root.findNavController().navigate(R.id.fragment_main)
                 else -> binding.root.findNavController().navigate(R.id.fragment_start)
             }
 
@@ -84,7 +86,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.main_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search)
+        val searchView = searchItem.actionView as SearchView
+        setSearchViewListener(searchView)
         return true
+    }
+
+    private fun setSearchViewListener(searchView: SearchView) {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                //callSearch(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return true
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -95,6 +114,9 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.change_username -> {
+                true
+            }
+            R.id.search -> {
                 true
             }
             else -> super.onOptionsItemSelected(item)
