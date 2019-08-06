@@ -2,19 +2,19 @@ package com.artf.chatapp.repository
 
 
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 
-class FirebaseRepository() {
+class FirebaseRepository(val activity: AppCompatActivity): FirebaseBaseRepository(activity) {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -25,11 +25,9 @@ class FirebaseRepository() {
     }
 
     private val TAG = FirebaseRepository::class.java.simpleName
-    private var mUser: User? = null
 
     private val firebaseDatabase by lazy { FirebaseDatabase.getInstance() }
     private val firebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private val firebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
@@ -40,7 +38,7 @@ class FirebaseRepository() {
     val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
 
     private var childEventListener: BaseChildEventListener? = null
-    private var authStateListener: FirebaseAuth.AuthStateListener? = null
+
 
     var startSignInActivity: (() -> Unit)? = null
     var signOut: (() -> Unit)? = null
@@ -50,21 +48,20 @@ class FirebaseRepository() {
     var onChildChanged: ((message: Message) -> Unit)? = null
 
     init {
-        authStateListener = getAuthStateListener()
-        firebaseAuth.addAuthStateListener(authStateListener!!)
+        init()
         fetchConfig()
     }
 
-    private fun getAuthStateListener(): FirebaseAuth.AuthStateListener {
-        return FirebaseAuth.AuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            if (user != null) {
-                onSignedInInitialize(user.uid)
-            } else {
-                onSignedOutCleanup()
-                startSignInActivity?.invoke()
-            }
-        }
+    override fun onSignedIn() {
+        getUser(firebaseLogin.mUser?.userId!!)
+        attachDatabaseReadListener()
+    }
+
+    override fun onSignedOut() {
+        detachDatabaseReadListener()
+        signOut?.invoke()
+        startSignInActivity?.invoke()
+
     }
 
     private fun fetchConfig() {
@@ -94,12 +91,12 @@ class FirebaseRepository() {
             childEventListener = BaseChildEventListener()
             childEventListener?.onChildAdded = { dataSnapshot, s ->
                 val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == mUser!!.userId.toString()
+                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == getUser().userId.toString()
                 onChildAdded?.invoke(friendlyMessage)
             }
             childEventListener?.onChildChanged = { dataSnapshot, s ->
                 val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == mUser!!.userId.toString()
+                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == getUser().userId.toString()
                 onChildChanged?.invoke(friendlyMessage)
             }
             databaseReference.addChildEventListener(childEventListener!!)
@@ -113,22 +110,10 @@ class FirebaseRepository() {
         }
     }
 
-    private fun onSignedInInitialize(userId: String) {
-        mUser = User(userId)
-        getUser(userId)
-        attachDatabaseReadListener()
-    }
-
-    private fun onSignedOutCleanup() {
-        this.mUser = null
-        signOut?.invoke()
-        detachDatabaseReadListener()
-    }
-
     fun pushMsg(msg: String?, photoUrl: String?) {
         val friendlyMessage = Message(
-            authorId = this.mUser!!.userId,
-            name = this.mUser!!.userName,
+            authorId = getUser().userId,
+            name = getUser().userName,
             photoUrl = photoUrl,
             text = msg,
             timestamp = Utility.getTimeStamp()
@@ -137,7 +122,7 @@ class FirebaseRepository() {
     }
 
     fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
-        usersReference.document(mUser!!.userId!!).set(mUser!!)
+        usersReference.document(getUser().userId!!).set(getUser())
             .addOnSuccessListener {
                 callBack(NetworkState.LOADED)
                 startMainFragment?.invoke()
@@ -150,8 +135,8 @@ class FirebaseRepository() {
 
     fun addUsername(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
-        mUser!!.userName = username.toLowerCase()
-        usernamesReference.document(mUser!!.userName!!).set(mUser!!)
+        getUser().userName = username.toLowerCase()
+        usernamesReference.document(getUser().userName!!).set(getUser())
             .addOnSuccessListener {
                 addUser { callBack(it) }
             }
@@ -164,7 +149,7 @@ class FirebaseRepository() {
         usersReference.document(userId).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    this.mUser = document.toObject(User::class.java)
+                    this.firebaseLogin.mUser = document.toObject(User::class.java)
                     startMainFragment?.invoke()
                 } else startUsernameFragment?.invoke()
             }
@@ -218,8 +203,8 @@ class FirebaseRepository() {
     }
 
     fun removeListener() {
-        if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
-        signOut?.invoke()
+        removeAuthListener()
         detachDatabaseReadListener()
     }
+
 }

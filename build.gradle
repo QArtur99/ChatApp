@@ -15,7 +15,7 @@ buildscript {
     versions.core_ktx = "1.2.0-alpha02"
     versions.coroutine = "1.1.1"
     versions.coroutines_adapter = "0.9.2"
-    versions.dagger = "2.16"
+    versions.dagger = "2.23.2"
     versions.dexmaker = "2.2.0"
     versions.diffplug = "3.23.1"
     versions.espresso = "3.3.0-alpha02"
@@ -57,7 +57,7 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+        mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.android_gradle_plugin"
@@ -70,7 +70,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        mavenCentral()
     }
 }
 
