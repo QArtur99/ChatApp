@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
+import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
 import com.google.firebase.database.FirebaseDatabase
@@ -14,7 +15,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 
-class FirebaseRepository(val activity: AppCompatActivity): FirebaseBaseRepository(activity) {
+class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseRepository(activity) {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -39,11 +40,8 @@ class FirebaseRepository(val activity: AppCompatActivity): FirebaseBaseRepositor
 
     private var childEventListener: BaseChildEventListener? = null
 
-
-    var startSignInActivity: (() -> Unit)? = null
-    var signOut: (() -> Unit)? = null
-    var startUsernameFragment: (() -> Unit)? = null
-    var startMainFragment: (() -> Unit)? = null
+    var onSignOut: (() -> Unit)? = null
+    var onFragmentStateChanged: ((state: FragmentState) -> Unit)? = null
     var onChildAdded: ((message: Message) -> Unit)? = null
     var onChildChanged: ((message: Message) -> Unit)? = null
 
@@ -59,9 +57,7 @@ class FirebaseRepository(val activity: AppCompatActivity): FirebaseBaseRepositor
 
     override fun onSignedOut() {
         detachDatabaseReadListener()
-        signOut?.invoke()
-        startSignInActivity?.invoke()
-
+        onSignOut?.invoke()
     }
 
     private fun fetchConfig() {
@@ -121,12 +117,10 @@ class FirebaseRepository(val activity: AppCompatActivity): FirebaseBaseRepositor
         databaseReference.push().setValue(friendlyMessage)
     }
 
-    fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
+    private fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
         usersReference.document(getUser().userId!!).set(getUser())
             .addOnSuccessListener {
                 callBack(NetworkState.LOADED)
-                startMainFragment?.invoke()
-
             }
             .addOnFailureListener {
                 callBack(NetworkState.FAILED)
@@ -150,11 +144,11 @@ class FirebaseRepository(val activity: AppCompatActivity): FirebaseBaseRepositor
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     this.firebaseLogin.mUser = document.toObject(User::class.java)
-                    startMainFragment?.invoke()
-                } else startUsernameFragment?.invoke()
+                    onFragmentStateChanged?.invoke(FragmentState.MAIN)
+                } else onFragmentStateChanged?.invoke(FragmentState.USERNAME)
             }
             .addOnFailureListener {
-                startUsernameFragment?.invoke()
+                onFragmentStateChanged?.invoke(FragmentState.USERNAME)
             }
     }
 

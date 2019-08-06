@@ -38,11 +38,16 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     init {
         _msgData.value = arrayListOf()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
-        firebaseRepository.startSignInActivity = { setStartSignInActivity(true) }
-        firebaseRepository.signOut = { _msgData.clear() }
-        firebaseRepository.startUsernameFragment = { setFragmentState(FragmentState.USERNAME) }
-        firebaseRepository.startMainFragment = { setFragmentState(FragmentState.MAIN) }
+        firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
+        setOnSignOutListener()
         setMsgListener()
+    }
+
+    private fun setOnSignOutListener() {
+        firebaseRepository.onSignOut = {
+            _msgData.clear()
+            setStartSignInActivity(true)
+        }
     }
 
     private fun setMsgListener() {
@@ -60,8 +65,9 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     }
 
     fun addUsername(username: String) {
-        firebaseRepository.addUsername(username){
+        firebaseRepository.addUsername(username) {
             _usernameStatus.value = it
+            if (it == NetworkState.LOADED) setFragmentState(FragmentState.MAIN)
         }
     }
 

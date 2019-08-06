@@ -2,7 +2,7 @@ package com.artf.chatapp.repository
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.artf.chatapp.MainApplication
+import com.artf.chatapp.App
 import com.artf.chatapp.model.User
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ open class FirebaseBaseRepository(private val activity: AppCompatActivity) {
     lateinit var firebaseLogin: FirebaseLogin
 
     fun init() {
-        (activity.application as MainApplication).component.inject(this)
+        App.component.inject(this)
         setAuthObserver(activity)
     }
 
