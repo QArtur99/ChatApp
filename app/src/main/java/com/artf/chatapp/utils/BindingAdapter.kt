@@ -7,6 +7,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.MsgAdapter
 import com.artf.chatapp.R
+import com.artf.chatapp.SearchAdapter
 import com.artf.chatapp.model.Message
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -15,7 +16,11 @@ import java.util.*
 
 @BindingAdapter("listData")
 fun bindMoviesRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
-    val adapter = recyclerView.adapter as MsgAdapter
+    val adapter = when(recyclerView.adapter){
+        is MsgAdapter -> recyclerView.adapter as MsgAdapter
+        is SearchAdapter -> recyclerView.adapter as SearchAdapter
+        else -> throw IllegalArgumentException("Unknown Adapter class: ${recyclerView.adapter?.javaClass}")
+    }
     adapter.submitList(data)
     adapter.notifyDataSetChanged()
     recyclerView.layoutManager!!.scrollToPosition(recyclerView.adapter!!.itemCount-1)

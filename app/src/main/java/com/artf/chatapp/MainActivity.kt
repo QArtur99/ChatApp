@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             when (it) {
                 FragmentState.USERNAME -> binding.root.findNavController().navigate(R.id.fragment_username)
                 FragmentState.MAIN -> binding.root.findNavController().navigate(R.id.fragment_main)
-                FragmentState.SEARCH -> binding.root.findNavController().navigate(R.id.fragment_main)
+                FragmentState.SEARCH -> binding.root.findNavController().navigate(R.id.fragment_search)
                 else -> binding.root.findNavController().navigate(R.id.fragment_start)
             }
 
@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
+                firebaseVm.onQueryTextChange(newText)
                 return true
             }
         })

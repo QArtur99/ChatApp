@@ -17,6 +17,9 @@ class SearchFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
+        binding.recyclerView.adapter = SearchAdapter(SearchAdapter.OnClickListener { product ->
+            //movieDetailViewModel.onReviewListItemClick(product)
+        })
 
 
         return binding.root

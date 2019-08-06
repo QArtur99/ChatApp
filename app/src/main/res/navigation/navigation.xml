@@ -23,4 +23,11 @@
             android:label="GridViewFragment">
     </fragment>
 
+    <fragment
+            android:id="@+id/fragment_search"
+            android:name="com.artf.chatapp.SearchFragment"
+            android:label="GridViewFragment">
+    </fragment>
+
+
 </navigation>

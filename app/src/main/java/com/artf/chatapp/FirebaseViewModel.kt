@@ -43,6 +43,10 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         setMsgListener()
     }
 
+    fun onQueryTextChange(newText: String) {
+        setFragmentState(FragmentState.SEARCH)
+    }
+
     private fun setOnSignOutListener() {
         firebaseRepository.onSignOut = {
             _msgData.clear()
