@@ -9,9 +9,16 @@
         <variable
                 name="user"
                 type="com.artf.chatapp.model.User"/>
+
+        <variable
+                name="clickListener"
+                type="com.artf.chatapp.SearchAdapter.OnClickListener"/>
     </data>
 
     <LinearLayout
+            android:foreground="?android:attr/selectableItemBackground"
+            android:stateListAnimator="@animator/raise"
+            android:onClick="@{(v) -> clickListener.onClick(v, user)}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_item_message"

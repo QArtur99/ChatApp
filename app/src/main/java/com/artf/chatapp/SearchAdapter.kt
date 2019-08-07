@@ -1,6 +1,7 @@
 package com.artf.chatapp
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -25,7 +26,7 @@ class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<Us
 
         fun bind(clickListener: OnClickListener, item: User) {
             binding.user = item
-            //binding.clickListener = clickListener
+            binding.clickListener = clickListener
             binding.executePendingBindings()
         }
     }
@@ -41,6 +42,6 @@ class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<Us
     }
 
     class OnClickListener(val clickListener: (productId: User) -> Unit) {
-        fun onClick(product: User) = clickListener(product)
+        fun onClick(v: View, product: User) = clickListener(product)
     }
 }
