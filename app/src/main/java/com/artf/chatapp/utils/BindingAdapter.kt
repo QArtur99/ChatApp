@@ -52,7 +52,7 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
 fun bindProfileImg(imgView: ImageView, imgUrl: String?) {
 
     if (imgUrl.isNullOrEmpty()) {
-        imgView.setImageResource(R.drawable.ic_account_circle_black_48dp)
+        imgView.setImageResource(R.drawable.ic_account_circle_black_24dp)
         return
     }
 
@@ -61,7 +61,8 @@ fun bindProfileImg(imgView: ImageView, imgUrl: String?) {
         .apply(
             RequestOptions()
                 .placeholder(R.drawable.loading_animation)
-                .error(R.drawable.ic_account_circle_black_48dp)
+                .error(R.drawable.ic_account_circle_black_24dp)
+                .circleCrop()
         )
         .into(imgView)
 }
