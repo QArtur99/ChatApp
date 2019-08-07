@@ -48,6 +48,24 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         .into(imgView)
 }
 
+@BindingAdapter("profileImgUrl")
+fun bindProfileImg(imgView: ImageView, imgUrl: String?) {
+
+    if (imgUrl.isNullOrEmpty()) {
+        imgView.setImageResource(R.drawable.ic_account_circle_black_48dp)
+        return
+    }
+
+    Glide.with(imgView.context)
+        .load(imgUrl)
+        .apply(
+            RequestOptions()
+                .placeholder(R.drawable.loading_animation)
+                .error(R.drawable.ic_account_circle_black_48dp)
+        )
+        .into(imgView)
+}
+
 @BindingAdapter("hourTime")
 fun bindingTextHourTime(textView: TextView, timestamp: Long) {
     val df = SimpleDateFormat("HH:mm", Locale.getDefault())
