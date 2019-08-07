@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.FragmentSearchBinding
 import com.artf.chatapp.utils.extension.getVm
 
@@ -21,6 +22,13 @@ class SearchFragment : Fragment() {
             //movieDetailViewModel.onReviewListItemClick(product)
         })
 
+        firebaseVm.userList.observe(viewLifecycleOwner, Observer {
+            binding.root.visibility = if(it.isNullOrEmpty()) View.GONE else View.VISIBLE
+        })
+
+        binding.root.setOnClickListener {
+            binding.root.visibility = View.GONE
+        }
 
         return binding.root
     }

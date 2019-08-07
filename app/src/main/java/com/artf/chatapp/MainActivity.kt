@@ -2,6 +2,7 @@ package com.artf.chatapp
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.ActivityMainBinding
@@ -22,6 +24,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
+
+    private val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+    private val uriUsername = Uri.parse("atr:fragment_username")
+    private val uriMain = Uri.parse("atr:fragment_main")
+    private val uriSearch = Uri.parse("atr:fragment_search")
+    private val uriStart = Uri.parse("atr:fragment_start")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,13 +48,14 @@ class MainActivity : AppCompatActivity() {
     private fun setFragmentStateListener() {
         Navigation.setViewNavController(binding.root, findNavController(R.id.nav_host_fragment))
         firebaseVm.fragmentState.observe(this, Observer {
-            when (it) {
-                FragmentState.USERNAME -> binding.root.findNavController().navigate(R.id.fragment_username)
-                FragmentState.MAIN -> binding.root.findNavController().navigate(R.id.fragment_main)
-                FragmentState.SEARCH -> binding.root.findNavController().navigate(R.id.fragment_search)
-                else -> binding.root.findNavController().navigate(R.id.fragment_start)
+            it?.let {
+                when (it) {
+                    FragmentState.USERNAME -> binding.root.findNavController().navigate(uriUsername, navOptions)
+                    FragmentState.MAIN -> binding.root.findNavController().navigate(uriMain, navOptions)
+                    //FragmentState.SEARCH -> binding.root.findNavController().navigate(uriSearch, navOptions)
+                    FragmentState.START -> binding.root.findNavController().navigate(uriStart, navOptions)
+                }
             }
-
         })
     }
 
@@ -110,7 +119,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
-                firebaseVm.setFragmentState(null)
+                firebaseVm.setFragmentState(FragmentState.START)
                 AuthUI.getInstance().signOut(this)
                 true
             }

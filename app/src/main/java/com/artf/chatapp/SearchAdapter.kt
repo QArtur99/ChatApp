@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.databinding.ItemSearchBinding
-import com.artf.chatapp.model.Message
+import com.artf.chatapp.model.User
 
-class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<Message,
+class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<User,
         RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -23,24 +23,24 @@ class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<Me
     class MsgViewHolder constructor(val binding: ItemSearchBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(clickListener: OnClickListener, item: Message) {
-            binding.message = item
+        fun bind(clickListener: OnClickListener, item: User) {
+            binding.user = item
             //binding.clickListener = clickListener
             binding.executePendingBindings()
         }
     }
 
-    companion object GridViewDiffCallback : DiffUtil.ItemCallback<Message>() {
-        override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
-            return oldItem.id == newItem.id
+    companion object GridViewDiffCallback : DiffUtil.ItemCallback<User>() {
+        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem.userId == newItem.userId
         }
 
-        override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
             return oldItem == newItem
         }
     }
 
-    class OnClickListener(val clickListener: (productId: Message) -> Unit) {
-        fun onClick(product: Message) = clickListener(product)
+    class OnClickListener(val clickListener: (productId: User) -> Unit) {
+        fun onClick(product: User) = clickListener(product)
     }
 }

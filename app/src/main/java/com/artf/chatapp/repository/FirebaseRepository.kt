@@ -174,7 +174,19 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
             }
     }
 
-    fun isUsernameAvailable(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
+    fun searchForUser(username: String, callBack: (networkState: NetworkState, userList: MutableList<User>) -> Unit) {
+        callBack(NetworkState.LOADING, mutableListOf())
+        usersReference.whereEqualTo("userName", username).get()
+            .addOnSuccessListener { querySnapshot ->
+                val list = querySnapshot.toObjects(User::class.java)
+                callBack(NetworkState.LOADED, list)
+            }
+            .addOnFailureListener {
+                callBack(NetworkState.FAILED, mutableListOf())
+            }
+    }
+
+    fun isUsernameAvailable(username: String, callBack: (networkState: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
         usernamesReference.document(username.toLowerCase()).get()
             .addOnSuccessListener { document ->

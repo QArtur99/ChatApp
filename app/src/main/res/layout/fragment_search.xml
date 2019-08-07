@@ -11,20 +11,30 @@
     </data>
 
     <LinearLayout
+            android:background="@color/transparent"
             android:orientation="vertical"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+        <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:padding="8dp"
-                tools:listitem="@layout/item_message"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:listData="@{firebaseVm.msgData}"
-        />
+                android:layout_height="wrap_content"
+                android:background="@color/colorWhite"
+                android:elevation="4dp"
+                android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:padding="8dp"
+                    tools:listitem="@layout/item_message"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:userSearchList="@{firebaseVm.userList}"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 </layout>

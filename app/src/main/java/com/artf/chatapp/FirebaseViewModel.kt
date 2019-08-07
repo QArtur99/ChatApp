@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.artf.chatapp.model.Message
+import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
@@ -13,8 +14,14 @@ import com.artf.chatapp.utils.extension.*
 class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel() {
 
 
-    private val _msgData = MutableLiveData<List<Message>>()
-    val msgData: LiveData<List<Message>> = _msgData
+    private val _userList = MutableLiveData<List<User>>()
+    val userList: LiveData<List<User>> = _userList
+
+    private val _userSearchStatus = MutableLiveData<NetworkState>()
+    val userSearchStatus: LiveData<NetworkState> = _userSearchStatus
+
+    private val _msgList = MutableLiveData<List<Message>>()
+    val msgList: LiveData<List<Message>> = _msgList
 
     private val _msgLength = MutableLiveData<Int>()
     val msgLength: LiveData<Int> = _msgLength
@@ -36,29 +43,35 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
 
 
     init {
-        _msgData.value = arrayListOf()
+        _msgList.value = arrayListOf()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
         firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
         setOnSignOutListener()
         setMsgListener()
     }
 
+
     fun onQueryTextChange(newText: String) {
-        setFragmentState(FragmentState.SEARCH)
+         firebaseRepository.searchForUser(newText) { networkState, userList ->
+            if (networkState == NetworkState.LOADED) {
+                _userList.value = userList
+            }
+            _userSearchStatus.value = networkState
+        }
     }
 
     private fun setOnSignOutListener() {
         firebaseRepository.onSignOut = {
-            _msgData.clear()
+            _msgList.clear()
             setStartSignInActivity(true)
         }
     }
 
     private fun setMsgListener() {
-        firebaseRepository.onChildAdded = { _msgData.add(it) }
+        firebaseRepository.onChildAdded = { _msgList.add(it) }
         firebaseRepository.onChildChanged = {
-            _msgData.remove(_msgData.get(_msgData.count() - 1))
-            _msgData.add(it)
+            _msgList.remove(_msgList.get(_msgList.count() - 1))
+            _msgList.add(it)
         }
     }
 

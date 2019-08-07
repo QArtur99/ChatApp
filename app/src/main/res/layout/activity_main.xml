@@ -5,7 +5,7 @@
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorWhite"
+            android:background="@color/colorPrimary"
             android:orientation="vertical">
         <FrameLayout
                 android:layout_width="match_parent"
@@ -17,6 +17,13 @@
                     android:layout_height="match_parent"
                     app:defaultNavHost="true"
                     app:navGraph="@navigation/navigation"/>
+
+            <fragment
+                    android:id="@+id/nav_host_search"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:navGraph="@navigation/navigation_search"/>
         </FrameLayout>
 
     </RelativeLayout>

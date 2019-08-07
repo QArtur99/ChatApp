@@ -9,21 +9,25 @@ import com.artf.chatapp.MsgAdapter
 import com.artf.chatapp.R
 import com.artf.chatapp.SearchAdapter
 import com.artf.chatapp.model.Message
+import com.artf.chatapp.model.User
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import java.text.SimpleDateFormat
 import java.util.*
 
-@BindingAdapter("listData")
-fun bindMoviesRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
-    val adapter = when(recyclerView.adapter){
-        is MsgAdapter -> recyclerView.adapter as MsgAdapter
-        is SearchAdapter -> recyclerView.adapter as SearchAdapter
-        else -> throw IllegalArgumentException("Unknown Adapter class: ${recyclerView.adapter?.javaClass}")
-    }
+@BindingAdapter("msgList")
+fun bindMsgRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
+    val adapter= recyclerView.adapter as MsgAdapter
     adapter.submitList(data)
     adapter.notifyDataSetChanged()
     recyclerView.layoutManager!!.scrollToPosition(recyclerView.adapter!!.itemCount-1)
+}
+
+@BindingAdapter("userSearchList")
+fun bindUserSearchRecyclerView(recyclerView: RecyclerView, data: List<User>?) {
+    val adapter= recyclerView.adapter as SearchAdapter
+    adapter.submitList(data)
+    adapter.notifyDataSetChanged()
 }
 
 @BindingAdapter("imageUrl")

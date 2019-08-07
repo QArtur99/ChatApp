@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/navigation_search"
+            app:startDestination="@id/fragment_search">
+
+    <fragment
+            android:id="@+id/fragment_search"
+            android:name="com.artf.chatapp.SearchFragment"
+            android:label="GridViewFragment">
+        <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_search"/>
+    </fragment>
+</navigation>
