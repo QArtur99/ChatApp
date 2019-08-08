@@ -4,5 +4,6 @@ enum class FragmentState {
     USERNAME,
     MAIN,
     SEARCH,
-    START
+    START,
+    CHAT
 }

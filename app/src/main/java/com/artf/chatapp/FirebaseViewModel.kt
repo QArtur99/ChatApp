@@ -41,6 +41,12 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         _fragmentState.value = fragmentState
     }
 
+    private val _receiver = MutableLiveData<User>()
+    val receiver: LiveData<User> = _receiver
+    fun setReceiver(user: User?) {
+        _receiver.value = user
+        user?.let { firebaseRepository.setChatRoomId(user.userId!!) }
+    }
 
     init {
         _msgList.value = arrayListOf()
@@ -48,11 +54,12 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
         setOnSignOutListener()
         setMsgListener()
+        firebaseRepository.onMsgList = { _msgList.value = it }
     }
 
 
     fun onQueryTextChange(newText: String) {
-         firebaseRepository.searchForUser(newText) { networkState, userList ->
+        firebaseRepository.searchForUser(newText) { networkState, userList ->
             if (networkState == NetworkState.LOADED) {
                 _userList.value = userList
             }

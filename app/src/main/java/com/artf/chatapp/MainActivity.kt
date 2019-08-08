@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                 when (it) {
                     FragmentState.USERNAME -> binding.root.findNavController().navigate(uriUsername, navOptions)
                     FragmentState.MAIN -> binding.root.findNavController().navigate(uriMain, navOptions)
+                    FragmentState.CHAT -> binding.root.findNavController().navigate(uriMain, navOptions)
                     //FragmentState.SEARCH -> binding.root.findNavController().navigate(uriSearch, navOptions)
                     FragmentState.START -> binding.root.findNavController().navigate(uriStart, navOptions)
                 }

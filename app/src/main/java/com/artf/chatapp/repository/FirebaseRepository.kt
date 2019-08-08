@@ -9,8 +9,9 @@ import com.artf.chatapp.model.User
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
@@ -27,21 +28,21 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
 
     private val TAG = FirebaseRepository::class.java.simpleName
 
-    private val firebaseDatabase by lazy { FirebaseDatabase.getInstance() }
     private val firebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
-    val chatsReference by lazy { firebaseFirestore.collection("chat") }
+    val chatRoomsReference by lazy { firebaseFirestore.collection("chatRooms") }
     val usersReference by lazy { firebaseFirestore.collection("users") }
     val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
-    val databaseReference by lazy { firebaseDatabase.reference.child("messages") }
     val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
 
-    private var childEventListener: BaseChildEventListener? = null
+    private lateinit var chatRoomId: String
+    private var chatRoomListner: ListenerRegistration? = null
 
     var onSignOut: (() -> Unit)? = null
     var onFragmentStateChanged: ((state: FragmentState) -> Unit)? = null
+    var onMsgList: ((message: List<Message>) -> Unit)? = null
     var onChildAdded: ((message: Message) -> Unit)? = null
     var onChildChanged: ((message: Message) -> Unit)? = null
 
@@ -52,7 +53,7 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
 
     override fun onSignedIn() {
         getUser(firebaseLogin.mUser?.userId!!)
-        attachDatabaseReadListener()
+        //attachDatabaseReadListener()
     }
 
     override fun onSignedOut() {
@@ -83,27 +84,29 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
     }
 
     private fun attachDatabaseReadListener() {
-        if (childEventListener == null) {
-            childEventListener = BaseChildEventListener()
-            childEventListener?.onChildAdded = { dataSnapshot, s ->
-                val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == getUser().userId.toString()
-                onChildAdded?.invoke(friendlyMessage)
-            }
-            childEventListener?.onChildChanged = { dataSnapshot, s ->
-                val friendlyMessage = dataSnapshot.getValue(Message::class.java)
-                friendlyMessage!!.isOwner = friendlyMessage.authorId!! == getUser().userId.toString()
-                onChildChanged?.invoke(friendlyMessage)
-            }
-            databaseReference.addChildEventListener(childEventListener!!)
+        if (chatRoomListner == null) {
+            chatRoomListner = chatRoomsReference.document(chatRoomId).collection("chatRoom")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(1)
+                .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                    firebaseFirestoreException?.let { return@addSnapshotListener }
+                    querySnapshot?.let { if (it.metadata.isFromCache) return@addSnapshotListener }
+
+                    val msgList = querySnapshot?.toObjects(Message::class.java)
+                    msgList?.let {
+                        for (friendlyMessage in msgList) {
+                            friendlyMessage!!.isOwner = friendlyMessage.authorId!! == getUser().userId.toString()
+                            onChildAdded?.invoke(friendlyMessage)
+                        }
+                    }
+                }
         }
+
     }
 
     private fun detachDatabaseReadListener() {
-        if (childEventListener != null) {
-            databaseReference.removeEventListener(childEventListener!!)
-            childEventListener = null
-        }
+        chatRoomListner?.remove()
+        chatRoomListner = null
     }
 
     fun pushMsg(msg: String?, photoUrl: String?) {
@@ -114,7 +117,10 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
             text = msg,
             timestamp = Utility.getTimeStamp()
         )
-        databaseReference.push().setValue(friendlyMessage)
+        chatRoomsReference.document(chatRoomId).collection("chatRoom").document().set(friendlyMessage)
+            .addOnFailureListener {
+
+            }
     }
 
     private fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
@@ -174,7 +180,10 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
             }
     }
 
-    fun searchForUser(username: String, callBack: (networkState: NetworkState, userList: MutableList<User>) -> Unit) {
+    fun searchForUser(
+        username: String,
+        callBack: (networkState: NetworkState, userList: MutableList<User>) -> Unit
+    ) {
         callBack(NetworkState.LOADING, mutableListOf())
         usersReference.whereEqualTo("userName", username).get()
             .addOnSuccessListener { querySnapshot ->
@@ -206,6 +215,13 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
                     pushMsg(null, uri.toString())
                 }
             }
+    }
+
+    fun setChatRoomId(receiverId: String) {
+        val userId = getUser().userId!!
+        chatRoomId = if (receiverId > userId) "$receiverId\\_$userId" else "$userId\\_$receiverId"
+        detachDatabaseReadListener()
+        attachDatabaseReadListener()
     }
 
     fun removeListener() {

@@ -21,9 +21,9 @@ class SearchFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
-        binding.recyclerView.adapter = SearchAdapter(SearchAdapter.OnClickListener { product ->
-
-            //movieDetailViewModel.onReviewListItemClick(product)
+        binding.recyclerView.adapter = SearchAdapter(SearchAdapter.OnClickListener { user ->
+            firebaseVm.setReceiver(user)
+            onSearchViewClose()
         })
 
         firebaseVm.userList.observe(viewLifecycleOwner, Observer {
