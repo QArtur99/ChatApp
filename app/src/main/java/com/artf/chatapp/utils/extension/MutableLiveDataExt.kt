@@ -9,7 +9,7 @@ fun <T> MutableLiveData<List<T>>.add(item: T) {
 }
 
 fun <T> MutableLiveData<List<T>>.remove(item: T) {
-    val updatedItems = this.value as ArrayList
+    val updatedItems = this.value as MutableList
     updatedItems.remove(item)
     this.value = updatedItems
 }
