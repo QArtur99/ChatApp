@@ -7,18 +7,18 @@
 
     <data>
         <variable
-                name="user"
-                type="com.artf.chatapp.model.User"/>
+                name="chat"
+                type="com.artf.chatapp.model.Chat"/>
 
         <variable
                 name="clickListener"
-                type="com.artf.chatapp.SearchAdapter.OnClickListener"/>
+                type="com.artf.chatapp.ChatListAdapter.OnClickListener"/>
     </data>
 
     <LinearLayout
             android:foreground="?android:attr/selectableItemBackground"
             android:stateListAnimator="@animator/raise"
-            android:onClick="@{(v) -> clickListener.onClick(v, user)}"
+            android:onClick="@{(v) -> clickListener.onClick(v, chat)}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_item_message"
@@ -47,7 +47,7 @@
                     android:layout_height="0dp"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    app:profileImgUrl="@{user.photoUrl}"
+                    app:profileImgUrl="@{chat.user.photoUrl}"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -67,8 +67,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    app:textOrGone="@{user.userName}"
-                    tools:text="Name"/>
+                    app:textOrGone="@{chat.user.userName}"
+                    tools:text="Name" android:padding="0dp"/>
 
 
             <TextView
@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    app:textOrGone="@{user.userId}"
+                    app:textOrGone="@{chat.user.userId}"
                     tools:text="Message"/>
 
             <TextView
@@ -91,7 +91,7 @@
                     android:layout_marginStart="8dp"
                     android:textSize="12sp"
                     android:layout_gravity="end"
-                    app:textOrGone="@{user.userId}"
+                    app:textOrGone="@{chat.user.userId}"
                     tools:text="Name"/>
         </RelativeLayout>
     </LinearLayout>

@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
@@ -19,6 +20,9 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
 
     private val _userSearchStatus = MutableLiveData<NetworkState>()
     val userSearchStatus: LiveData<NetworkState> = _userSearchStatus
+
+    private val _chatRoomList = MutableLiveData<List<Chat>>()
+    val chatRoomList: LiveData<List<Chat>> = _chatRoomList
 
     private val _msgList = MutableLiveData<List<Message>>()
     val msgList: LiveData<List<Message>> = _msgList
@@ -55,6 +59,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         setOnSignOutListener()
         setMsgListener()
         firebaseRepository.onMsgList = { _msgList.value = it }
+        firebaseRepository.onChatRoomList = { _chatRoomList.value = it }
     }
 
 
@@ -91,7 +96,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     fun addUsername(username: String) {
         firebaseRepository.addUsername(username) {
             _usernameStatus.value = it
-            if (it == NetworkState.LOADED) setFragmentState(FragmentState.MAIN)
+            if (it == NetworkState.LOADED) setFragmentState(FragmentState.START)
         }
     }
 

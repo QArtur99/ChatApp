@@ -5,9 +5,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.artf.chatapp.ChatListAdapter
 import com.artf.chatapp.MsgAdapter
 import com.artf.chatapp.R
 import com.artf.chatapp.SearchAdapter
+import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.bumptech.glide.Glide
@@ -26,6 +28,13 @@ fun bindMsgRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
 @BindingAdapter("userSearchList")
 fun bindUserSearchRecyclerView(recyclerView: RecyclerView, data: List<User>?) {
     val adapter= recyclerView.adapter as SearchAdapter
+    adapter.submitList(data)
+    adapter.notifyDataSetChanged()
+}
+
+@BindingAdapter("userChatList")
+fun bindUserChatRecyclerView(recyclerView: RecyclerView, data: List<Chat>?) {
+    val adapter= recyclerView.adapter as ChatListAdapter
     adapter.submitList(data)
     adapter.notifyDataSetChanged()
 }

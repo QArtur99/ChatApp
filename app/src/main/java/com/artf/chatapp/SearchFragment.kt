@@ -6,6 +6,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.FragmentSearchBinding
+import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.extension.getVm
 import kotlinx.android.synthetic.main.fragment_search.view.*
 
@@ -23,6 +24,7 @@ class SearchFragment : Fragment() {
 
         binding.recyclerView.adapter = SearchAdapter(SearchAdapter.OnClickListener { user ->
             firebaseVm.setReceiver(user)
+            firebaseVm.setFragmentState(FragmentState.CHAT)
             onSearchViewClose()
         })
 

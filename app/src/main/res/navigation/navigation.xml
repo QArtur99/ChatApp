@@ -19,10 +19,10 @@
     </fragment>
 
     <fragment
-            android:id="@+id/fragment_main"
-            android:name="com.artf.chatapp.MainFragment"
+            android:id="@+id/fragment_chat"
+            android:name="com.artf.chatapp.ChatFragment"
             android:label="GridViewFragment">
-        <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_main"/>
+        <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_chat"/>
     </fragment>
 
     <fragment

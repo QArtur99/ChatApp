@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
     private val uriUsername = Uri.parse("atr:fragment_username")
-    private val uriMain = Uri.parse("atr:fragment_main")
+    private val uriChat = Uri.parse("atr:fragment_chat")
     private val uriSearch = Uri.parse("atr:fragment_search")
     private val uriStart = Uri.parse("atr:fragment_start")
 
@@ -51,8 +51,7 @@ class MainActivity : AppCompatActivity() {
             it?.let {
                 when (it) {
                     FragmentState.USERNAME -> binding.root.findNavController().navigate(uriUsername, navOptions)
-                    FragmentState.MAIN -> binding.root.findNavController().navigate(uriMain, navOptions)
-                    FragmentState.CHAT -> binding.root.findNavController().navigate(uriMain, navOptions)
+                    FragmentState.CHAT -> binding.root.findNavController().navigate(uriChat, navOptions)
                     //FragmentState.SEARCH -> binding.root.findNavController().navigate(uriSearch, navOptions)
                     FragmentState.START -> binding.root.findNavController().navigate(uriStart, navOptions)
                 }
@@ -111,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                firebaseVm.onQueryTextChange(newText)
+                if (newText.isNullOrEmpty().not()) firebaseVm.onQueryTextChange(newText)
                 return true
             }
         })

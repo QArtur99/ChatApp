@@ -7,17 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import com.artf.chatapp.databinding.FragmentMainBinding
+import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.extension.afterTextChanged
 import com.artf.chatapp.utils.extension.getVm
 
-class MainFragment : Fragment() {
+class ChatFragment : Fragment() {
 
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragmentMainBinding.inflate(LayoutInflater.from(context))
+        val binding = FragmentChatBinding.inflate(LayoutInflater.from(context))
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 

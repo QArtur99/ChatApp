@@ -39,6 +39,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -58,7 +62,7 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging:$versions.firebase_messaging"
     implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
     implementation "com.firebaseui:firebase-ui-auth:$versions.firebase_ui_auth"
-    implementation 'com.facebook.android:facebook-android-sdk:5.1.1'
+    implementation 'com.facebook.android:facebook-android-sdk:5.2.0'
 
     //Glide
     implementation "com.github.bumptech.glide:glide:$versions.glide"
