@@ -2,24 +2,21 @@ package com.artf.chatapp.repository
 
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 
-class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(activity) {
+class FirebaseRepository {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -30,21 +27,24 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
         val TAG = FirebaseRepository::class.java.simpleName
     }
 
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+    private var mUser: User? = null
 
+    private val firebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
+    private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
 
     private val chatRoomsReference by lazy { firebaseFirestore.collection("chatRooms") }
-    private val usersReference by lazy { firebaseFirestore.collection("users") }
-    private val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
     private val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
+    private val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
+    private val usersReference by lazy { firebaseFirestore.collection("users") }
 
     private lateinit var chatRoomId: String
+
+    private var authStateListener: FirebaseAuth.AuthStateListener? = null
     private var chatRoomListner: ListenerRegistration? = null
     private var userChatRoomsListner: ListenerRegistration? = null
+
     private var isNewSenderChatRoom: Boolean? = null
     private var isNewReceiverChatRoom: Boolean? = null
     private var receiverId: String? = null
@@ -58,16 +58,26 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
     var onChildChanged: ((message: Message) -> Unit)? = null
 
     init {
-        init()
+        authStateListener = getAuthStateListener()
+        firebaseAuth.addAuthStateListener(authStateListener!!)
         fetchConfig()
     }
 
-    override fun onSignedIn() {
-        getUser(getUser().userId!!)
+    private fun getAuthStateListener(): FirebaseAuth.AuthStateListener {
+        return FirebaseAuth.AuthStateListener { firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            if (user != null) onSignedIn(user.uid) else onSignedOut()
+        }
+    }
+
+    private fun onSignedIn(userId: String) {
+        mUser = User(userId)
+        getUser(mUser?.userId!!)
         attachUserChatRoomsListener()
     }
 
-    override fun onSignedOut() {
+    private fun onSignedOut() {
+        this.mUser = null
         detachDatabaseListeners()
         onSignOut?.invoke()
     }
@@ -96,7 +106,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
 
     private fun attachUserChatRoomsListener() {
         if (userChatRoomsListner == null) {
-            userChatRoomsListner = usersReference.document(getUser().userId!!).collection("chatRooms")
+            userChatRoomsListner = usersReference.document(mUser?.userId!!).collection("chatRooms")
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     firebaseFirestoreException?.let { return@addSnapshotListener }
                     val chatRoomList = querySnapshot?.toObjects(Chat::class.java)
@@ -109,7 +119,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
 
     private fun loadChatRooms(chatRoomList: List<Chat>): List<Chat> {
         for (chat in chatRoomList) {
-            val receiverId = (if (chat.receiverId != getUser().userId) chat.receiverId else chat.senderId)
+            val receiverId = (if (chat.receiverId != mUser?.userId) chat.receiverId else chat.senderId)
             receiverId?.let { chat.userLr = getReceiver(chat, receiverId) }
             chat.chatId?.let { chat.msgLr = setSingleMsgListener(chat) }
         }
@@ -155,7 +165,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
                     val msgList = querySnapshot?.toObjects(Message::class.java)
                     msgList?.let {
                         for (msg in msgList) {
-                            msg!!.isOwner = msg.authorId!! == getUser().userId.toString()
+                            msg!!.isOwner = msg.authorId!! == mUser?.userId.toString()
                         }
                     }
                     msgList?.let { onMsgList?.invoke(msgList) }
@@ -176,8 +186,8 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
 
     fun pushMsg(msg: String?, photoUrl: String?) {
         val friendlyMessage = Message(
-            authorId = getUser().userId,
-            name = getUser().userName,
+            authorId = mUser?.userId,
+            name = mUser?.userName,
             photoUrl = photoUrl,
             text = msg,
             timestamp = Utility.getTimeStamp()
@@ -193,7 +203,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
     }
 
     private fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
-        usersReference.document(getUser().userId!!).set(getUser())
+        usersReference.document(mUser?.userId!!).set(mUser!!)
             .addOnSuccessListener {
                 callBack(NetworkState.LOADED)
             }
@@ -204,8 +214,8 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
 
     fun addUsername(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
-        getUser().userName = username.toLowerCase()
-        usernamesReference.document(getUser().userName!!).set(getUser())
+        mUser?.userName = username.toLowerCase()
+        usernamesReference.document(mUser?.userName!!).set(mUser!!)
             .addOnSuccessListener {
                 addUser { callBack(it) }
             }
@@ -218,7 +228,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
         usersReference.document(userId).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    this.firebaseLogin.mUser = document.toObject(User::class.java)
+                    this.mUser = document.toObject(User::class.java)
                     onFragmentStateChanged?.invoke(FragmentState.START)
                 } else onFragmentStateChanged?.invoke(FragmentState.USERNAME)
             }
@@ -229,8 +239,8 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
 
 
     private fun addSenderChatRoom() {
-        val chatSender = Chat(chatRoomId, getUser().userId, receiverId)
-        usersReference.document(getUser().userId!!).collection("chatRooms").document(chatRoomId).set(chatSender)
+        val chatSender = Chat(chatRoomId, mUser?.userId, receiverId)
+        usersReference.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId).set(chatSender)
             .addOnSuccessListener {
                 isNewSenderChatRoom = false
             }
@@ -240,7 +250,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
     }
 
     private fun addReceiverChatRoom() {
-        val chatReceiver = Chat(chatRoomId, receiverId, getUser().userId)
+        val chatReceiver = Chat(chatRoomId, receiverId, mUser?.userId)
         usersReference.document(receiverId!!).collection("chatRooms").document(chatRoomId).set(chatReceiver)
             .addOnSuccessListener {
                 isNewReceiverChatRoom = false
@@ -251,7 +261,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
     }
 
     private fun getUserChatRoom() {
-        usersReference.document(getUser().userId!!).collection("chatRooms").document(chatRoomId).get()
+        usersReference.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId).get()
             .addOnSuccessListener { documentSnapshot ->
                 isNewSenderChatRoom = !documentSnapshot.exists()
             }
@@ -306,7 +316,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
     }
 
     fun setChatRoomId(receiverId: String) {
-        val userId = getUser().userId!!
+        val userId = mUser?.userId!!
         this.receiverId = receiverId
         chatRoomId = if (receiverId > userId) "${receiverId}_$userId" else "${userId}_$receiverId"
         detachChatRoomListener()
@@ -316,9 +326,8 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
     }
 
     fun removeListener() {
-        removeAuthListener()
+        if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()
-        viewModelJob.cancel()
     }
 
 }

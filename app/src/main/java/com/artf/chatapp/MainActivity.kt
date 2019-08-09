@@ -23,7 +23,7 @@ import com.firebase.ui.auth.AuthUI
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        lateinit var repository: FirebaseRepository
+        val repository: FirebaseRepository = FirebaseRepository()
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -37,8 +37,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //TODO move it
-        repository = FirebaseRepository(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         firebaseVm.startSignInActivity.observe(this, Observer {
