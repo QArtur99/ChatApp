@@ -32,13 +32,12 @@ fun <T> MutableLiveData<List<T>>.count(): Int {
 }
 
 fun MutableLiveData<List<Chat>>.clearChatRoomList() {
-    val updatedItems = this.value as MutableList
+    val updatedItems = this.value as MutableList<Chat>
     for (chatRoom in updatedItems) {
         chatRoom.userLr?.remove()
         chatRoom.userLr = null
         chatRoom.msgLr?.remove()
         chatRoom.msgLr = null
     }
-    updatedItems.clear()
-    this.value = updatedItems
+    this.value = mutableListOf()
 }
