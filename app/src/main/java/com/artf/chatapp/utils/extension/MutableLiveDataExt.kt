@@ -1,9 +1,10 @@
 package com.artf.chatapp.utils.extension
 
 import androidx.lifecycle.MutableLiveData
+import com.artf.chatapp.model.Chat
 
 fun <T> MutableLiveData<List<T>>.add(item: T) {
-    val updatedItems = this.value as ArrayList
+    val updatedItems = this.value as MutableList
     updatedItems.add(item)
     this.value = updatedItems
 }
@@ -15,17 +16,29 @@ fun <T> MutableLiveData<List<T>>.remove(item: T) {
 }
 
 fun <T> MutableLiveData<List<T>>.clear() {
-    val updatedItems = this.value as ArrayList
+    val updatedItems = this.value as MutableList
     updatedItems.clear()
     this.value = updatedItems
 }
 
 fun <T> MutableLiveData<List<T>>.get(index: Int): T {
-    val updatedItems = this.value as ArrayList
+    val updatedItems = this.value as MutableList
     return updatedItems[index]
 }
 
 fun <T> MutableLiveData<List<T>>.count(): Int {
-    val updatedItems = this.value as ArrayList
+    val updatedItems = this.value as MutableList
     return updatedItems.size
+}
+
+fun MutableLiveData<List<Chat>>.clearChatRoomList() {
+    val updatedItems = this.value as MutableList
+    for (chatRoom in updatedItems) {
+        chatRoom.userLr?.remove()
+        chatRoom.userLr = null
+        chatRoom.msgLr?.remove()
+        chatRoom.msgLr = null
+    }
+    updatedItems.clear()
+    this.value = updatedItems
 }

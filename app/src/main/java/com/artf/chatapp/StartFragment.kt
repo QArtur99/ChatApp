@@ -18,8 +18,8 @@ class StartFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
-        binding.recyclerView.adapter = ChatListAdapter(ChatListAdapter.OnClickListener { user ->
-            firebaseVm.setReceiver(user.user)
+        binding.recyclerView.adapter = ChatListAdapter(this, ChatListAdapter.OnClickListener { user ->
+            firebaseVm.setReceiver(user.user.value)
             firebaseVm.setFragmentState(FragmentState.CHAT)
         })
 

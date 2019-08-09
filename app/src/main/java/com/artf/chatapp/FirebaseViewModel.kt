@@ -75,6 +75,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     private fun setOnSignOutListener() {
         firebaseRepository.onSignOut = {
             _msgList.clear()
+            _chatRoomList.clearChatRoomList()
             setStartSignInActivity(true)
         }
     }
@@ -109,6 +110,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     }
 
     override fun onCleared() {
+        _chatRoomList.clearChatRoomList()
         firebaseRepository.removeListener()
     }
 }

@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    app:textOrGone="@{chat.user.userId}"
+                    app:textOrGone="@{chat.message.text}"
                     tools:text="Message"/>
 
             <TextView
@@ -91,7 +91,7 @@
                     android:layout_marginStart="8dp"
                     android:textSize="12sp"
                     android:layout_gravity="end"
-                    app:textOrGone="@{chat.user.userId}"
+                    app:hourTime="@{chat.message.timestamp}"
                     tools:text="Name"/>
         </RelativeLayout>
     </LinearLayout>

@@ -15,8 +15,11 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 
-class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseRepository(activity) {
+class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(activity) {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -25,6 +28,9 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
         const val DEFAULT_MSG_LENGTH_LIMIT = 1000
         const val MSG_LENGTH_KEY = "friendly_msg_length"
     }
+
+    private var viewModelJob = Job()
+    private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     private val TAG = FirebaseRepository::class.java.simpleName
 
@@ -93,17 +99,47 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
             userChatRoomsListner = usersReference.document(getUser().userId!!).collection("chatRooms")
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     firebaseFirestoreException?.let { return@addSnapshotListener }
-
                     val chatRoomList = querySnapshot?.toObjects(Chat::class.java)
                     chatRoomList?.let {
-                        for (msg in chatRoomList) {
-                            //msg!!.isOwner = msg.authorId!! == getUser().userId.toString()
-                        }
+                        onChatRoomList?.invoke(loadChatRooms(chatRoomList))
                     }
-                    chatRoomList?.let { onChatRoomList?.invoke(chatRoomList) }
                 }
         }
     }
+
+    private fun loadChatRooms(chatRoomList: List<Chat>): List<Chat> {
+        for (chat in chatRoomList) {
+            val receiverId = (if (chat.receiverId != getUser().userId) chat.receiverId else chat.senderId)
+            receiverId?.let { chat.userLr = getReceiver(chat, receiverId) }
+            chat.chatId?.let { chat.msgLr = setSingleListener(chat) }
+        }
+        return chatRoomList
+    }
+
+    private fun getReceiver(chat: Chat, receiverId: String): ListenerRegistration {
+        return usersReference.document(receiverId)
+            .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                firebaseFirestoreException?.let { return@addSnapshotListener }
+                val user = querySnapshot?.toObject(User::class.java)
+                chat.setUser(user)
+            }
+    }
+
+    private fun setSingleListener(chat: Chat): ListenerRegistration {
+        return chatRoomsReference.document(chat.chatId!!).collection("chatRoom")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .limit(1)
+            .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                firebaseFirestoreException?.let { return@addSnapshotListener }
+                val msgList = querySnapshot?.toObjects(Message::class.java)
+                msgList?.let {
+                    for (lastMsg in msgList) {
+                        chat.setMessage(lastMsg)
+                    }
+                }
+            }
+    }
+
 
     private fun attachChatRoomListener() {
         if (chatRoomListner == null) {
@@ -281,6 +317,7 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
     fun removeListener() {
         removeAuthListener()
         detachDatabaseListeners()
+        viewModelJob.cancel()
     }
 
 }
