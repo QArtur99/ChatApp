@@ -19,22 +19,21 @@ import java.util.*
 
 @BindingAdapter("msgList")
 fun bindMsgRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
-    val adapter= recyclerView.adapter as MsgAdapter
-    adapter.submitList(data)
+    val adapter = recyclerView.adapter as MsgAdapter
+    adapter.submitList(data) { recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
     adapter.notifyDataSetChanged()
-    recyclerView.layoutManager!!.scrollToPosition(recyclerView.adapter!!.itemCount-1)
 }
 
 @BindingAdapter("userSearchList")
 fun bindUserSearchRecyclerView(recyclerView: RecyclerView, data: List<User>?) {
-    val adapter= recyclerView.adapter as SearchAdapter
+    val adapter = recyclerView.adapter as SearchAdapter
     adapter.submitList(data)
     adapter.notifyDataSetChanged()
 }
 
 @BindingAdapter("userChatList")
 fun bindUserChatRecyclerView(recyclerView: RecyclerView, data: List<Chat>?) {
-    val adapter= recyclerView.adapter as ChatListAdapter
+    val adapter = recyclerView.adapter as ChatListAdapter
     adapter.submitList(data)
     adapter.notifyDataSetChanged()
 }
@@ -84,9 +83,9 @@ fun bindingTextHourTime(textView: TextView, timestamp: Long) {
 
 @BindingAdapter("textOrGone")
 fun bindingTextOrGone(textView: TextView, text: String?) {
-    if(text == null){
+    if (text == null) {
         textView.visibility = View.GONE
-    }else{
+    } else {
         textView.visibility = View.VISIBLE
         textView.text = text
     }
