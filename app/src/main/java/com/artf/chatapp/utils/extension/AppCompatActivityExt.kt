@@ -5,10 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.artf.chatapp.ViewModelFactory
-import com.artf.chatapp.repository.FirebaseRepository
 fun AppCompatActivity.getVmFactory(): ViewModelFactory {
-    val repository = FirebaseRepository(this)
-    return ViewModelFactory(repository)
+    return ViewModelFactory()
 }
 
 inline fun <reified T : ViewModel> AppCompatActivity.getVm(): T {

@@ -90,7 +90,7 @@ class FirebaseRepository(val activity: AppCompatActivity) : FirebaseBaseReposito
 
     private fun attachUserChatRoomsListener() {
         if (userChatRoomsListner == null) {
-            usersReference.document(getUser().userId!!).collection("chatRooms")
+            userChatRoomsListner = usersReference.document(getUser().userId!!).collection("chatRooms")
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     firebaseFirestoreException?.let { return@addSnapshotListener }
 
