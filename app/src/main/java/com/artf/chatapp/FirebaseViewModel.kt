@@ -60,6 +60,14 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         setMsgListener()
         firebaseRepository.onMsgList = { _msgList.value = it }
         firebaseRepository.onChatRoomList = { _chatRoomList.value = it }
+        setOnChatRoomListSort()
+    }
+
+    private fun setOnChatRoomListSort() {
+        firebaseRepository.onChatRoomListSort = {
+            val sortedList = _chatRoomList.value?.sortedByDescending { it.message.value?.timestamp }.also {  }
+            _chatRoomList.value = sortedList
+        }
     }
 
 

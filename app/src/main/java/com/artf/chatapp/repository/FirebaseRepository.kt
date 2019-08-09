@@ -27,21 +27,20 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
         const val ANONYMOUS = "anonymous"
         const val DEFAULT_MSG_LENGTH_LIMIT = 1000
         const val MSG_LENGTH_KEY = "friendly_msg_length"
+        val TAG = FirebaseRepository::class.java.simpleName
     }
 
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    private val TAG = FirebaseRepository::class.java.simpleName
-
     private val firebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
-    val chatRoomsReference by lazy { firebaseFirestore.collection("chatRooms") }
-    val usersReference by lazy { firebaseFirestore.collection("users") }
-    val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
-    val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
+    private val chatRoomsReference by lazy { firebaseFirestore.collection("chatRooms") }
+    private val usersReference by lazy { firebaseFirestore.collection("users") }
+    private val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
+    private val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
 
     private lateinit var chatRoomId: String
     private var chatRoomListner: ListenerRegistration? = null
@@ -50,6 +49,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
     private var isNewReceiverChatRoom: Boolean? = null
     private var receiverId: String? = null
 
+    var onChatRoomListSort: (() -> Unit)? = null
     var onSignOut: (() -> Unit)? = null
     var onFragmentStateChanged: ((state: FragmentState) -> Unit)? = null
     var onChatRoomList: ((chatRoomList: List<Chat>) -> Unit)? = null
@@ -111,7 +111,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
         for (chat in chatRoomList) {
             val receiverId = (if (chat.receiverId != getUser().userId) chat.receiverId else chat.senderId)
             receiverId?.let { chat.userLr = getReceiver(chat, receiverId) }
-            chat.chatId?.let { chat.msgLr = setSingleListener(chat) }
+            chat.chatId?.let { chat.msgLr = setSingleMsgListener(chat) }
         }
         return chatRoomList
     }
@@ -125,7 +125,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
             }
     }
 
-    private fun setSingleListener(chat: Chat): ListenerRegistration {
+    private fun setSingleMsgListener(chat: Chat): ListenerRegistration {
         return chatRoomsReference.document(chat.chatId!!).collection("chatRoom")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(1)
@@ -135,6 +135,7 @@ class FirebaseRepository(activity: AppCompatActivity) : FirebaseBaseRepository(a
                 msgList?.let {
                     for (lastMsg in msgList) {
                         chat.setMessage(lastMsg)
+                        onChatRoomListSort?.invoke()
                     }
                 }
             }
