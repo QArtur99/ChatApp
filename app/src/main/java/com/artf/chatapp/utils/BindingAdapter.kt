@@ -81,6 +81,18 @@ fun bindingTextHourTime(textView: TextView, timestamp: Long) {
     textView.text = df.format(Date(timestamp))
 }
 
+@BindingAdapter("textOrGoneName", "groupChat")
+fun bindingTextOrGoneUsername(textView: TextView, text: String?, isGroupChat: Boolean?) {
+    val groupChat  = isGroupChat ?: false
+
+    if (text == null || groupChat.not()) {
+        textView.visibility = View.GONE
+    } else {
+        textView.visibility = View.VISIBLE
+        textView.text = text
+    }
+}
+
 @BindingAdapter("textOrGone")
 fun bindingTextOrGone(textView: TextView, text: String?) {
     if (text == null) {

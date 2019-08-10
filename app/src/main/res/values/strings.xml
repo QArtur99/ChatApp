@@ -13,4 +13,6 @@
     <string name="usernameError">This username is not available.</string>
     <string name="usernameHint">Use 4 or more characters.</string>
     <string name="usernameInfo">Pick username for your account. You can always change it later.</string>
+    <string name="no_results">No results</string>
+    <string name="change_a_bit_your_query">Change a bit your query</string>
 </resources>

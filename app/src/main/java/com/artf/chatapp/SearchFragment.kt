@@ -7,8 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.FragmentSearchBinding
 import com.artf.chatapp.utils.FragmentState
+import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.extension.getVm
-import kotlinx.android.synthetic.main.fragment_search.view.*
 
 class SearchFragment : Fragment() {
 
@@ -28,9 +28,26 @@ class SearchFragment : Fragment() {
             onSearchViewClose()
         })
 
-        firebaseVm.userList.observe(viewLifecycleOwner, Observer {
-            binding.root.searchView.visibility = if(it.isNullOrEmpty()) View.GONE else View.VISIBLE
-            binding.root.visibility = View.VISIBLE
+        firebaseVm.userSearchStatus.observe(viewLifecycleOwner, Observer {
+            binding.searchView.visibility = View.VISIBLE
+            when(it){
+                NetworkState.LOADING ->{
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.GONE
+                    binding.info.visibility = View.GONE
+                }
+                NetworkState.LOADED -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.info.visibility = View.GONE
+                }
+                NetworkState.FAILED -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.GONE
+                    binding.info.visibility = View.VISIBLE
+                }
+                else -> {}
+            }
         })
 
         binding.root.setOnClickListener {
@@ -49,9 +66,17 @@ class SearchFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         searchItem = menu.findItem(R.id.search)
         searchView = searchItem.actionView as SearchView
-        searchView.setOnQueryTextFocusChangeListener { view, b ->
-            if (b.not()) onSearchViewClose() else binding.root.visibility = View.VISIBLE
-        }
+        setOnQueryTextFocusChangeListener()
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun setOnQueryTextFocusChangeListener() {
+        searchView.setOnQueryTextFocusChangeListener { view, b ->
+            if (b.not()) onSearchViewClose()
+            else {
+                binding.root.visibility = View.VISIBLE
+                binding.searchView.visibility = View.GONE
+            }
+        }
     }
 }

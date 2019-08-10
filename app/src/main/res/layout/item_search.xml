@@ -57,41 +57,18 @@
 
         <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
             <TextView
-                    android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
                     android:id="@+id/nameTextView"
                     android:textColor="@color/colorPrimary"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:textSize="20sp"
                     app:textOrGone="@{user.userName}"
-                    tools:text="Name"/>
-
-
-            <TextView
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/nameTextView"
-                    android:id="@+id/messageTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    app:textOrGone="@{user.userId}"
-                    tools:text="Message"/>
-
-            <TextView
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/timeTextView"
-                    android:textColor="@color/colorMsgTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textSize="12sp"
-                    android:layout_gravity="end"
-                    app:textOrGone="@{user.userId}"
                     tools:text="Name"/>
         </RelativeLayout>
     </LinearLayout>

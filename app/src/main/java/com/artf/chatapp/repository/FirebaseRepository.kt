@@ -286,7 +286,8 @@ class FirebaseRepository {
         usersReference.whereEqualTo("userName", username).get()
             .addOnSuccessListener { querySnapshot ->
                 val list = querySnapshot.toObjects(User::class.java)
-                callBack(NetworkState.LOADED, list)
+                val networkState = if(list.isNotEmpty()) NetworkState.LOADED else NetworkState.FAILED
+                callBack(networkState, list)
             }
             .addOnFailureListener {
                 callBack(NetworkState.FAILED, mutableListOf())

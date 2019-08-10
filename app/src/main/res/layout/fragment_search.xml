@@ -21,9 +21,9 @@
                 android:id="@+id/searchView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:background="@color/colorWhite"
                 android:elevation="4dp"
+                android:padding="8dp"
                 android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -31,12 +31,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
-                    android:padding="8dp"
                     tools:listitem="@layout/item_message"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:userSearchList="@{firebaseVm.userList}"/>
 
-        </LinearLayout>
+            <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="74dp"
+                    android:padding="12dp"
+                    android:layout_gravity="center"/>
 
+            <LinearLayout
+                    android:id="@+id/info"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="74dp"
+                    android:orientation="vertical">
+                <TextView
+                        android:text="@string/no_results"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"/>
+                <TextView
+                        android:text="@string/change_a_bit_your_query"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </layout>

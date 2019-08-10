@@ -7,7 +7,8 @@ import com.google.firebase.firestore.ListenerRegistration
 data class Chat(
     var chatId: String? = null,
     var senderId: String? = null,
-    var receiverId: String? = null
+    var receiverId: String? = null,
+    var isGroupChat: Boolean? = null
 ) {
     var userLr: ListenerRegistration? = null
     var msgLr: ListenerRegistration? = null
