@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#00695C</color>
+    <color name="colorPrimaryDark">#004D40</color>
     <color name="colorAccent">#D81B60</color>
 
     <color name="colorWhite">#FFFFFF</color>
@@ -16,6 +16,13 @@
     <color name="colorDisable">#E0E0E0</color>
     <color name="colorEnable">#FFFFFF</color>
     <color name="colorError">#D50000</color>
-    <color name="colorChat">#DDEEFF</color>
-    <color name="colorMsgTime">#BDBDBD</color>
+
+    <color name="colorMsgTextLeft">#000000</color>
+    <color name="colorMsgTextRight">#FFFFFF</color>
+
+    <color name="colorMsgTimeLeft">#9E9E9E</color>
+    <color name="colorMsgTimeRight">#E0E0E0</color>
+
+    <color name="colorMsgLeft">#FFFFFF</color>
+    <color name="colorMsgRight">#009688</color>
 </resources>

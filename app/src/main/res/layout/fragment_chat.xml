@@ -13,7 +13,6 @@
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorChat"
             tools:context="com.artf.chatapp.MainActivity">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -23,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:padding="8dp"
-                tools:listitem="@layout/item_message"
+                tools:listitem="@layout/item_message_left_base"
                 app:stackFromEnd="true"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:msgList="@{firebaseVm.msgList}"

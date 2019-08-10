@@ -12,14 +12,15 @@
     </data>
 
     <LinearLayout
+            android:id="@+id/msgContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_item_message"
+            android:background="@drawable/shape_item_message_right"
             android:elevation="2dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
             android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,6 +54,7 @@
 
             <TextView
                     android:id="@+id/messageTextView"
+                    android:textColor="@color/colorMsgTextRight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
@@ -61,7 +63,7 @@
 
             <TextView
                     android:id="@+id/timeTextView"
-                    android:textColor="@color/colorMsgTime"
+                    android:textColor="@color/colorMsgTimeRight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
