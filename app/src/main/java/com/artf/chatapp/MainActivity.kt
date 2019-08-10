@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isNullOrEmpty().not()) firebaseVm.onQueryTextChange(newText)
+                if (newText.isNullOrEmpty().not()) firebaseVm.onSearchTextChange(newText)
                 return true
             }
         })

@@ -68,7 +68,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:textSize="20sp"
-                    app:textOrGone="@{user.userName}"
+                    app:textOrGone="@{user.username}"
                     tools:text="Name"/>
         </RelativeLayout>
     </LinearLayout>

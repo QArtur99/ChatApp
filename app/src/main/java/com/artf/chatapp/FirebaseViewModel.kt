@@ -11,9 +11,17 @@ import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.extension.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel() {
 
+    private var viewModelJob = Job()
+    private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+    private var isUsernameAvailableJob: Job? = null
+    private var searchForUserJob: Job? = null
 
     private val _userList = MutableLiveData<List<User>>()
     val userList: LiveData<List<User>> = _userList
@@ -65,18 +73,8 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
 
     private fun setOnChatRoomListSort() {
         firebaseRepository.onChatRoomListSort = {
-            val sortedList = _chatRoomList.value?.sortedByDescending { it.message.value?.timestamp }.also {  }
+            val sortedList = _chatRoomList.value?.sortedByDescending { it.message.value?.timestamp }.also { }
             _chatRoomList.value = sortedList
-        }
-    }
-
-
-    fun onQueryTextChange(newText: String) {
-        firebaseRepository.searchForUser(newText) { networkState, userList ->
-            if (networkState == NetworkState.LOADED) {
-                _userList.value = userList
-            }
-            _userSearchStatus.value = networkState
         }
     }
 
@@ -96,9 +94,22 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         }
     }
 
+    fun onSearchTextChange(newText: String) {
+        searchForUserJob?.cancel()
+        searchForUserJob = uiScope.launch {
+            firebaseRepository.searchForUser(newText) { networkState, userList ->
+                if (networkState == NetworkState.LOADED) _userList.value = userList
+                _userSearchStatus.value = networkState
+            }
+        }
+    }
+
     fun isUsernameAvailable(username: String) {
-        firebaseRepository.isUsernameAvailable(username) {
-            _usernameStatus.value = it
+        isUsernameAvailableJob?.cancel()
+        isUsernameAvailableJob = uiScope.launch {
+            firebaseRepository.isUsernameAvailable(username) {
+                _usernameStatus.value = it
+            }
         }
     }
 
@@ -118,6 +129,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     }
 
     override fun onCleared() {
+        viewModelJob.cancel()
         _chatRoomList.clearChatRoomList()
         firebaseRepository.removeListener()
     }

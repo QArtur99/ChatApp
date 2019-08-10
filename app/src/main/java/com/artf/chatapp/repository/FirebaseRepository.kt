@@ -10,11 +10,13 @@ import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
 
@@ -187,7 +189,7 @@ class FirebaseRepository {
     fun pushMsg(msg: String?, photoUrl: String?) {
         val friendlyMessage = Message(
             authorId = mUser?.userId,
-            name = mUser?.userName,
+            name = mUser?.username,
             photoUrl = photoUrl,
             text = msg,
             timestamp = Utility.getTimeStamp()
@@ -214,8 +216,10 @@ class FirebaseRepository {
 
     fun addUsername(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
-        mUser?.userName = username.toLowerCase()
-        usernamesReference.document(mUser?.userName!!).set(mUser!!)
+        val usernameLowerCase = username.toLowerCase()
+        mUser?.username = usernameLowerCase
+        mUser?.usernameList = User.nameToArray(usernameLowerCase)
+        usernamesReference.document(usernameLowerCase).set(mUser!!)
             .addOnSuccessListener {
                 addUser { callBack(it) }
             }
@@ -278,31 +282,29 @@ class FirebaseRepository {
             }
     }
 
-    fun searchForUser(
+    suspend fun searchForUser(
         username: String,
         callBack: (networkState: NetworkState, userList: MutableList<User>) -> Unit
     ) {
-        callBack(NetworkState.LOADING, mutableListOf())
-        usersReference.whereEqualTo("userName", username).get()
-            .addOnSuccessListener { querySnapshot ->
-                val list = querySnapshot.toObjects(User::class.java)
-                val networkState = if(list.isNotEmpty()) NetworkState.LOADED else NetworkState.FAILED
-                callBack(networkState, list)
-            }
-            .addOnFailureListener {
-                callBack(NetworkState.FAILED, mutableListOf())
-            }
+        try {
+            callBack(NetworkState.LOADING, mutableListOf())
+            val querySnapshot =  usersReference.whereArrayContains("usernameList", username).get().await()
+            val list = querySnapshot.toObjects(User::class.java)
+            val networkState = if (list.isNotEmpty()) NetworkState.LOADED else NetworkState.FAILED
+            callBack(networkState, list)
+        } catch (e: FirebaseFirestoreException) {
+            callBack(NetworkState.FAILED, mutableListOf())
+        }
     }
 
-    fun isUsernameAvailable(username: String, callBack: (networkState: NetworkState) -> Unit) {
-        callBack(NetworkState.LOADING)
-        usernamesReference.document(username.toLowerCase()).get()
-            .addOnSuccessListener { document ->
-                callBack(if (document.exists()) NetworkState.FAILED else NetworkState.LOADED)
-            }
-            .addOnFailureListener {
-                callBack(NetworkState.FAILED)
-            }
+    suspend fun isUsernameAvailable(username: String, callBack: (networkState: NetworkState) -> Unit) {
+        try {
+            callBack(NetworkState.LOADING)
+            val document = usernamesReference.document(username.toLowerCase()).get().await()
+            callBack(if (document.exists()) NetworkState.FAILED else NetworkState.LOADED)
+        } catch (e: FirebaseFirestoreException) {
+            callBack(NetworkState.FAILED)
+        }
     }
 
     fun putPicture(data: Intent?) {
