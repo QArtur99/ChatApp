@@ -9,85 +9,89 @@
                 type="com.artf.chatapp.FirebaseViewModel"/>
     </data>
 
-
-    <LinearLayout
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <TextView
-                android:id="@+id/titleDialogSearch"
-                android:text="@string/username"
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:textColor="@color/colorText"
-                android:textSize="24sp"
-                android:textStyle="normal|bold"/>
+                android:orientation="vertical">
 
-        <TextView
-                android:id="@+id/usernameInfo"
-                android:text="@string/usernameInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="8dp"
-                android:textColor="@color/colorText"
-                android:textSize="16sp"
-                android:textStyle="normal"/>
+            <TextView
+                    android:id="@+id/titleDialogSearch"
+                    android:text="@string/username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="24sp"
+                    android:textStyle="normal|bold"/>
 
-        <EditText
-                android:id="@+id/usernameEditText"
-                android:hint="@string/enter_username"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
-                android:background="@drawable/selector_progressbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/usernameInfo"
+                    android:text="@string/usernameInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp"
+                    android:textStyle="normal"/>
 
-        <TextView
-                android:id="@+id/usernameErrorTextView"
-                android:text="@string/usernameHint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:textColor="@color/colorText"
-                android:textSize="14sp"
-                android:textStyle="normal"/>
-
-        <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-            <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_margin="16dp"
-                    android:elevation="2dp"
-                    android:background="@drawable/shape_button_username_off"
+            <EditText
+                    android:id="@+id/usernameEditText"
+                    android:hint="@string/enter_username"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="16dp"
+                    android:background="@drawable/selector_progressbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-            <Button
-                    android:id="@+id/usernameButton"
-                    android:textColor="@color/dialogButtonTextColor"
-                    android:textSize="16sp"
-                    android:textAllCaps="false"
-                    android:textStyle="normal"
-                    android:background="@drawable/selector_username_button"
+            <TextView
+                    android:id="@+id/usernameErrorTextView"
+                    android:text="@string/usernameHint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="16dp"
-                    android:text="@string/next"/>
+                    android:gravity="start"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:textStyle="normal"/>
 
-        </RelativeLayout>
-    </LinearLayout>
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
+                <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_margin="16dp"
+                        android:elevation="2dp"
+                        android:background="@drawable/shape_button_username_off"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <Button
+                        android:id="@+id/usernameButton"
+                        android:textColor="@color/dialogButtonTextColor"
+                        android:textSize="16sp"
+                        android:textAllCaps="false"
+                        android:textStyle="normal"
+                        android:background="@drawable/selector_username_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="16dp"
+                        android:text="@string/next"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
 </layout>
