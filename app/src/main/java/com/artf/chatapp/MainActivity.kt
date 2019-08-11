@@ -22,10 +22,6 @@ import com.firebase.ui.auth.AuthUI
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        val repository: FirebaseRepository = FirebaseRepository()
-    }
-
     private lateinit var binding: ActivityMainBinding
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
 
@@ -55,9 +51,8 @@ class MainActivity : AppCompatActivity() {
             it?.let {
                 when (it) {
                     FragmentState.USERNAME -> binding.root.findNavController().navigate(uriUsername, navOptions)
-                    FragmentState.CHAT -> binding.root.findNavController().navigate(uriChat, navOptions)
-                    //FragmentState.SEARCH -> binding.root.findNavController().navigate(uriSearch, navOptions)
                     FragmentState.START -> binding.root.findNavController().navigate(uriStart, navOptions)
+                    FragmentState.CHAT -> binding.root.findNavController().navigate(uriChat, navOptions)
                 }
             }
         })
@@ -69,7 +64,6 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show()
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show()
                 finish()
             }
         } else if (requestCode == FirebaseRepository.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {

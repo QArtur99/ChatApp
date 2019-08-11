@@ -12,8 +12,9 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-                   android:value="@string/facebook_application_id"/>
+        <meta-data
+                android:name="com.facebook.sdk.ApplicationId"
+                android:value="@string/facebook_application_id"/>
         <activity
                 android:windowSoftInputMode="adjustResize"
                 android:name=".MainActivity">

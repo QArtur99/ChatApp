@@ -12,7 +12,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>) =
         with(modelClass) {
             when {
-                isAssignableFrom(FirebaseViewModel::class.java) -> FirebaseViewModel(MainActivity.repository)
+                isAssignableFrom(FirebaseViewModel::class.java) -> FirebaseViewModel(App.repository)
                 else ->
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
             }

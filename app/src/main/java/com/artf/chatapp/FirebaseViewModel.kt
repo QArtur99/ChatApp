@@ -61,6 +61,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     }
 
     init {
+        firebaseRepository.startListening()
         _msgList.value = arrayListOf()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
         firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
@@ -131,6 +132,6 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     override fun onCleared() {
         viewModelJob.cancel()
         _chatRoomList.clearChatRoomList()
-        firebaseRepository.removeListener()
+        firebaseRepository.stopListening()
     }
 }

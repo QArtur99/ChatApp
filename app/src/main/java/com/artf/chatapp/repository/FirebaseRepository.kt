@@ -59,7 +59,8 @@ class FirebaseRepository {
     var onChildAdded: ((message: Message) -> Unit)? = null
     var onChildChanged: ((message: Message) -> Unit)? = null
 
-    init {
+
+    fun startListening() {
         authStateListener = getAuthStateListener()
         firebaseAuth.addAuthStateListener(authStateListener!!)
         fetchConfig()
@@ -328,7 +329,7 @@ class FirebaseRepository {
         getUserChatRoom()
     }
 
-    fun removeListener() {
+    fun stopListening() {
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()
     }
