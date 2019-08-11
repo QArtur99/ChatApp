@@ -81,9 +81,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutine"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$versions.coroutine"
 
-    //FlexBox
-    implementation 'com.google.android:flexbox:1.1.0'
-
     // Dagger
     implementation "com.google.dagger:dagger:$versions.dagger"
     implementation "com.google.dagger:dagger-android-support:$versions.dagger"

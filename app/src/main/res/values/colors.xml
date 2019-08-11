@@ -17,6 +17,8 @@
     <color name="colorEnable">#FFFFFF</color>
     <color name="colorError">#D50000</color>
 
+    <color name="colorChatUsername">#000000</color>
+
     <color name="colorMsgTextLeft">#000000</color>
     <color name="colorMsgTextRight">#FFFFFF</color>
 

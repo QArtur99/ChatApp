@@ -63,11 +63,13 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
                     android:id="@+id/nameTextView"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/colorChatUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
+                    android:textStyle="bold"
                     app:textOrGone="@{user.username}"
                     tools:text="Name"/>
         </RelativeLayout>

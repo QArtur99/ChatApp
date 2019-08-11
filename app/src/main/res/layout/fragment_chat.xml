@@ -65,13 +65,18 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"/>
 
-            <Button
+            <ImageButton
                     android:id="@+id/sendButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:enabled="false"
-                    android:text="@string/send_button_label"/>
+                    android:padding="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:src="@drawable/ic_send_white_24dp"
+                    android:background="@drawable/shape_button_send"
+            />
         </LinearLayout>
 
         <ProgressBar
