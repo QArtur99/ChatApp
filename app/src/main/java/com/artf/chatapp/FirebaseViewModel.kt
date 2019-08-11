@@ -99,7 +99,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         searchForUserJob?.cancel()
         searchForUserJob = uiScope.launch {
             firebaseRepository.searchForUser(newText) { networkState, userList ->
-                if (networkState == NetworkState.LOADED) _userList.value = userList
+                _userList.value = userList
                 _userSearchStatus.value = networkState
             }
         }

@@ -2,6 +2,7 @@ package com.artf.chatapp.utils
 
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +13,7 @@ import com.artf.chatapp.SearchAdapter
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
+import com.artf.chatapp.utils.extension.toDp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import java.text.SimpleDateFormat
@@ -100,5 +102,19 @@ fun bindingTextOrGone(textView: TextView, text: String?) {
     } else {
         textView.visibility = View.VISIBLE
         textView.text = text
+    }
+}
+
+/**
+ * When @RecyclerView is in parent layout_height="wrap_content" it blinks on data change.
+ * Setting layout_height programmatically prevent blinking onDataChange.
+ */
+@BindingAdapter("preventSearchBlinking")
+fun bindPreventSearchBlinking(linearLayout: LinearLayout, data: List<User>?) {
+    data?.let {
+        val parentHeight = (linearLayout.parent as LinearLayout).height
+        val customHeight = it.size * 74.toDp() + 16.toDp()
+        val newHeight = if(customHeight > parentHeight) parentHeight else customHeight
+        linearLayout.layoutParams.height = if (it.isEmpty()) 90.toDp() else newHeight
     }
 }

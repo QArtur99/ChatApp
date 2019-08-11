@@ -22,6 +22,7 @@ class SearchFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
+        binding.recyclerView.itemAnimator = null
         binding.recyclerView.adapter = SearchAdapter(SearchAdapter.OnClickListener { user ->
             firebaseVm.setReceiver(user)
             firebaseVm.setFragmentState(FragmentState.CHAT)
