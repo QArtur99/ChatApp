@@ -187,7 +187,7 @@ class FirebaseRepository {
         chatRoomListner = null
     }
 
-    fun pushMsg(msg: String?, photoUrl: String?) {
+    fun pushMsg(msg: String?, photoUrl: String?, callBack: ((usernameStatus: NetworkState) -> Unit)? = null) {
         val friendlyMessage = Message(
             authorId = mUser?.userId,
             name = mUser?.username,
@@ -199,10 +199,25 @@ class FirebaseRepository {
             .addOnSuccessListener {
                 isNewSenderChatRoom?.let { if (it) addSenderChatRoom() }
                 isNewReceiverChatRoom?.let { if (it) addReceiverChatRoom() }
+                callBack?.invoke(NetworkState.LOADED)
             }
             .addOnFailureListener {
-
+                callBack?.invoke(NetworkState.FAILED)
             }
+    }
+
+    fun pushPicture(data: Intent?, callBack: (usernameStatus: NetworkState) -> Unit) {
+        callBack(NetworkState.LOADING)
+        val selectedImageUri = data!!.data
+        storageReference.child(selectedImageUri!!.lastPathSegment!!).putFile(selectedImageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                val urlTask = taskSnapshot.storage.downloadUrl
+                urlTask.addOnSuccessListener { uri ->
+                    pushMsg(null, uri.toString()) { callBack(it) }
+                }.addOnFailureListener {
+                    callBack(NetworkState.FAILED)
+                }
+            }.addOnFailureListener { callBack(NetworkState.FAILED) }
     }
 
     private fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
@@ -234,7 +249,6 @@ class FirebaseRepository {
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     this.mUser = document.toObject(User::class.java)
-                    onFragmentStateChanged?.invoke(FragmentState.START)
                 } else onFragmentStateChanged?.invoke(FragmentState.USERNAME)
             }
             .addOnFailureListener {
@@ -289,7 +303,7 @@ class FirebaseRepository {
     ) {
         try {
             callBack(NetworkState.LOADING, mutableListOf())
-            val querySnapshot =  usersReference.whereArrayContains("usernameList", username).get().await()
+            val querySnapshot = usersReference.whereArrayContains("usernameList", username).get().await()
             val list = querySnapshot.toObjects(User::class.java)
             val networkState = if (list.isNotEmpty()) NetworkState.LOADED else NetworkState.FAILED
             callBack(networkState, list)
@@ -306,17 +320,6 @@ class FirebaseRepository {
         } catch (e: FirebaseFirestoreException) {
             callBack(NetworkState.FAILED)
         }
-    }
-
-    fun putPicture(data: Intent?) {
-        val selectedImageUri = data!!.data
-        storageReference.child(selectedImageUri!!.lastPathSegment!!).putFile(selectedImageUri)
-            .addOnSuccessListener { taskSnapshot ->
-                val urlTask = taskSnapshot.storage.downloadUrl
-                urlTask.addOnSuccessListener { uri ->
-                    pushMsg(null, uri.toString())
-                }
-            }
     }
 
     fun setChatRoomId(receiverId: String) {

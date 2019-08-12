@@ -29,11 +29,17 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     private val _userSearchStatus = MutableLiveData<NetworkState>()
     val userSearchStatus: LiveData<NetworkState> = _userSearchStatus
 
+    private val _pushImgStatus = MutableLiveData<NetworkState>()
+    val pushImgStatus: LiveData<NetworkState> = _pushImgStatus
+
     private val _chatRoomList = MutableLiveData<List<Chat>>()
     val chatRoomList: LiveData<List<Chat>> = _chatRoomList
 
     private val _msgList = MutableLiveData<List<Message>>()
     val msgList: LiveData<List<Message>> = _msgList
+    fun setMsgList(msgList: List<Message>) {
+        _msgList.value = msgList
+    }
 
     private val _msgLength = MutableLiveData<Int>()
     val msgLength: LiveData<Int> = _msgLength
@@ -122,7 +128,9 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     }
 
     fun putPicture(data: Intent?) {
-        firebaseRepository.putPicture(data)
+        firebaseRepository.pushPicture(data) {
+            _pushImgStatus.value = it
+        }
     }
 
     fun pushMsg(msg: String, photoUrl: String?) {

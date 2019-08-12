@@ -23,6 +23,7 @@ class StartFragment : Fragment() {
             firebaseVm.setFragmentState(FragmentState.CHAT)
         })
 
+        firebaseVm.setMsgList(mutableListOf())
         return binding.root
     }
 }

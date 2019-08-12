@@ -48,6 +48,11 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         return
     } else imgView.visibility = View.VISIBLE
 
+    if(imgUrl == "loading"){
+        imgView.setImageResource(R.drawable.loading_animation)
+        return
+    }
+
     Glide.with(imgView.context)
         .load(imgUrl)
         .apply(

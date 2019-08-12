@@ -7,22 +7,64 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.FragmentChatBinding
+import com.artf.chatapp.model.Message
 import com.artf.chatapp.repository.FirebaseRepository
+import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.extension.afterTextChanged
 import com.artf.chatapp.utils.extension.getVm
 
 class ChatFragment : Fragment() {
 
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
+    private lateinit var binding: FragmentChatBinding
+    private lateinit var adapter: MsgAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragmentChatBinding.inflate(LayoutInflater.from(context))
+        binding = FragmentChatBinding.inflate(LayoutInflater.from(context))
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
-        binding.recyclerView.adapter = MsgAdapter(MsgAdapter.OnClickListener { product ->
+        adapter = MsgAdapter(MsgAdapter.OnClickListener { product ->
             //movieDetailViewModel.onReviewListItemClick(product)
+        })
+
+        binding.recyclerView.layoutAnimation = null
+        binding.recyclerView.itemAnimator = null
+        binding.recyclerView.adapter = adapter
+
+        val fakeMsg = Message(
+            photoUrl = "loading",
+            isOwner = true
+        )
+
+        firebaseVm.pushImgStatus.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                NetworkState.LOADING -> {
+                    val newList = mutableListOf<Message>()
+                    newList.addAll(adapter.currentList)
+                    newList.add(fakeMsg)
+                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.notifyDataSetChanged()
+                }
+                NetworkState.LOADED -> {
+                    val newList = mutableListOf<Message>()
+                    newList.addAll(adapter.currentList)
+                    newList.remove(fakeMsg)
+                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.notifyDataSetChanged()
+                }
+                NetworkState.FAILED -> {
+                    val newList = mutableListOf<Message>()
+                    newList.addAll(adapter.currentList)
+                    newList.remove(fakeMsg)
+                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.notifyDataSetChanged()
+                }
+                else -> {
+                }
+            }
         })
 
         binding.progressBar.visibility = ProgressBar.INVISIBLE

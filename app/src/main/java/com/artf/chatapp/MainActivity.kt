@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
-                firebaseVm.setFragmentState(FragmentState.START)
+                //firebaseVm.setFragmentState(FragmentState.START)
                 AuthUI.getInstance().signOut(this)
                 true
             }
