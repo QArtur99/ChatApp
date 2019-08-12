@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -38,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         firebaseVm.startSignInActivity.observe(this, Observer {
             it?.let {
                 startSignInActivity()
+                supportActionBar?.hide()
                 firebaseVm.setStartSignInActivity(null)
             }
         })
@@ -62,12 +62,12 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FirebaseRepository.RC_SIGN_IN) {
             if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show()
+                supportActionBar?.show()
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 finish()
             }
         } else if (requestCode == FirebaseRepository.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {
-            firebaseVm.putPicture(data)
+            firebaseVm.pushPicture(data)
         }
     }
 

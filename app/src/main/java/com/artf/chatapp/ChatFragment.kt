@@ -80,14 +80,18 @@ class ChatFragment : Fragment() {
         }
 
         binding.messageEditText.afterTextChanged { text ->
-            binding.sendButton.isEnabled = text.isNotEmpty()
+            binding.sendButton.isActivated = text.isNotBlank()
         }
 
         binding.sendButton.setOnClickListener {
-            firebaseVm.pushMsg(binding.messageEditText.text.toString(), null)
+            if(it.isActivated) {
+                firebaseVm.pushMsg(binding.messageEditText.text.toString(), null)
+            }else{
+
+            }
             binding.messageEditText.setText("")
         }
-
+        binding.sendButton.isActivated = false
         return binding.root
     }
 }

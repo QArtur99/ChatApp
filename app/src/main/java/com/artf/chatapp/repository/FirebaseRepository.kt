@@ -52,6 +52,7 @@ class FirebaseRepository {
     private var receiverId: String? = null
 
     var onChatRoomListSort: (() -> Unit)? = null
+    var onSignIn: (() -> Unit)? = null
     var onSignOut: (() -> Unit)? = null
     var onFragmentStateChanged: ((state: FragmentState) -> Unit)? = null
     var onChatRoomList: ((chatRoomList: List<Chat>) -> Unit)? = null
@@ -77,6 +78,7 @@ class FirebaseRepository {
         mUser = User(userId)
         getUser(mUser?.userId!!)
         attachUserChatRoomsListener()
+        onSignIn?.invoke()
     }
 
     private fun onSignedOut() {

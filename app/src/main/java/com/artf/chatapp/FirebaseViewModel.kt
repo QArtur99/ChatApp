@@ -71,6 +71,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         _msgList.value = arrayListOf()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
         firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
+        setOnSignInListener()
         setOnSignOutListener()
         setMsgListener()
         firebaseRepository.onMsgList = { _msgList.value = it }
@@ -78,10 +79,9 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         setOnChatRoomListSort()
     }
 
-    private fun setOnChatRoomListSort() {
-        firebaseRepository.onChatRoomListSort = {
-            val sortedList = _chatRoomList.value?.sortedByDescending { it.message.value?.timestamp }.also { }
-            _chatRoomList.value = sortedList
+    private fun setOnSignInListener() {
+        firebaseRepository.onSignIn = {
+
         }
     }
 
@@ -90,6 +90,13 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
             _msgList.clear()
             _chatRoomList.clearChatRoomList()
             setStartSignInActivity(true)
+        }
+    }
+
+    private fun setOnChatRoomListSort() {
+        firebaseRepository.onChatRoomListSort = {
+            val sortedList = _chatRoomList.value?.sortedByDescending { it.message.value?.timestamp }.also { }
+            _chatRoomList.value = sortedList
         }
     }
 
@@ -127,7 +134,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         }
     }
 
-    fun putPicture(data: Intent?) {
+    fun pushPicture(data: Intent?) {
         firebaseRepository.pushPicture(data) {
             _pushImgStatus.value = it
         }
