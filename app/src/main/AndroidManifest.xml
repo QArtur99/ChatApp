@@ -3,6 +3,8 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.artf.chatapp">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
             android:name=".App"
             android:allowBackup="true"

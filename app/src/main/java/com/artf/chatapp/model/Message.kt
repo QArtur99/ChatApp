@@ -6,6 +6,8 @@ data class Message(
     var isOwner: Boolean? = null,
     var name: String? = null,
     var photoUrl: String? = null,
+    var audioUrl: String? = null,
+    var audioFile: String? = null,
     var text: String? = null,
     var timestamp: Long? = null
 ) {

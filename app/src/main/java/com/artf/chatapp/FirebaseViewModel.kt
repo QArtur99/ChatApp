@@ -32,6 +32,9 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     private val _pushImgStatus = MutableLiveData<NetworkState>()
     val pushImgStatus: LiveData<NetworkState> = _pushImgStatus
 
+    private val _pushAudioStatus = MutableLiveData<NetworkState>()
+    val pushAudioStatus: LiveData<NetworkState> = _pushAudioStatus
+
     private val _chatRoomList = MutableLiveData<List<Chat>>()
     val chatRoomList: LiveData<List<Chat>> = _chatRoomList
 
@@ -134,14 +137,20 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         }
     }
 
+    fun pushAudio(audioPath: String) {
+        firebaseRepository.pushAudio(audioPath) {
+            _pushAudioStatus.value = it
+        }
+    }
+
+    fun pushMsg(msg: String) {
+        firebaseRepository.pushMsg(msg)
+    }
+
     fun pushPicture(data: Intent?) {
         firebaseRepository.pushPicture(data) {
             _pushImgStatus.value = it
         }
-    }
-
-    fun pushMsg(msg: String, photoUrl: String?) {
-        firebaseRepository.pushMsg(msg, photoUrl)
     }
 
     override fun onCleared() {

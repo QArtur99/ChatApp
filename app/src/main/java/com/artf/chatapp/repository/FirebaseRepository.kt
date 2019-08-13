@@ -2,12 +2,15 @@ package com.artf.chatapp.repository
 
 
 import android.content.Intent
+import android.net.Uri
+import com.artf.chatapp.App
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
+import com.artf.chatapp.utils.extension.saveTo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -17,6 +20,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import java.io.File
 
 class FirebaseRepository {
 
@@ -36,10 +40,11 @@ class FirebaseRepository {
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
 
-    private val chatRoomsReference by lazy { firebaseFirestore.collection("chatRooms") }
-    private val storageReference by lazy { firebaseStorage.reference.child("chat_photos") }
-    private val usernamesReference by lazy { firebaseFirestore.collection("usernames") }
-    private val usersReference by lazy { firebaseFirestore.collection("users") }
+    private val dbRefChatRooms by lazy { firebaseFirestore.collection("chatRooms") }
+    private val dbRefUsernames by lazy { firebaseFirestore.collection("usernames") }
+    private val dbRefUsers by lazy { firebaseFirestore.collection("users") }
+    private val sRefPhotos by lazy { firebaseStorage.reference.child("chat_photos") }
+    private val sRefRecords by lazy { firebaseStorage.reference.child("chat_records") }
 
     private lateinit var chatRoomId: String
 
@@ -111,7 +116,7 @@ class FirebaseRepository {
 
     private fun attachUserChatRoomsListener() {
         if (userChatRoomsListner == null) {
-            userChatRoomsListner = usersReference.document(mUser?.userId!!).collection("chatRooms")
+            userChatRoomsListner = dbRefUsers.document(mUser?.userId!!).collection("chatRooms")
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     firebaseFirestoreException?.let { return@addSnapshotListener }
                     val chatRoomList = querySnapshot?.toObjects(Chat::class.java)
@@ -132,7 +137,7 @@ class FirebaseRepository {
     }
 
     private fun getReceiver(chat: Chat, receiverId: String): ListenerRegistration {
-        return usersReference.document(receiverId)
+        return dbRefUsers.document(receiverId)
             .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 firebaseFirestoreException?.let { return@addSnapshotListener }
                 val user = querySnapshot?.toObject(User::class.java)
@@ -141,7 +146,7 @@ class FirebaseRepository {
     }
 
     private fun setSingleMsgListener(chat: Chat): ListenerRegistration {
-        return chatRoomsReference.document(chat.chatId!!).collection("chatRoom")
+        return dbRefChatRooms.document(chat.chatId!!).collection("chatRoom")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(1)
             .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
@@ -160,7 +165,7 @@ class FirebaseRepository {
     private fun attachChatRoomListener() {
         if (chatRoomListner == null) {
             //TODO editable messages
-            chatRoomListner = chatRoomsReference.document(chatRoomId).collection("chatRoom")
+            chatRoomListner = dbRefChatRooms.document(chatRoomId).collection("chatRoom")
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 //.limit(1)
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
@@ -171,6 +176,7 @@ class FirebaseRepository {
                     msgList?.let {
                         for (msg in msgList) {
                             msg!!.isOwner = msg.authorId!! == mUser?.userId.toString()
+                            msg.audioUrl?.saveTo(App.fileName.format(msg.audioFile))
                         }
                     }
                     msgList?.let { onMsgList?.invoke(msgList) }
@@ -189,15 +195,23 @@ class FirebaseRepository {
         chatRoomListner = null
     }
 
-    fun pushMsg(msg: String?, photoUrl: String?, callBack: ((usernameStatus: NetworkState) -> Unit)? = null) {
+    fun pushMsg(
+        msg: String? = null,
+        photoUrl: String? = null,
+        audioUrl: String? = null,
+        audioFile: String? = null,
+        callBack: ((usernameStatus: NetworkState) -> Unit)? = null
+    ) {
         val friendlyMessage = Message(
             authorId = mUser?.userId,
             name = mUser?.username,
             photoUrl = photoUrl,
+            audioUrl = audioUrl,
+            audioFile = audioFile,
             text = msg,
             timestamp = Utility.getTimeStamp()
         )
-        chatRoomsReference.document(chatRoomId).collection("chatRoom").document().set(friendlyMessage)
+        dbRefChatRooms.document(chatRoomId).collection("chatRoom").document().set(friendlyMessage)
             .addOnSuccessListener {
                 isNewSenderChatRoom?.let { if (it) addSenderChatRoom() }
                 isNewReceiverChatRoom?.let { if (it) addReceiverChatRoom() }
@@ -208,14 +222,29 @@ class FirebaseRepository {
             }
     }
 
-    fun pushPicture(data: Intent?, callBack: (usernameStatus: NetworkState) -> Unit) {
+    fun pushAudio(audioPath: String, callBack: (usernameStatus: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
-        val selectedImageUri = data!!.data
-        storageReference.child(selectedImageUri!!.lastPathSegment!!).putFile(selectedImageUri)
+        val audioFileName = "${mUser?.userId!!}_${Utility.getTimeStamp()}"
+        val selectedImageUri = Uri.fromFile(File(audioPath))
+        sRefRecords.child(audioFileName).putFile(selectedImageUri)
             .addOnSuccessListener { taskSnapshot ->
                 val urlTask = taskSnapshot.storage.downloadUrl
                 urlTask.addOnSuccessListener { uri ->
-                    pushMsg(null, uri.toString()) { callBack(it) }
+                    pushMsg(audioUrl = uri.toString(), audioFile = audioFileName) { callBack(it) }
+                }.addOnFailureListener {
+                    callBack(NetworkState.FAILED)
+                }
+            }.addOnFailureListener { callBack(NetworkState.FAILED) }
+    }
+
+    fun pushPicture(data: Intent?, callBack: (usernameStatus: NetworkState) -> Unit) {
+        callBack(NetworkState.LOADING)
+        val selectedImageUri = data!!.data
+        sRefPhotos.child(selectedImageUri!!.lastPathSegment!!).putFile(selectedImageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                val urlTask = taskSnapshot.storage.downloadUrl
+                urlTask.addOnSuccessListener { uri ->
+                    pushMsg(photoUrl = uri.toString()) { callBack(it) }
                 }.addOnFailureListener {
                     callBack(NetworkState.FAILED)
                 }
@@ -223,7 +252,7 @@ class FirebaseRepository {
     }
 
     private fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
-        usersReference.document(mUser?.userId!!).set(mUser!!)
+        dbRefUsers.document(mUser?.userId!!).set(mUser!!)
             .addOnSuccessListener {
                 callBack(NetworkState.LOADED)
             }
@@ -237,7 +266,7 @@ class FirebaseRepository {
         val usernameLowerCase = username.toLowerCase()
         mUser?.username = usernameLowerCase
         mUser?.usernameList = User.nameToArray(usernameLowerCase)
-        usernamesReference.document(usernameLowerCase).set(mUser!!)
+        dbRefUsernames.document(usernameLowerCase).set(mUser!!)
             .addOnSuccessListener {
                 addUser { callBack(it) }
             }
@@ -247,7 +276,7 @@ class FirebaseRepository {
     }
 
     private fun getUser(userId: String) {
-        usersReference.document(userId).get()
+        dbRefUsers.document(userId).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     this.mUser = document.toObject(User::class.java)
@@ -261,7 +290,7 @@ class FirebaseRepository {
 
     private fun addSenderChatRoom() {
         val chatSender = Chat(chatRoomId, mUser?.userId, receiverId)
-        usersReference.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId).set(chatSender)
+        dbRefUsers.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId).set(chatSender)
             .addOnSuccessListener {
                 isNewSenderChatRoom = false
             }
@@ -272,7 +301,7 @@ class FirebaseRepository {
 
     private fun addReceiverChatRoom() {
         val chatReceiver = Chat(chatRoomId, receiverId, mUser?.userId)
-        usersReference.document(receiverId!!).collection("chatRooms").document(chatRoomId).set(chatReceiver)
+        dbRefUsers.document(receiverId!!).collection("chatRooms").document(chatRoomId).set(chatReceiver)
             .addOnSuccessListener {
                 isNewReceiverChatRoom = false
             }
@@ -282,7 +311,7 @@ class FirebaseRepository {
     }
 
     private fun getUserChatRoom() {
-        usersReference.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId).get()
+        dbRefUsers.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId).get()
             .addOnSuccessListener { documentSnapshot ->
                 isNewSenderChatRoom = !documentSnapshot.exists()
             }
@@ -290,7 +319,7 @@ class FirebaseRepository {
 
             }
 
-        usersReference.document(receiverId!!).collection("chatRooms").document(chatRoomId).get()
+        dbRefUsers.document(receiverId!!).collection("chatRooms").document(chatRoomId).get()
             .addOnSuccessListener { documentSnapshot ->
                 isNewReceiverChatRoom = !documentSnapshot.exists()
             }
@@ -305,7 +334,7 @@ class FirebaseRepository {
     ) {
         try {
             callBack(NetworkState.LOADING, mutableListOf())
-            val querySnapshot = usersReference.whereArrayContains("usernameList", username).get().await()
+            val querySnapshot = dbRefUsers.whereArrayContains("usernameList", username).get().await()
             val list = querySnapshot.toObjects(User::class.java)
             val networkState = if (list.isNotEmpty()) NetworkState.LOADED else NetworkState.FAILED
             callBack(networkState, list)
@@ -317,7 +346,7 @@ class FirebaseRepository {
     suspend fun isUsernameAvailable(username: String, callBack: (networkState: NetworkState) -> Unit) {
         try {
             callBack(NetworkState.LOADING)
-            val document = usernamesReference.document(username.toLowerCase()).get().await()
+            val document = dbRefUsernames.document(username.toLowerCase()).get().await()
             callBack(if (document.exists()) NetworkState.FAILED else NetworkState.LOADED)
         } catch (e: FirebaseFirestoreException) {
             callBack(NetworkState.FAILED)
