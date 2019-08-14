@@ -2,4 +2,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="touch_raise">8dp</dimen>
+
+    <dimen name="seekbar_track_background_height_material">4dp</dimen>
+    <dimen name="seekbar_track_progress_height_material">5dp</dimen>
+    <dimen name="progressBarCornerRadius">4dp</dimen>
 </resources>

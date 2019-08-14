@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.SeekBar
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -26,7 +27,8 @@ import java.io.IOException
 
 class ChatFragment : Fragment() {
 
-    private val fileName: String by lazy { "${activity!!.externalCacheDir?.absolutePath}/audiorecordtest.3gp" }
+    private val recordFileName: String by lazy { "${activity!!.externalCacheDir?.absolutePath}/audiorecordtest.3gp" }
+    private var playFileName: String? = null
     private val LOG_TAG = "AudioRecordTest"
     private val RC_RECORD_AUDIO = 200
     private var permissionToRecord = false
@@ -46,10 +48,7 @@ class ChatFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
-        adapter = MsgAdapter(MsgAdapter.OnClickListener { product ->
-            //movieDetailViewModel.onReviewListItemClick(product)
-        })
-
+        adapter = MsgAdapter(getMsgAdapterInt())
         binding.recyclerView.layoutAnimation = null
         binding.recyclerView.itemAnimator = null
         binding.recyclerView.adapter = adapter
@@ -124,7 +123,7 @@ class ChatFragment : Fragment() {
                     }
                     MotionEvent.ACTION_UP -> {
                         stopRecording()
-                        firebaseVm.pushAudio(fileName)
+                        firebaseVm.pushAudio(recordFileName)
                     }
                 }
             }else{
@@ -144,6 +143,24 @@ class ChatFragment : Fragment() {
         return binding.root
     }
 
+    fun getMsgAdapterInt(): MsgAdapter.MsgAdapterInt {
+        return object: MsgAdapter.MsgAdapterInt {
+            override fun onAudioClick(view: View, message: Message) {
+                if(view.isActivated.not()){
+                    playFileName = App.fileName.format(message.audioFile)
+                    stopPlaying()
+                    startPlaying()
+                    view.isActivated = true
+                    val seekBar = view.rootView.findViewById<SeekBar>(R.id.seekBar)
+                }else{
+                    stopPlaying()
+                    view.isActivated = false
+                }
+            }
+
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         permissionToRecord = if (requestCode == RC_RECORD_AUDIO && grantResults.isNotEmpty()) {
@@ -154,7 +171,7 @@ class ChatFragment : Fragment() {
     private fun startPlaying() {
         player = MediaPlayer().apply {
             try {
-                setDataSource(fileName)
+                setDataSource(playFileName)
                 prepare()
                 start()
             } catch (e: IOException) {
@@ -173,16 +190,15 @@ class ChatFragment : Fragment() {
         recorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            setOutputFile(fileName)
+            setOutputFile(recordFileName)
             setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
 
             try {
                 prepare()
+                start()
             } catch (e: IOException) {
                 Log.e(LOG_TAG, "prepare() failed")
             }
-
-            start()
         }
     }
 

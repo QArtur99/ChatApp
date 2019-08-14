@@ -110,6 +110,15 @@ fun bindingTextOrGone(textView: TextView, text: String?) {
     }
 }
 
+@BindingAdapter("textOrGone")
+fun bindingTextOrGoneView(view: View, text: String?) {
+    if (text == null) {
+        view.visibility = View.GONE
+    } else {
+        view.visibility = View.VISIBLE
+    }
+}
+
 /**
  * When @RecyclerView is in parent layout_height="wrap_content" it blinks on data change.
  * Setting layout_height programmatically prevent blinking onDataChange.

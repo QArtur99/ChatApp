@@ -9,6 +9,10 @@
         <variable
                 name="message"
                 type="com.artf.chatapp.model.Message"/>
+
+        <variable
+                name="msgAdapterInt"
+                type="com.artf.chatapp.MsgAdapter.MsgAdapterInt"/>
     </data>
 
     <LinearLayout

@@ -9,6 +9,10 @@
         <variable
                 name="message"
                 type="com.artf.chatapp.model.Message"/>
+
+        <variable
+                name="msgAdapterInt"
+                type="com.artf.chatapp.MsgAdapter.MsgAdapterInt"/>
     </data>
 
     <LinearLayout
@@ -51,37 +55,60 @@
                 app:groupChat="@{false}"
                 tools:text="Name" android:padding="0dp"/>
 
-        <SeekBar
-                android:id="@+id/songProgressBar"
+        <LinearLayout
+                android:id="@+id/audioContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="20dp"
-                android:thumb="@drawable/seek_handler"
-                android:progressDrawable="@drawable/seekbar_progress"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"/>
+                android:orientation="horizontal"
+                app:textOrGone="@{message.audioUrl}"
+        >
 
-
-            <TextView
-                    android:id="@+id/messageTextView"
-                    android:textColor="@color/colorMsgTextRight"
+            <ImageButton
+                    android:id="@+id/sendButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    app:textOrGone="@{message.text}"
-                    tools:text="Message"/>
+                    android:onClick="@{(v) -> msgAdapterInt.onAudioClick(v, message)}"
+                    android:layout_gravity="center_vertical"
+                    android:padding="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/selector_button_play"
+            />
 
-            <TextView
-                    android:id="@+id/timeTextView"
-                    android:textColor="@color/colorMsgTimeRight"
-                    android:layout_width="wrap_content"
+            <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textSize="12sp"
-                    android:layout_gravity="end"
-                    app:hourTime="@{message.timestamp}"
-                    tools:text="Name"/>
+                    android:layout_gravity="center_vertical"
+                    android:progressDrawable="@drawable/seekbar_progress"
+                    android:indeterminateDrawable="@drawable/seekbar_progress"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:splitTrack="false"
+                    android:background="@null"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp" />
+        </LinearLayout>
+
+
+        <TextView
+                android:id="@+id/messageTextView"
+                android:textColor="@color/colorMsgTextRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                app:textOrGone="@{message.text}"
+                tools:text="Message"/>
+
+        <TextView
+                android:id="@+id/timeTextView"
+                android:textColor="@color/colorMsgTimeRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="12sp"
+                android:layout_gravity="end"
+                app:hourTime="@{message.timestamp}"
+                tools:text="Name"/>
     </LinearLayout>
 
 </layout>

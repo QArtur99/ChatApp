@@ -1,6 +1,7 @@
 package com.artf.chatapp
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
@@ -13,12 +14,12 @@ import com.artf.chatapp.databinding.ItemMessageRightImgBinding
 import com.artf.chatapp.model.Message
 
 class MsgAdapter(
-    private val clickListener: OnClickListener
+    private val msgAdapterInt: MsgAdapterInt
 ) : ListAdapter<Message, RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = getItem(position)
-        (holder as MsgViewHolder<*>).bind(clickListener, msg)
+        (holder as MsgViewHolder<*>).bind(msgAdapterInt, msg)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -42,31 +43,41 @@ class MsgAdapter(
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)!!
         return if (item.isOwner!!) {
-            if (item.photoUrl == null) R.layout.item_message_right else R.layout.item_message_right_img
+            when {
+                item.audioUrl != null -> R.layout.item_message_right_img
+                item.photoUrl != null -> R.layout.item_message_right_img
+                else -> R.layout.item_message_right
+            }
         } else {
-            if (item.photoUrl == null) R.layout.item_message_left else R.layout.item_message_left_img
+            when {
+                item.audioUrl != null -> R.layout.item_message_left_img
+                item.photoUrl != null -> R.layout.item_message_left_img
+                else -> R.layout.item_message_left
+            }
         }
     }
 
     class MsgViewHolder<T : ViewDataBinding> constructor(val binding: T) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(clickListener: OnClickListener, item: Message) {
+        fun bind(msgAdapterInt: MsgAdapterInt, item: Message) {
             when (binding) {
                 is ItemMessageLeftBinding -> {
                     binding.message = item
+                    binding.msgAdapterInt = msgAdapterInt
                 }
                 is ItemMessageRightBinding -> {
                     binding.message = item
+                    binding.msgAdapterInt = msgAdapterInt
                 }
                 is ItemMessageLeftImgBinding -> {
                     binding.message = item
+                    binding.msgAdapterInt = msgAdapterInt
                 }
                 is ItemMessageRightImgBinding -> {
                     binding.message = item
+                    binding.msgAdapterInt = msgAdapterInt
                 }
             }
-
-            //binding.clickListener = clickListener
             binding.executePendingBindings()
         }
     }
@@ -81,7 +92,9 @@ class MsgAdapter(
         }
     }
 
-    class OnClickListener(val clickListener: (productId: Message) -> Unit) {
-        fun onClick(product: Message) = clickListener(product)
+    interface MsgAdapterInt{
+        fun onAudioClick(view: View, message: Message)
+
     }
+
 }

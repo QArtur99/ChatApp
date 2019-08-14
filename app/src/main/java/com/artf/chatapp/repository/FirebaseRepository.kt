@@ -19,6 +19,10 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
@@ -32,6 +36,10 @@ class FirebaseRepository {
         const val MSG_LENGTH_KEY = "friendly_msg_length"
         val TAG = FirebaseRepository::class.java.simpleName
     }
+
+    private var viewModelJob = Job()
+    private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+    private val nonUiScope = CoroutineScope(viewModelJob + Dispatchers.IO)
 
     private var mUser: User? = null
 
@@ -99,8 +107,7 @@ class FirebaseRepository {
         firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
 
         val defaultConfigMap = HashMap<String, Any>()
-        defaultConfigMap[MSG_LENGTH_KEY] =
-            DEFAULT_MSG_LENGTH_LIMIT
+        defaultConfigMap[MSG_LENGTH_KEY] = DEFAULT_MSG_LENGTH_LIMIT
         firebaseRemoteConfig.setDefaults(defaultConfigMap)
     }
 
@@ -176,7 +183,8 @@ class FirebaseRepository {
                     msgList?.let {
                         for (msg in msgList) {
                             msg!!.isOwner = msg.authorId!! == mUser?.userId.toString()
-                            msg.audioUrl?.saveTo(App.fileName.format(msg.audioFile))
+                            nonUiScope.launch { msg.audioUrl?.saveTo(App.fileName.format(msg.audioFile)) }
+
                         }
                     }
                     msgList?.let { onMsgList?.invoke(msgList) }
@@ -364,6 +372,7 @@ class FirebaseRepository {
     }
 
     fun stopListening() {
+        viewModelJob.cancel()
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()
     }
