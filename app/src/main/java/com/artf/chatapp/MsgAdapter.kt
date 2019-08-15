@@ -92,7 +92,7 @@ class MsgAdapter(
         }
     }
 
-    interface MsgAdapterInt{
+    interface MsgAdapterInt {
         fun onAudioClick(view: View, message: Message)
 
     }

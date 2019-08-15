@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat.checkSelfPermission
@@ -24,6 +25,8 @@ import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.extension.afterTextChanged
 import com.artf.chatapp.utils.extension.getVm
 import java.io.IOException
+import java.util.*
+
 
 class ChatFragment : Fragment() {
 
@@ -34,6 +37,10 @@ class ChatFragment : Fragment() {
     private var permissionToRecord = false
     private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
 
+    private var pauseTime: Int? = null
+    private var playButton: View? = null
+    private var seekBar: SeekBar? = null
+    private var timer: Timer? = null
     private var recorder: MediaRecorder? = null
     private var player: MediaPlayer? = null
 
@@ -126,15 +133,6 @@ class ChatFragment : Fragment() {
                         firebaseVm.pushAudio(recordFileName)
                     }
                 }
-            }else{
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        startPlaying()
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        stopPlaying()
-                    }
-                }
             }
             true
         }
@@ -144,21 +142,39 @@ class ChatFragment : Fragment() {
     }
 
     fun getMsgAdapterInt(): MsgAdapter.MsgAdapterInt {
-        return object: MsgAdapter.MsgAdapterInt {
+        return object : MsgAdapter.MsgAdapterInt {
             override fun onAudioClick(view: View, message: Message) {
-                if(view.isActivated.not()){
+                if (view.isActivated.not()) {
+                    playButton = view
+                    seekBar = (view.parent as LinearLayout).findViewById<SeekBar>(R.id.seekBar)
                     playFileName = App.fileName.format(message.audioFile)
                     stopPlaying()
-                    startPlaying()
+                    startPlaying { getTime() }
                     view.isActivated = true
-                    val seekBar = view.rootView.findViewById<SeekBar>(R.id.seekBar)
-                }else{
+
+                    seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
+
+                        override fun onStartTrackingTouch(seekBar: SeekBar) {stopTimer() }
+
+                        override fun onStopTrackingTouch(seekBar: SeekBar) {
+                            stopTimer()
+                            stopPlaying()
+                            playButton?.let { if (it.isActivated) startPlaying { getTime() } }
+                        }
+                    })
+                } else {
+                    pauseTime = player?.currentPosition
                     stopPlaying()
                     view.isActivated = false
                 }
             }
-
         }
+    }
+
+    fun getTime(): Int {
+        val totalDuration = player?.duration
+        return totalDuration!! * seekBar?.progress!! / 100
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -168,22 +184,52 @@ class ChatFragment : Fragment() {
         } else false
     }
 
-    private fun startPlaying() {
-        player = MediaPlayer().apply {
+    private fun startPlaying(getPosition: () -> Int) {
+        player = MediaPlayer()
+        player?.apply {
+
+            setOnCompletionListener {
+                stopPlaying()
+                playButton?.isActivated = false
+                seekBar?.progress = 0
+            }
+
             try {
                 setDataSource(playFileName)
                 prepare()
                 start()
+                seekTo(getPosition.invoke())
+                setSeekBarTimer()
             } catch (e: IOException) {
                 Log.e(LOG_TAG, "prepare() failed")
             }
         }
     }
 
+    private fun setSeekBarTimer() {
+        timer = Timer()
+        timer?.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                if (player != null) {
+                    seekBar?.progress = player!!.currentPosition * 100 / player!!.duration
+                } else {
+                    timer?.cancel()
+                }
+            }
+        }, 0, 20)
+    }
+
+
     private fun stopPlaying() {
+        stopTimer()
         player?.stop()
         player?.release()
         player = null
+    }
+
+    private fun stopTimer() {
+        timer?.cancel()
+        timer = null
     }
 
     private fun startRecording() {
