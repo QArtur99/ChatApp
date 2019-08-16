@@ -6,10 +6,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.ChatListAdapter
-import com.artf.chatapp.MsgAdapter
-import com.artf.chatapp.R
-import com.artf.chatapp.SearchAdapter
+import com.artf.chatapp.*
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
@@ -48,7 +45,7 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         return
     } else imgView.visibility = View.VISIBLE
 
-    if(imgUrl == "loading"){
+    if (imgUrl == "loading") {
         imgView.setImageResource(R.drawable.loading_animation)
         return
     }
@@ -90,7 +87,7 @@ fun bindingTextHourTime(textView: TextView, timestamp: Long) {
 
 @BindingAdapter("textOrGoneName", "groupChat")
 fun bindingTextOrGoneUsername(textView: TextView, text: String?, isGroupChat: Boolean?) {
-    val groupChat  = isGroupChat ?: false
+    val groupChat = isGroupChat ?: false
 
     if (text == null || groupChat.not()) {
         textView.visibility = View.GONE
@@ -110,13 +107,33 @@ fun bindingTextOrGone(textView: TextView, text: String?) {
     }
 }
 
-@BindingAdapter("textOrGone")
-fun bindingTextOrGoneView(view: View, text: String?) {
-    if (text == null) {
-        view.visibility = View.GONE
-    } else {
-        view.visibility = View.VISIBLE
-    }
+@BindingAdapter("lastMsg")
+fun bindingLastMsg(textView: TextView, message: Message?) {
+    if (message == null) return
+    message.audioUrl?.let { textView.text = "\uD83C\uDFA4 Record" }
+    message.photoUrl?.let { textView.text = "\uD83D\uDCF7 Photo" }
+    message.text?.let { textView.text = it }
+
+}
+
+@BindingAdapter("goneIfNull")
+fun bindingGoneIfNull(view: View, text: String?) {
+    view.visibility = if (text == null) View.GONE else View.VISIBLE
+}
+
+@BindingAdapter("goneIfNotNull")
+fun bindingGoneIfNotNull(view: View, text: String?) {
+    view.visibility = if (text == null) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("audioTime")
+fun bindingAudioTime(textView: TextView, audioFile: Long?) {
+    audioFile?.let { Utility.setAudioTimeMmSs(textView, audioFile) }
+}
+
+@BindingAdapter("fakeAudioProgress")
+fun bindingFakeAudioProgress(view: View, audioFile: String?) {
+    view.visibility = if(audioFile == ChatFragment.LOADING) View.VISIBLE else View.GONE
 }
 
 /**
@@ -128,7 +145,7 @@ fun bindPreventSearchBlinking(linearLayout: LinearLayout, data: List<User>?) {
     data?.let {
         val parentHeight = (linearLayout.parent as LinearLayout).height
         val customHeight = it.size * 74.toDp() + 16.toDp()
-        val newHeight = if(customHeight > parentHeight) parentHeight else customHeight
+        val newHeight = if (customHeight > parentHeight) parentHeight else customHeight
         linearLayout.layoutParams.height = if (it.isEmpty()) 90.toDp() else newHeight
     }
 }

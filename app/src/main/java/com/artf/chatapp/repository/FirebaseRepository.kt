@@ -39,7 +39,8 @@ class FirebaseRepository {
 
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-    private val nonUiScope = CoroutineScope(viewModelJob + Dispatchers.IO)
+    private val nonUiContext = Dispatchers.IO
+    private val nonUiScope = CoroutineScope(viewModelJob + nonUiContext)
 
     private var mUser: User? = null
 
@@ -180,15 +181,23 @@ class FirebaseRepository {
                     //querySnapshot?.let { if (it.metadata.isFromCache) return@addSnapshotListener }
 
                     val msgList = querySnapshot?.toObjects(Message::class.java)
+
                     msgList?.let {
                         for (msg in msgList) {
                             msg!!.isOwner = msg.authorId!! == mUser?.userId.toString()
-                            nonUiScope.launch { msg.audioUrl?.saveTo(App.fileName.format(msg.audioFile)) }
-
+                            getAudio(msg)
                         }
                     }
                     msgList?.let { onMsgList?.invoke(msgList) }
                 }
+        }
+    }
+
+    private fun getAudio(msg: Message) {
+        nonUiScope.launch {
+            msg.audioDownloaded = false
+            msg.audioUrl?.saveTo(App.fileName.format(msg.audioFile))
+            msg.audioDownloaded = true
         }
     }
 
@@ -208,6 +217,7 @@ class FirebaseRepository {
         photoUrl: String? = null,
         audioUrl: String? = null,
         audioFile: String? = null,
+        audioDuration: Long? = null,
         callBack: ((usernameStatus: NetworkState) -> Unit)? = null
     ) {
         val friendlyMessage = Message(
@@ -216,6 +226,7 @@ class FirebaseRepository {
             photoUrl = photoUrl,
             audioUrl = audioUrl,
             audioFile = audioFile,
+            audioDuration = audioDuration,
             text = msg,
             timestamp = Utility.getTimeStamp()
         )
@@ -230,7 +241,7 @@ class FirebaseRepository {
             }
     }
 
-    fun pushAudio(audioPath: String, callBack: (usernameStatus: NetworkState) -> Unit) {
+    fun pushAudio(audioPath: String, audioDuration: Long, callBack: (usernameStatus: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
         val audioFileName = "${mUser?.userId!!}_${Utility.getTimeStamp()}"
         val selectedImageUri = Uri.fromFile(File(audioPath))
@@ -238,7 +249,11 @@ class FirebaseRepository {
             .addOnSuccessListener { taskSnapshot ->
                 val urlTask = taskSnapshot.storage.downloadUrl
                 urlTask.addOnSuccessListener { uri ->
-                    pushMsg(audioUrl = uri.toString(), audioFile = audioFileName) { callBack(it) }
+                    pushMsg(
+                        audioUrl = uri.toString()
+                        , audioFile = audioFileName
+                        , audioDuration = audioDuration
+                    ) { callBack(it) }
                 }.addOnFailureListener {
                     callBack(NetworkState.FAILED)
                 }

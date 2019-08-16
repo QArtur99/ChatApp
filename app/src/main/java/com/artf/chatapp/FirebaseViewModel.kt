@@ -137,8 +137,8 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         }
     }
 
-    fun pushAudio(audioPath: String) {
-        firebaseRepository.pushAudio(audioPath) {
+    fun pushAudio(audioPath: String, audioDuration: Long) {
+        firebaseRepository.pushAudio(audioPath, audioDuration) {
             _pushAudioStatus.value = it
         }
     }

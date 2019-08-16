@@ -60,7 +60,7 @@
             <EditText
                     android:id="@+id/messageEditText"
                     android:layout_width="0dp"
-                    android:hint="Type a message"
+                    android:hint="@string/type_a_message"
                     android:background="@color/transparent"
                     android:maxLength="@{firebaseVm.msgLength}"
                     android:layout_height="wrap_content"
@@ -72,7 +72,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:enabled="false"
                     android:padding="8dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="4dp"

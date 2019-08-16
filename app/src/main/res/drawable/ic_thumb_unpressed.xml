@@ -9,8 +9,8 @@
 <group
         android:pivotX="12"
         android:pivotY="12"
-        android:scaleX="0.65"
-        android:scaleY="0.65">
+        android:scaleX="0.6"
+        android:scaleY="0.6">
     <path android:fillColor="#FF000000"
           android:pathData="M12,12m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0"/>
 </group>

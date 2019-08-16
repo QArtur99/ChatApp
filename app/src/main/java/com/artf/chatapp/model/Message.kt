@@ -8,9 +8,12 @@ data class Message(
     var photoUrl: String? = null,
     var audioUrl: String? = null,
     var audioFile: String? = null,
+    var audioDuration: Long? = null,
+    var audioDownloaded: Boolean? = null,
     var text: String? = null,
     var timestamp: Long? = null
 ) {
+
     init {
         id = authorId + "_" + timestamp
     }

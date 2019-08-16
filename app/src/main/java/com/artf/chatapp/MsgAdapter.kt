@@ -3,6 +3,7 @@ package com.artf.chatapp
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -60,25 +61,21 @@ class MsgAdapter(
     class MsgViewHolder<T : ViewDataBinding> constructor(val binding: T) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(msgAdapterInt: MsgAdapterInt, item: Message) {
-            when (binding) {
-                is ItemMessageLeftBinding -> {
-                    binding.message = item
-                    binding.msgAdapterInt = msgAdapterInt
-                }
-                is ItemMessageRightBinding -> {
-                    binding.message = item
-                    binding.msgAdapterInt = msgAdapterInt
-                }
-                is ItemMessageLeftImgBinding -> {
-                    binding.message = item
-                    binding.msgAdapterInt = msgAdapterInt
-                }
-                is ItemMessageRightImgBinding -> {
-                    binding.message = item
-                    binding.msgAdapterInt = msgAdapterInt
-                }
-            }
+            binding.setVariable(BR.message, item)
+            binding.setVariable(BR.msgAdapterInt, msgAdapterInt)
             binding.executePendingBindings()
+            val seekBar = binding.root.findViewById<SeekBar>(R.id.seekBar)
+            seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
+
+                override fun onStartTrackingTouch(seekBar: SeekBar) {
+                    msgAdapterInt.onStartTrackingTouch(seekBar, item)
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+                    msgAdapterInt.onStopTrackingTouch(seekBar, item)
+                }
+            })
         }
     }
 
@@ -94,6 +91,9 @@ class MsgAdapter(
 
     interface MsgAdapterInt {
         fun onAudioClick(view: View, message: Message)
+        fun onStartTrackingTouch(seekBar: SeekBar, item: Message)
+        fun onStopTrackingTouch(seekBar: SeekBar, item: Message)
+        fun getVm() : FirebaseViewModel
 
     }
 

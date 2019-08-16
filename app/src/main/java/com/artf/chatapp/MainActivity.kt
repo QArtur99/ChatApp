@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
                 .setTheme(R.style.LoginTheme)
                 .setIsSmartLockEnabled(false)
                 .setAvailableProviders(providers)
-                .setLogo(R.mipmap.ic_launcher)
+                .setLogo(R.drawable.ic_launcher)
                 .build(), FirebaseRepository.RC_SIGN_IN
         )
     }
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isNullOrEmpty().not()) firebaseVm.onSearchTextChange(newText)
+                if (newText.isEmpty().not()) firebaseVm.onSearchTextChange(newText)
                 return true
             }
         })
