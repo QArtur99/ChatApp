@@ -331,6 +331,7 @@ class ChatFragment : Fragment() {
 
     private fun startRecording() {
         recorder = MediaRecorder().apply {
+            reset()
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             setOutputFile(recordFileName)

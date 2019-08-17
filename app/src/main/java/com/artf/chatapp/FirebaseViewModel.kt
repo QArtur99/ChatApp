@@ -11,6 +11,7 @@ import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.extension.*
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -98,7 +99,10 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
 
     private fun setOnChatRoomListSort() {
         firebaseRepository.onChatRoomListSort = {
-            val sortedList = _chatRoomList.value?.sortedByDescending { it.message.value?.timestamp }.also { }
+            val sortedList = _chatRoomList.value?.sortedByDescending {
+                val timestamp = it.message.value?.timestamp
+                if (timestamp is Timestamp) timestamp.seconds else 0
+            }
             _chatRoomList.value = sortedList
         }
     }

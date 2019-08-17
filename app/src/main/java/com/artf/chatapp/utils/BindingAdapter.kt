@@ -13,6 +13,7 @@ import com.artf.chatapp.model.User
 import com.artf.chatapp.utils.extension.toDp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -80,9 +81,11 @@ fun bindProfileImg(imgView: ImageView, imgUrl: String?) {
 }
 
 @BindingAdapter("hourTime")
-fun bindingTextHourTime(textView: TextView, timestamp: Long) {
-    val df = SimpleDateFormat("HH:mm", Locale.getDefault())
-    textView.text = df.format(Date(timestamp))
+fun bindingTextHourTime(textView: TextView, timestamp: Any?) {
+    if(timestamp is Timestamp) {
+        val df = SimpleDateFormat("HH:mm", Locale.getDefault())
+        textView.text = df.format(timestamp.toDate())
+    }
 }
 
 @BindingAdapter("textOrGoneName", "groupChat")

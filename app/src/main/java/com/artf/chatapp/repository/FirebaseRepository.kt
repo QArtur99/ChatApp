@@ -12,10 +12,7 @@ import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.extension.saveTo
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
@@ -184,6 +181,7 @@ class FirebaseRepository {
 
                     msgList?.let {
                         for (msg in msgList) {
+                            msg.setMessageId()
                             msg!!.isOwner = msg.authorId!! == mUser?.userId.toString()
                             getAudio(msg)
                         }
@@ -228,7 +226,7 @@ class FirebaseRepository {
             audioFile = audioFile,
             audioDuration = audioDuration,
             text = msg,
-            timestamp = Utility.getTimeStamp()
+            timestamp = FieldValue.serverTimestamp()
         )
         dbRefChatRooms.document(chatRoomId).collection("chatRoom").document().set(friendlyMessage)
             .addOnSuccessListener {

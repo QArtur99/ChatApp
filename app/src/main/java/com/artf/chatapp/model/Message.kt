@@ -1,5 +1,12 @@
 package com.artf.chatapp.model
 
+import com.google.firebase.Timestamp
+
+/**
+ * Set messageId for recycler view adapter
+ * Firebase timestamp is created after init method.
+ */
+
 data class Message(
     var id: String? = null,
     var authorId: String? = null,
@@ -11,10 +18,12 @@ data class Message(
     var audioDuration: Long? = null,
     var audioDownloaded: Boolean? = null,
     var text: String? = null,
-    var timestamp: Long? = null
+    var timestamp: Any? = null
 ) {
-
-    init {
-        id = authorId + "_" + timestamp
+    fun setMessageId() {
+        val timestamp = this.timestamp
+        if (timestamp is Timestamp) {
+            id = authorId + "_" + timestamp.toDate().time
+        }
     }
 }
