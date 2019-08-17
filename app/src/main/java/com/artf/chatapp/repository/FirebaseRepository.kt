@@ -87,15 +87,17 @@ class FirebaseRepository {
 
     private fun onSignedIn(userId: String) {
         mUser = User(userId)
-        getUser(mUser?.userId!!)
+        getUser(userId)
+        updateUser(userId, true)
         attachUserChatRoomsListener()
         onSignIn?.invoke()
     }
 
     private fun onSignedOut() {
-        this.mUser = null
+        mUser?.userId?.let { updateUser(it, true)}
         detachDatabaseListeners()
         onSignOut?.invoke()
+        this.mUser = null
     }
 
     private fun fetchConfig() {
@@ -308,6 +310,13 @@ class FirebaseRepository {
             }
     }
 
+    private fun updateUser(userId: String, isOnline: Boolean){
+        val map = mutableMapOf<String, Any>()
+        map["isOnline"] = isOnline
+        map["lastSeenTimestamp"] = FieldValue.serverTimestamp()
+        dbRefUsers.document(userId).update(map)
+    }
+
 
     private fun addSenderChatRoom() {
         val chatSender = Chat(chatRoomId, mUser?.userId, receiverId)
@@ -385,6 +394,7 @@ class FirebaseRepository {
     }
 
     fun stopListening() {
+        mUser?.userId?.let { updateUser(it, true)}
         viewModelJob.cancel()
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()
