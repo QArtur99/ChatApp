@@ -9,6 +9,14 @@ def localProp = new Properties()
 localProp.load(new FileInputStream(localPropFile))
 
 android {
+    signingConfigs {
+        config {
+            keyAlias localProp['keyAlias']
+            keyPassword localProp['keyPassword']
+            storeFile file(localProp['storeFile'])
+            storePassword localProp['storePassword']
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.artf.chatapp"
