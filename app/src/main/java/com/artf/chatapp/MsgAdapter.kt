@@ -8,10 +8,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.databinding.ItemMessageLeftBinding
-import com.artf.chatapp.databinding.ItemMessageLeftImgBinding
-import com.artf.chatapp.databinding.ItemMessageRightBinding
-import com.artf.chatapp.databinding.ItemMessageRightImgBinding
+import com.artf.chatapp.databinding.*
 import com.artf.chatapp.model.Message
 
 class MsgAdapter(
@@ -37,6 +34,12 @@ class MsgAdapter(
             R.layout.item_message_right_img -> MsgViewHolder(
                 ItemMessageRightImgBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
+            R.layout.item_message_left_record -> MsgViewHolder(
+                ItemMessageLeftRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
+            R.layout.item_message_right_record -> MsgViewHolder(
+                ItemMessageRightRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
     }
@@ -45,13 +48,13 @@ class MsgAdapter(
         val item = getItem(position)!!
         return if (item.isOwner!!) {
             when {
-                item.audioUrl != null -> R.layout.item_message_right_img
+                item.audioUrl != null -> R.layout.item_message_right_record
                 item.photoUrl != null -> R.layout.item_message_right_img
                 else -> R.layout.item_message_right
             }
         } else {
             when {
-                item.audioUrl != null -> R.layout.item_message_left_img
+                item.audioUrl != null -> R.layout.item_message_left_record
                 item.photoUrl != null -> R.layout.item_message_left_img
                 else -> R.layout.item_message_left
             }

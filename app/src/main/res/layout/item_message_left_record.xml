@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+>
+
+    <data>
+        <variable
+                name="message"
+                type="com.artf.chatapp.model.Message"/>
+
+        <variable
+                name="msgAdapterInt"
+                type="com.artf.chatapp.MsgAdapter.MsgAdapterInt"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintWidth_percent="0.8"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                    android:id="@+id/msgContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_item_message_left"
+                    android:elevation="2dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="4dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:orientation="vertical">
+
+                <TextView
+                        android:id="@+id/nameTextView"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        app:textOrGoneName="@{message.name}"
+                        app:groupChat="@{false}"
+                        tools:text="Name" android:padding="0dp"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/audioContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:goneIfNull="@{message.audioUrl}">
+
+                    <ImageButton
+                            android:id="@+id/playButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="@{(v) -> msgAdapterInt.onAudioClick(v, message)}"
+                            android:layout_gravity="center_vertical"
+                            android:padding="8dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp"
+                            android:background="@drawable/selector_button_play"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                    <SeekBar
+                            android:id="@+id/seekBar"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:progressDrawable="@drawable/seekbar_progress"
+                            android:indeterminateDrawable="@drawable/seekbar_progress"
+                            android:thumb="@drawable/seekbar_thumb"
+                            android:splitTrack="false"
+                            android:paddingTop="6dp"
+                            android:paddingBottom="6dp"
+                            android:thumbOffset="8dp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/playButton"
+                            app:layout_constraintStart_toEndOf="@id/playButton"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                            android:id="@+id/audioTimeTextView"
+                            android:textColor="@color/colorMsgTimeLeft"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:textSize="12sp"
+                            android:layout_gravity="end"
+                            app:layout_constraintTop_toBottomOf="@id/seekBar"
+                            app:layout_constraintStart_toStartOf="@id/seekBar"
+                            app:audioTime="@{message.audioDuration}"
+                            tools:text="Name"/>
+
+                    <TextView
+                            android:id="@+id/timeSeekBarTextView"
+                            android:textColor="@color/colorMsgTimeLeft"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textSize="12sp"
+                            android:layout_gravity="end"
+                            app:layout_constraintTop_toBottomOf="@id/seekBar"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:hourTime="@{message.timestamp}"
+                            tools:text="Name"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

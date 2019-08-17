@@ -4,6 +4,7 @@
           package="com.artf.chatapp">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.STORAGE" />
 
     <application
             android:name=".App"

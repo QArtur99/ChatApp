@@ -34,13 +34,13 @@ class ChatFragment : Fragment() {
 
 
     companion object {
+        val TAG = ChatFragment::class.java.simpleName
+        const val RC_RECORD_AUDIO = 200
         const val LOADING = "loading"
     }
 
     private val recordFileName: String by lazy { "${activity!!.externalCacheDir?.absolutePath}/audiorecordtest.3gp" }
     private var playFileName: String? = null
-    private val TAG = ChatFragment::class.java.simpleName
-    private val RC_RECORD_AUDIO = 200
     private var permissionToRecord = false
     private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
 
@@ -340,6 +340,8 @@ class ChatFragment : Fragment() {
                 start()
                 recorderDuration = System.currentTimeMillis()
             } catch (e: IOException) {
+                Log.e(TAG, "prepare() failed")
+            } catch (e: IllegalStateException) {
                 Log.e(TAG, "prepare() failed")
             }
         }
