@@ -70,7 +70,7 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging:$versions.firebase_messaging"
     implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
     implementation "com.firebaseui:firebase-ui-auth:$versions.firebase_ui_auth"
-    implementation 'com.facebook.android:facebook-android-sdk:5.2.0'
+    implementation 'com.facebook.android:facebook-android-sdk:5.4.0'
 
     //Glide
     implementation "com.github.bumptech.glide:glide:$versions.glide"
