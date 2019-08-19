@@ -72,7 +72,6 @@
                     app:textOrGone="@{chat.user.username}"
                     tools:text="Name" android:padding="0dp"/>
 
-
             <TextView
                     android:layout_alignParentStart="true"
                     android:layout_below="@id/nameTextView"
@@ -82,6 +81,17 @@
                     android:textSize="16sp"
                     app:lastMsg="@{chat.message}"
                     tools:text="Message"/>
+
+            <ImageView
+                    android:id="@+id/onlineDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_online_dot"
+                    android:tint="@color/colorDisable"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/timeTextView"
+                    app:onlineTint="@{chat.user.isOnline}"
+            />
 
             <TextView
                     android:layout_alignParentTop="true"

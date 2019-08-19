@@ -28,6 +28,10 @@
     <color name="colorMsgLeft">#FFFFFF</color>
     <color name="colorMsgRight">#009688</color>
 
+    //Online status
+    <color name="onlineOn">#64DD17</color>
+    <color name="onlineOff">#AAAAAA</color>
+
     //SeekBar
     <color name="colorProgressBackgroundNormal">#33000000</color>
     <color name="white_disabled_material">#FFFFFF</color>

@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.*
@@ -82,7 +83,7 @@ fun bindProfileImg(imgView: ImageView, imgUrl: String?) {
 
 @BindingAdapter("hourTime")
 fun bindingTextHourTime(textView: TextView, timestamp: Any?) {
-    if(timestamp is Timestamp) {
+    if (timestamp is Timestamp) {
         val df = SimpleDateFormat("HH:mm", Locale.getDefault())
         textView.text = df.format(timestamp.toDate())
     }
@@ -136,7 +137,17 @@ fun bindingAudioTime(textView: TextView, audioFile: Long?) {
 
 @BindingAdapter("fakeAudioProgress")
 fun bindingFakeAudioProgress(view: View, audioFile: String?) {
-    view.visibility = if(audioFile == ChatFragment.LOADING) View.VISIBLE else View.GONE
+    view.visibility = if (audioFile == ChatFragment.LOADING) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("onlineTint")
+fun bindingOnlineTint(view: ImageView, isOnline: Boolean?) {
+    isOnline?.let {
+        view.setColorFilter(
+            if (isOnline) ContextCompat.getColor(view.context, R.color.onlineOn)
+            else ContextCompat.getColor(view.context, R.color.onlineOff)
+        )
+    }
 }
 
 /**
