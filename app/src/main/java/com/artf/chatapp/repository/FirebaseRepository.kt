@@ -94,7 +94,7 @@ class FirebaseRepository {
     }
 
     private fun onSignedOut() {
-        mUser?.userId?.let { updateUser(it, true)}
+        mUser?.userId?.let { updateUser(it, false) }
         detachDatabaseListeners()
         onSignOut?.invoke()
         this.mUser = null

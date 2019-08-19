@@ -67,6 +67,7 @@ dependencies {
     implementation "com.google.firebase:firebase-config:$versions.firebase_config"
     implementation "com.google.firebase:firebase-database:$versions.firebase_database"
     implementation "com.google.firebase:firebase-firestore:$versions.firebase_firestore"
+    implementation 'com.google.firebase:firebase-core:17.1.0'
     implementation "com.google.firebase:firebase-messaging:$versions.firebase_messaging"
     implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
     implementation "com.firebaseui:firebase-ui-auth:$versions.firebase_ui_auth"
