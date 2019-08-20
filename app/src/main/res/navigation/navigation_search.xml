@@ -7,7 +7,7 @@
     <fragment
             android:id="@+id/fragment_search"
             android:name="com.artf.chatapp.SearchFragment"
-            android:label="GridViewFragment">
+            android:label="SearchFragment">
         <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_search"/>
     </fragment>
 </navigation>

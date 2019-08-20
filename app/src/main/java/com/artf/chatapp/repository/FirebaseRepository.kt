@@ -184,7 +184,7 @@ class FirebaseRepository {
                     msgList?.let {
                         for (msg in msgList) {
                             msg.setMessageId()
-                            msg!!.isOwner = msg.authorId!! == mUser?.userId.toString()
+                            msg!!.isOwner = msg.senderId!! == mUser?.userId.toString()
                             getAudio(msg)
                         }
                     }
@@ -221,7 +221,8 @@ class FirebaseRepository {
         callBack: ((usernameStatus: NetworkState) -> Unit)? = null
     ) {
         val friendlyMessage = Message(
-            authorId = mUser?.userId,
+            senderId = mUser?.userId,
+            receiverId = receiverId,
             name = mUser?.username,
             photoUrl = photoUrl,
             audioUrl = audioUrl,
@@ -386,6 +387,7 @@ class FirebaseRepository {
     fun setChatRoomId(receiverId: String) {
         val userId = mUser?.userId!!
         this.receiverId = receiverId
+        App.receiverId = receiverId
         chatRoomId = if (receiverId > userId) "${receiverId}_$userId" else "${userId}_$receiverId"
         detachChatRoomListener()
         attachChatRoomListener()
@@ -394,7 +396,7 @@ class FirebaseRepository {
     }
 
     fun stopListening() {
-        mUser?.userId?.let { updateUser(it, true)}
+        mUser?.userId?.let { updateUser(it, false)}
         viewModelJob.cancel()
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()

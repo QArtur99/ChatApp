@@ -14,8 +14,10 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.artf.chatapp.databinding.ActivityMainBinding
+import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
+import com.artf.chatapp.utils.convertFromString
 import com.artf.chatapp.utils.extension.getVm
 import com.firebase.ui.auth.AuthUI
 
@@ -33,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
         firebaseVm.startSignInActivity.observe(this, Observer {
             it?.let {
                 startSignInActivity()
@@ -41,12 +42,30 @@ class MainActivity : AppCompatActivity() {
                 firebaseVm.setStartSignInActivity(null)
             }
         })
-
         setFragmentStateListener()
+        checkNotificationIntent()
+    }
+
+    private fun checkNotificationIntent() {
+        if (intent == null) return
+        if (intent.hasExtra("userString")) {
+            val user: User = convertFromString(intent.getStringExtra("userString")!!)
+            firebaseVm.setReceiver(user)
+            firebaseVm.setFragmentState(FragmentState.CHAT)
+        }
     }
 
     private fun setFragmentStateListener() {
         Navigation.setViewNavController(binding.root, findNavController(R.id.nav_host_fragment))
+
+        binding.root.findNavController().addOnDestinationChangedListener { controller, destination, arguments ->
+            when (destination.label) {
+                "ChatFragment" -> {
+                }
+                else -> App.receiverId = ""
+            }
+        }
+
         firebaseVm.fragmentState.observe(this, Observer {
             it?.let {
                 when (it) {

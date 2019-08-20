@@ -7,28 +7,28 @@
     <fragment
             android:id="@+id/fragment_start"
             android:name="com.artf.chatapp.StartFragment"
-            android:label="GridViewFragment">
+            android:label="StartFragment">
         <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_start"/>
     </fragment>
 
     <fragment
             android:id="@+id/fragment_username"
             android:name="com.artf.chatapp.UsernameFragment"
-            android:label="GridViewFragment">
+            android:label="UsernameFragment">
         <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_username"/>
     </fragment>
 
     <fragment
             android:id="@+id/fragment_chat"
             android:name="com.artf.chatapp.ChatFragment"
-            android:label="GridViewFragment">
+            android:label="ChatFragment">
         <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_chat"/>
     </fragment>
 
     <fragment
             android:id="@+id/fragment_search"
             android:name="com.artf.chatapp.SearchFragment"
-            android:label="GridViewFragment">
+            android:label="SearchFragment">
         <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_search"/>
     </fragment>
 

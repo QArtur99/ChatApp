@@ -9,7 +9,8 @@ import com.google.firebase.Timestamp
 
 data class Message(
     var id: String? = null,
-    var authorId: String? = null,
+    var senderId: String? = null,
+    var receiverId: String? = null,
     var isOwner: Boolean? = null,
     var name: String? = null,
     var photoUrl: String? = null,
@@ -23,7 +24,7 @@ data class Message(
     fun setMessageId() {
         val timestamp = this.timestamp
         if (timestamp is Timestamp) {
-            id = authorId + "_" + timestamp.toDate().time
+            id = senderId + "_" + timestamp.toDate().time
         }
     }
 }
