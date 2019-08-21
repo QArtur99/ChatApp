@@ -111,12 +111,12 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.2.0'
 
     // Assertions
+    testImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
 //    androidTestImplementation 'androidx.test.ext:truth:1.2.0'
 //    androidTestImplementation 'com.google.truth:truth:0.44'
 
     //Test
-    testImplementation "junit:junit:$versions.junit"
     androidTestImplementation "androidx.test:runner:$versions.atsl_runner"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
     androidTestImplementation "androidx.work:work-testing:$versions.work"
