@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
@@ -65,7 +66,11 @@ class ChatFragment : Fragment() {
     private lateinit var adapter: MsgAdapter
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = FragmentChatBinding.inflate(LayoutInflater.from(context))
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
@@ -95,37 +100,9 @@ class ChatFragment : Fragment() {
         }
 
         binding.sendButton.setOnTouchListener { view, motionEvent ->
-            val permissionCheck = checkSelfPermission(activity!!, permissions[0])
-            permissionToRecord = permissionCheck == PackageManager.PERMISSION_GRANTED
-            if (permissionToRecord.not()) {
-                requestPermissions(permissions, RC_RECORD_AUDIO)
-                return@setOnTouchListener true
-            }
-            if (view.isActivated.not() && permissionToRecord) {
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        startRecording()
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        stopRecording()
-                        if (recorderDuration!! > 1000){
-                            fakeMsgAudio.apply {
-                                audioFile = recordFileName
-                                audioDuration = recorderDuration!!
-                            }
-                            firebaseVm.pushAudio(recordFileName, recorderDuration!!)
-                        }
-                    }
-                }
-            } else if (view.isActivated) {
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_UP -> {
-                        if (view.isActivated) {
-                            firebaseVm.pushMsg(binding.messageEditText.text.toString())
-                        }
-                        binding.messageEditText.setText("")
-                    }
-                }
+            when (view.isActivated) {
+                true -> onSendButtonClick(motionEvent, view)
+                false -> if (onMicButtonClick(motionEvent)) return@setOnTouchListener true
             }
 
             when (motionEvent.action) {
@@ -137,6 +114,46 @@ class ChatFragment : Fragment() {
 
         binding.sendButton.isActivated = false
         return binding.root
+    }
+
+    private fun onSendButtonClick(motionEvent: MotionEvent, view: View) {
+        when (motionEvent.action) {
+            MotionEvent.ACTION_UP -> {
+                if (view.isActivated) {
+                    firebaseVm.pushMsg(binding.messageEditText.text.toString())
+                }
+                binding.messageEditText.setText("")
+            }
+        }
+    }
+
+    private fun onMicButtonClick(motionEvent: MotionEvent): Boolean {
+        val permissionCheck = checkSelfPermission(activity!!, permissions[0])
+        permissionToRecord = permissionCheck == PackageManager.PERMISSION_GRANTED
+        if (permissionToRecord.not()) {
+            requestPermissions(permissions, RC_RECORD_AUDIO)
+            return true
+        }
+
+        if (permissionToRecord) {
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    startRecording()
+                }
+                MotionEvent.ACTION_UP -> {
+                    stopRecording()
+                    val recorderDuration = recorderDuration ?: 0
+                    if (recorderDuration > 1000) {
+                        fakeMsgAudio.apply {
+                            audioFile = recordFileName
+                            audioDuration = recorderDuration
+                        }
+                        firebaseVm.pushAudio(recordFileName, recorderDuration)
+                    }
+                }
+            }
+        }
+        return false
     }
 
     private fun pushPhotoStateListener() {
@@ -151,21 +168,33 @@ class ChatFragment : Fragment() {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.add(fakeMsg)
-                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.submitList(newList) {
+                        binding.recyclerView.layoutManager?.scrollToPosition(
+                            adapter.itemCount - 1
+                        )
+                    }
                     adapter.notifyDataSetChanged()
                 }
                 NetworkState.LOADED -> {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.remove(fakeMsg)
-                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.submitList(newList) {
+                        binding.recyclerView.layoutManager?.scrollToPosition(
+                            adapter.itemCount - 1
+                        )
+                    }
                     adapter.notifyDataSetChanged()
                 }
                 NetworkState.FAILED -> {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.remove(fakeMsg)
-                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.submitList(newList) {
+                        binding.recyclerView.layoutManager?.scrollToPosition(
+                            adapter.itemCount - 1
+                        )
+                    }
                     adapter.notifyDataSetChanged()
                 }
                 else -> {
@@ -181,21 +210,33 @@ class ChatFragment : Fragment() {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.add(fakeMsgAudio)
-                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.submitList(newList) {
+                        binding.recyclerView.layoutManager?.scrollToPosition(
+                            adapter.itemCount - 1
+                        )
+                    }
                     adapter.notifyDataSetChanged()
                 }
                 NetworkState.LOADED -> {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.remove(fakeMsgAudio)
-                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.submitList(newList) {
+                        binding.recyclerView.layoutManager?.scrollToPosition(
+                            adapter.itemCount - 1
+                        )
+                    }
                     adapter.notifyDataSetChanged()
                 }
                 NetworkState.FAILED -> {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.remove(fakeMsgAudio)
-                    adapter.submitList(newList) { binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
+                    adapter.submitList(newList) {
+                        binding.recyclerView.layoutManager?.scrollToPosition(
+                            adapter.itemCount - 1
+                        )
+                    }
                     adapter.notifyDataSetChanged()
                 }
                 else -> {
@@ -204,7 +245,11 @@ class ChatFragment : Fragment() {
         })
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         permissionToRecord = if (requestCode == RC_RECORD_AUDIO && grantResults.isNotEmpty()) {
             grantResults[0] == PackageManager.PERMISSION_GRANTED
@@ -218,14 +263,16 @@ class ChatFragment : Fragment() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar, item: Message) {
-                val playButton = (seekBar.parent as ConstraintLayout).findViewById<View>(R.id.playButton)
+                val playButton =
+                    (seekBar.parent as ConstraintLayout).findViewById<View>(R.id.playButton)
                 if (playButton.isActivated) {
                     stopTimer()
                 }
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar, item: Message) {
-                val playButton = (seekBar.parent as ConstraintLayout).findViewById<View>(R.id.playButton)
+                val playButton =
+                    (seekBar.parent as ConstraintLayout).findViewById<View>(R.id.playButton)
                 if (playButton.isActivated) {
                     stopTimer()
                     stopPlaying()
@@ -238,8 +285,8 @@ class ChatFragment : Fragment() {
             }
 
             override fun onAudioClick(view: View, message: Message) {
-                if(message.audioUrl == LOADING) return
-                if(playButton != view){
+                if (message.audioUrl == LOADING) return
+                if (playButton != view) {
                     pauseTime = player?.currentPosition
                     stopPlaying()
                     playButton?.isActivated = false
@@ -248,7 +295,8 @@ class ChatFragment : Fragment() {
                 if (view.isActivated.not()) {
                     playButton = view
                     seekBar = (view.parent as ConstraintLayout).findViewById<SeekBar>(R.id.seekBar)
-                    audioTimeTextView = (view.parent as ConstraintLayout).findViewById<TextView>(R.id.audioTimeTextView)
+                    audioTimeTextView =
+                        (view.parent as ConstraintLayout).findViewById<TextView>(R.id.audioTimeTextView)
                     playFileName = App.fileName.format(message.audioFile)
                     stopPlaying()
                     startPlaying { getTime() }
@@ -303,7 +351,12 @@ class ChatFragment : Fragment() {
                     activity?.runOnUiThread {
                         if (player == null) return@runOnUiThread
                         seekBar?.progress = player!!.currentPosition * 100 / player!!.duration
-                        audioTimeTextView?.let { Utility.setAudioTimeMmSs(it, player!!.currentPosition.toLong()) }
+                        audioTimeTextView?.let {
+                            Utility.setAudioTimeMmSs(
+                                it,
+                                player!!.currentPosition.toLong()
+                            )
+                        }
                     }
                 } else {
                     timer?.cancel()
@@ -331,7 +384,6 @@ class ChatFragment : Fragment() {
 
     private fun startRecording() {
         recorder = MediaRecorder().apply {
-            reset()
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             setOutputFile(recordFileName)
@@ -344,6 +396,11 @@ class ChatFragment : Fragment() {
                 Log.e(TAG, "prepare() failed")
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "prepare() failed")
+                Toast.makeText(
+                    context!!,
+                    resources.getString(R.string.record_failed),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
