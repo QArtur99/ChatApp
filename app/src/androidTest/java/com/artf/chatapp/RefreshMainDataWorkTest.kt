@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker.Result
 import androidx.work.testing.TestListenableWorkerBuilder
-import com.artf.chatapp.work.RefreshDataWorker
+import com.artf.chatapp.work.NotificationWorker
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -23,7 +23,7 @@ class RefreshMainDataWorkTest {
     @Test
     fun testRefreshMainDataWork() {
         // Get the ListenableWorker
-        val worker = TestListenableWorkerBuilder<RefreshDataWorker>(context).build()
+        val worker = TestListenableWorkerBuilder<NotificationWorker>(context).build()
         // Start the work synchronously
         val result = worker.startWork().get()
         assertThat(result, `is`(Result.success()))

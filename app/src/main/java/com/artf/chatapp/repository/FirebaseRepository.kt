@@ -136,7 +136,8 @@ class FirebaseRepository {
 
     private fun loadChatRooms(chatRoomList: List<Chat>): List<Chat> {
         for (chat in chatRoomList) {
-            val receiverId = (if (chat.receiverId != mUser?.userId) chat.receiverId else chat.senderId)
+            val receiverId =
+                (if (chat.receiverId != mUser?.userId) chat.receiverId else chat.senderId)
             receiverId?.let { chat.userLr = getReceiver(chat, receiverId) }
             chat.chatId?.let { chat.msgLr = setSingleMsgListener(chat) }
         }
@@ -176,19 +177,28 @@ class FirebaseRepository {
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 //.limit(1)
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                    querySnapshot ?: return@addSnapshotListener
                     firebaseFirestoreException?.let { return@addSnapshotListener }
                     //querySnapshot?.let { if (it.metadata.isFromCache) return@addSnapshotListener }
 
-                    val msgList = querySnapshot?.toObjects(Message::class.java)
+                    val msgList = mutableListOf<Message>()
 
-                    msgList?.let {
-                        for (msg in msgList) {
-                            msg.setMessageId()
-                            msg!!.isOwner = msg.senderId!! == mUser?.userId.toString()
-                            getAudio(msg)
+                    for (documentSnapshot in querySnapshot.documents) {
+                        val msg = documentSnapshot.toObject(Message::class.java) ?: continue
+                        msg.setMessageId()
+                        msg.isOwner = msg.senderId!! == mUser?.userId.toString()
+                        getAudio(msg)
+                        msgList.add(msg)
+                        if (documentSnapshot.metadata.isFromCache) continue
+                        if (documentSnapshot.metadata.hasPendingWrites()) continue
+                        if (msg.readTimestamp != null) continue
+                        if (msg.isOwner!!.not()) {
+                            val map = mutableMapOf<String, Any>()
+                            map["readTimestamp"] = FieldValue.serverTimestamp()
+                            documentSnapshot.reference.update(map)
                         }
                     }
-                    msgList?.let { onMsgList?.invoke(msgList) }
+                    msgList.let { onMsgList?.invoke(msgList) }
                 }
         }
     }
@@ -242,7 +252,11 @@ class FirebaseRepository {
             }
     }
 
-    fun pushAudio(audioPath: String, audioDuration: Long, callBack: (usernameStatus: NetworkState) -> Unit) {
+    fun pushAudio(
+        audioPath: String,
+        audioDuration: Long,
+        callBack: (usernameStatus: NetworkState) -> Unit
+    ) {
         callBack(NetworkState.LOADING)
         val audioFileName = "${mUser?.userId!!}_${Utility.getTimeStamp()}"
         val selectedImageUri = Uri.fromFile(File(audioPath))
@@ -311,7 +325,7 @@ class FirebaseRepository {
             }
     }
 
-    private fun updateUser(userId: String, isOnline: Boolean){
+    private fun updateUser(userId: String, isOnline: Boolean) {
         val map = mutableMapOf<String, Any>()
         map["isOnline"] = isOnline
         map["lastSeenTimestamp"] = FieldValue.serverTimestamp()
@@ -321,7 +335,8 @@ class FirebaseRepository {
 
     private fun addSenderChatRoom() {
         val chatSender = Chat(chatRoomId, mUser?.userId, receiverId)
-        dbRefUsers.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId).set(chatSender)
+        dbRefUsers.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId)
+            .set(chatSender)
             .addOnSuccessListener {
                 isNewSenderChatRoom = false
             }
@@ -332,7 +347,8 @@ class FirebaseRepository {
 
     private fun addReceiverChatRoom() {
         val chatReceiver = Chat(chatRoomId, receiverId, mUser?.userId)
-        dbRefUsers.document(receiverId!!).collection("chatRooms").document(chatRoomId).set(chatReceiver)
+        dbRefUsers.document(receiverId!!).collection("chatRooms").document(chatRoomId)
+            .set(chatReceiver)
             .addOnSuccessListener {
                 isNewReceiverChatRoom = false
             }
@@ -365,7 +381,8 @@ class FirebaseRepository {
     ) {
         try {
             callBack(NetworkState.LOADING, mutableListOf())
-            val querySnapshot = dbRefUsers.whereArrayContains("usernameList", username).get().await()
+            val querySnapshot =
+                dbRefUsers.whereArrayContains("usernameList", username).get().await()
             val list = querySnapshot.toObjects(User::class.java)
             val networkState = if (list.isNotEmpty()) NetworkState.LOADED else NetworkState.FAILED
             callBack(networkState, list)
@@ -374,7 +391,10 @@ class FirebaseRepository {
         }
     }
 
-    suspend fun isUsernameAvailable(username: String, callBack: (networkState: NetworkState) -> Unit) {
+    suspend fun isUsernameAvailable(
+        username: String,
+        callBack: (networkState: NetworkState) -> Unit
+    ) {
         try {
             callBack(NetworkState.LOADING)
             val document = dbRefUsernames.document(username.toLowerCase()).get().await()
@@ -396,7 +416,7 @@ class FirebaseRepository {
     }
 
     fun stopListening() {
-        mUser?.userId?.let { updateUser(it, false)}
+        mUser?.userId?.let { updateUser(it, false) }
         viewModelJob.cancel()
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()

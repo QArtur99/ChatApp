@@ -19,7 +19,8 @@ data class Message(
     var audioDuration: Long? = null,
     var audioDownloaded: Boolean? = null,
     var text: String? = null,
-    var timestamp: Any? = null
+    var timestamp: Any? = null,
+    var readTimestamp: Any? = null
 ) {
     fun setMessageId() {
         val timestamp = this.timestamp

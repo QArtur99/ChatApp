@@ -8,7 +8,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.*
 import com.artf.chatapp.repository.FirebaseRepository
-import com.artf.chatapp.work.RefreshDataWorker
+import com.artf.chatapp.work.NotificationWorker
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +60,7 @@ class App : Application(), LifecycleObserver {
             .build()
 
         val repeatingRequest
-                = PeriodicWorkRequestBuilder<RefreshDataWorker>(900, TimeUnit.SECONDS,300, TimeUnit.SECONDS)
+                = PeriodicWorkRequestBuilder<NotificationWorker>(900, TimeUnit.SECONDS,300, TimeUnit.SECONDS)
             .setConstraints(constraints)
             .build()
 
@@ -69,7 +69,7 @@ class App : Application(), LifecycleObserver {
         repeatingRequest.workSpec.initialDelay = 1000
 
         WorkManager.getInstance(app).enqueueUniquePeriodicWork(
-            RefreshDataWorker.WORK_NAME,
+            NotificationWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             repeatingRequest)
     }

@@ -22,11 +22,11 @@ class MsgAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.item_message_left -> MsgViewHolder(
-                ItemMessageLeftBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_left_text -> MsgViewHolder(
+                ItemMessageLeftTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-            R.layout.item_message_right -> MsgViewHolder(
-                ItemMessageRightBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_right_text -> MsgViewHolder(
+                ItemMessageRightTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
             R.layout.item_message_left_img -> MsgViewHolder(
                 ItemMessageLeftImgBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -50,13 +50,13 @@ class MsgAdapter(
             when {
                 item.audioUrl != null -> R.layout.item_message_right_record
                 item.photoUrl != null -> R.layout.item_message_right_img
-                else -> R.layout.item_message_right
+                else -> R.layout.item_message_right_text
             }
         } else {
             when {
                 item.audioUrl != null -> R.layout.item_message_left_record
                 item.photoUrl != null -> R.layout.item_message_left_img
-                else -> R.layout.item_message_left
+                else -> R.layout.item_message_left_text
             }
         }
     }

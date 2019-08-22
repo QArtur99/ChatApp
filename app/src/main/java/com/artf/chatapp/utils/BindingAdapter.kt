@@ -150,6 +150,14 @@ fun bindingOnlineTint(view: ImageView, isOnline: Boolean?) {
     }
 }
 
+@BindingAdapter("readIconTint")
+fun bindingReadIconTint(view: ImageView, timestamp: Any?) {
+    view.setColorFilter(
+        if (timestamp != null) ContextCompat.getColor(view.context, R.color.readOn)
+        else ContextCompat.getColor(view.context, R.color.readOff)
+    )
+}
+
 /**
  * When @RecyclerView is in parent layout_height="wrap_content" it blinks on data change.
  * Setting layout_height programmatically prevent blinking onDataChange.
