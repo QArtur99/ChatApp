@@ -31,8 +31,8 @@ class SearchFragment : Fragment() {
 
         firebaseVm.userSearchStatus.observe(viewLifecycleOwner, Observer {
             binding.searchView.visibility = View.VISIBLE
-            when(it){
-                NetworkState.LOADING ->{
+            when (it) {
+                NetworkState.LOADING -> {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.recyclerView.visibility = View.GONE
                     binding.info.visibility = View.GONE

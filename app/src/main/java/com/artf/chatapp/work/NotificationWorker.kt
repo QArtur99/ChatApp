@@ -76,5 +76,4 @@ class NotificationWorker(appContext: Context, params: WorkerParameters) : Corout
         message.text?.let { text = it }
         return text
     }
-
 }

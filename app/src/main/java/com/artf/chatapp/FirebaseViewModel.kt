@@ -10,7 +10,12 @@ import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
-import com.artf.chatapp.utils.extension.*
+import com.artf.chatapp.utils.extension.add
+import com.artf.chatapp.utils.extension.clear
+import com.artf.chatapp.utils.extension.clearChatRoomList
+import com.artf.chatapp.utils.extension.count
+import com.artf.chatapp.utils.extension.get
+import com.artf.chatapp.utils.extension.remove
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +90,6 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
 
     private fun setOnSignInListener() {
         firebaseRepository.onSignIn = {
-
         }
     }
 

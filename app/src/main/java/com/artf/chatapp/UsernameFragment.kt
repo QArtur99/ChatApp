@@ -12,7 +12,6 @@ import com.artf.chatapp.utils.Status
 import com.artf.chatapp.utils.extension.afterTextChangedLowerCase
 import com.artf.chatapp.utils.extension.getVm
 
-
 class UsernameFragment : Fragment() {
 
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }

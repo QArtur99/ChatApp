@@ -96,8 +96,6 @@ class MsgAdapter(
         fun onAudioClick(view: View, message: Message)
         fun onStartTrackingTouch(seekBar: SeekBar, item: Message)
         fun onStopTrackingTouch(seekBar: SeekBar, item: Message)
-        fun getVm() : FirebaseViewModel
-
+        fun getVm(): FirebaseViewModel
     }
-
 }

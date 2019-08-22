@@ -117,7 +117,6 @@ fun bindingLastMsg(textView: TextView, message: Message?) {
     message.audioUrl?.let { textView.text = "\uD83C\uDFA4 Record" }
     message.photoUrl?.let { textView.text = "\uD83D\uDCF7 Photo" }
     message.text?.let { textView.text = it }
-
 }
 
 @BindingAdapter("goneIfNull")

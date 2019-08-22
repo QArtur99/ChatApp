@@ -30,9 +30,7 @@ import com.artf.chatapp.utils.extension.getVm
 import java.io.IOException
 import java.util.*
 
-
 class ChatFragment : Fragment() {
-
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
@@ -59,7 +57,6 @@ class ChatFragment : Fragment() {
         audioFile = LOADING,
         isOwner = true
     )
-
 
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
     private lateinit var binding: FragmentChatBinding
@@ -365,7 +362,6 @@ class ChatFragment : Fragment() {
         }, 0, 20)
     }
 
-
     private fun stopPlaying() {
         stopTimer()
         try {
@@ -416,12 +412,9 @@ class ChatFragment : Fragment() {
         }
     }
 
-
     override fun onStop() {
         super.onStop()
         stopPlaying()
         stopRecording()
     }
-
-
 }

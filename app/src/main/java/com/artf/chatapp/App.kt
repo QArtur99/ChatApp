@@ -6,7 +6,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.work.NotificationWorker
 import com.google.firebase.database.FirebaseDatabase
@@ -14,10 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
-
-
-
-
 
 class App : Application(), LifecycleObserver {
 
@@ -59,8 +59,8 @@ class App : Application(), LifecycleObserver {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val repeatingRequest
-                = PeriodicWorkRequestBuilder<NotificationWorker>(900, TimeUnit.SECONDS,300, TimeUnit.SECONDS)
+        val repeatingRequest =
+                PeriodicWorkRequestBuilder<NotificationWorker>(900, TimeUnit.SECONDS, 300, TimeUnit.SECONDS)
             .setConstraints(constraints)
             .build()
 

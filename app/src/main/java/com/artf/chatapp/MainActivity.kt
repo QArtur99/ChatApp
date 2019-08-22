@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
     private fun setSearchViewListener(searchView: SearchView) {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                //callSearch(query)
+                // callSearch(query)
                 return true
             }
 
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
-                //firebaseVm.setFragmentState(FragmentState.START)
+                // firebaseVm.setFragmentState(FragmentState.START)
                 AuthUI.getInstance().signOut(this)
                 true
             }

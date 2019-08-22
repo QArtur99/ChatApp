@@ -26,7 +26,6 @@ fun makeStatusNotification(
 
     val bitmapDrawable = AppCompatResources.getDrawable(context, R.drawable.ic_account_circle_black_24dp)?.toBitmap()
 
-
     // Make a channel if necessary
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // Create the NotificationChannel, but only on API 26+ because

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.artf.chatapp.ViewModelFactory
 
-
 fun Fragment.getVmFactory(): ViewModelFactory {
     return ViewModelFactory()
 }

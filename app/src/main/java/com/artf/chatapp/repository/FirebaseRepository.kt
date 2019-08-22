@@ -1,6 +1,5 @@
 package com.artf.chatapp.repository
 
-
 import android.content.Intent
 import android.net.Uri
 import com.artf.chatapp.App
@@ -70,7 +69,6 @@ class FirebaseRepository {
     var onMsgList: ((msgList: List<Message>) -> Unit)? = null
     var onChildAdded: ((message: Message) -> Unit)? = null
     var onChildChanged: ((message: Message) -> Unit)? = null
-
 
     fun startListening() {
         authStateListener = getAuthStateListener()
@@ -169,17 +167,16 @@ class FirebaseRepository {
             }
     }
 
-
     private fun attachChatRoomListener() {
         if (chatRoomListner == null) {
-            //TODO editable messages
+            // TODO editable messages
             chatRoomListner = dbRefChatRooms.document(chatRoomId).collection("chatRoom")
                 .orderBy("timestamp", Query.Direction.ASCENDING)
-                //.limit(1)
+                // .limit(1)
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     querySnapshot ?: return@addSnapshotListener
                     firebaseFirestoreException?.let { return@addSnapshotListener }
-                    //querySnapshot?.let { if (it.metadata.isFromCache) return@addSnapshotListener }
+                    // querySnapshot?.let { if (it.metadata.isFromCache) return@addSnapshotListener }
 
                     val msgList = mutableListOf<Message>()
 
@@ -265,9 +262,7 @@ class FirebaseRepository {
                 val urlTask = taskSnapshot.storage.downloadUrl
                 urlTask.addOnSuccessListener { uri ->
                     pushMsg(
-                        audioUrl = uri.toString()
-                        , audioFile = audioFileName
-                        , audioDuration = audioDuration
+                        audioUrl = uri.toString(), audioFile = audioFileName, audioDuration = audioDuration
                     ) { callBack(it) }
                 }.addOnFailureListener {
                     callBack(NetworkState.FAILED)
@@ -332,7 +327,6 @@ class FirebaseRepository {
         dbRefUsers.document(userId).update(map)
     }
 
-
     private fun addSenderChatRoom() {
         val chatSender = Chat(chatRoomId, mUser?.userId, receiverId)
         dbRefUsers.document(mUser?.userId!!).collection("chatRooms").document(chatRoomId)
@@ -341,7 +335,6 @@ class FirebaseRepository {
                 isNewSenderChatRoom = false
             }
             .addOnFailureListener {
-
             }
     }
 
@@ -353,7 +346,6 @@ class FirebaseRepository {
                 isNewReceiverChatRoom = false
             }
             .addOnFailureListener {
-
             }
     }
 
@@ -363,7 +355,6 @@ class FirebaseRepository {
                 isNewSenderChatRoom = !documentSnapshot.exists()
             }
             .addOnFailureListener {
-
             }
 
         dbRefUsers.document(receiverId!!).collection("chatRooms").document(chatRoomId).get()
@@ -371,7 +362,6 @@ class FirebaseRepository {
                 isNewReceiverChatRoom = !documentSnapshot.exists()
             }
             .addOnFailureListener {
-
             }
     }
 
@@ -421,5 +411,4 @@ class FirebaseRepository {
         if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()
     }
-
 }

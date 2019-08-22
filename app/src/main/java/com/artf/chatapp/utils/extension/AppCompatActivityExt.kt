@@ -1,6 +1,5 @@
 package com.artf.chatapp.utils.extension
 
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders

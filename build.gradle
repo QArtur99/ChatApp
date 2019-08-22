@@ -63,8 +63,11 @@ buildscript {
         classpath "com.android.tools.build:gradle:$versions.android_gradle_plugin"
         classpath "com.google.gms:google-services:$versions.google_gms"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:$versions.diffplug"
     }
 }
+
+apply plugin: "com.diffplug.gradle.spotless"
 
 allprojects {
     repositories {
@@ -74,6 +77,13 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+task cleanBuild(type: Delete) {
     delete rootProject.buildDir
+}
+
+spotless {
+    kotlin {
+        target "**/*.kt"
+        ktlint(versions.ktlint)
+    }
 }
