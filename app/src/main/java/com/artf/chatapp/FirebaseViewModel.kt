@@ -1,6 +1,6 @@
 package com.artf.chatapp
 
-import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -155,8 +155,8 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         firebaseRepository.pushMsg(msg)
     }
 
-    fun pushPicture(data: Intent?) {
-        firebaseRepository.pushPicture(data) {
+    fun pushPicture(pictureUri: Uri) {
+        firebaseRepository.pushPicture(pictureUri) {
             _pushImgStatus.value = it
         }
     }

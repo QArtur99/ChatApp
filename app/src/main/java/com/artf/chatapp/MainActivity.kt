@@ -2,10 +2,12 @@ package com.artf.chatapp
 
 import android.app.Activity
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -20,6 +22,7 @@ import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.convertFromString
 import com.artf.chatapp.utils.extension.getVm
 import com.firebase.ui.auth.AuthUI
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -58,20 +61,30 @@ class MainActivity : AppCompatActivity() {
     private fun setFragmentStateListener() {
         Navigation.setViewNavController(binding.root, findNavController(R.id.nav_host_fragment))
 
-        binding.root.findNavController().addOnDestinationChangedListener { controller, destination, arguments ->
-            when (destination.label) {
-                "ChatFragment" -> {
+        binding.root.findNavController()
+            .addOnDestinationChangedListener { controller, destination, arguments ->
+                when (destination.label) {
+                    "ChatFragment" -> {
+                    }
+                    else -> App.receiverId = ""
                 }
-                else -> App.receiverId = ""
             }
-        }
 
         firebaseVm.fragmentState.observe(this, Observer {
             it?.let {
                 when (it) {
-                    FragmentState.USERNAME -> binding.root.findNavController().navigate(uriUsername, navOptions)
-                    FragmentState.START -> binding.root.findNavController().navigate(uriStart, navOptions)
-                    FragmentState.CHAT -> binding.root.findNavController().navigate(uriChat, navOptions)
+                    FragmentState.USERNAME -> binding.root.findNavController().navigate(
+                        uriUsername,
+                        navOptions
+                    )
+                    FragmentState.START -> binding.root.findNavController().navigate(
+                        uriStart,
+                        navOptions
+                    )
+                    FragmentState.CHAT -> binding.root.findNavController().navigate(
+                        uriChat,
+                        navOptions
+                    )
                 }
             }
         })
@@ -86,8 +99,16 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         } else if (requestCode == FirebaseRepository.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {
-            firebaseVm.pushPicture(data)
+            val picUri = if (data != null) data.data!! else galleryAddPic()
+            picUri?.let { firebaseVm.pushPicture(picUri) }
         }
+    }
+
+    private fun galleryAddPic(): Uri? {
+        val photoFile = File(App.currentPhotoPath)
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(photoFile.extension)
+        MediaScannerConnection.scanFile(this, arrayOf(photoFile.absolutePath), arrayOf(mimeType), null)
+        return Uri.fromFile(photoFile)
     }
 
     private fun startSignInActivity() {

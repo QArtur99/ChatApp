@@ -1,6 +1,5 @@
 package com.artf.chatapp.repository
 
-import android.content.Intent
 import android.net.Uri
 import com.artf.chatapp.App
 import com.artf.chatapp.model.Chat
@@ -11,7 +10,11 @@ import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.extension.saveTo
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
@@ -89,6 +92,7 @@ class FirebaseRepository {
         updateUser(userId, true)
         attachUserChatRoomsListener()
         onSignIn?.invoke()
+        receiverId?.let { setChatRoomId(it) }
     }
 
     private fun onSignedOut() {
@@ -96,6 +100,7 @@ class FirebaseRepository {
         detachDatabaseListeners()
         onSignOut?.invoke()
         this.mUser = null
+        this.receiverId = null
     }
 
     private fun fetchConfig() {
@@ -262,7 +267,9 @@ class FirebaseRepository {
                 val urlTask = taskSnapshot.storage.downloadUrl
                 urlTask.addOnSuccessListener { uri ->
                     pushMsg(
-                        audioUrl = uri.toString(), audioFile = audioFileName, audioDuration = audioDuration
+                        audioUrl = uri.toString(),
+                        audioFile = audioFileName,
+                        audioDuration = audioDuration
                     ) { callBack(it) }
                 }.addOnFailureListener {
                     callBack(NetworkState.FAILED)
@@ -270,10 +277,9 @@ class FirebaseRepository {
             }.addOnFailureListener { callBack(NetworkState.FAILED) }
     }
 
-    fun pushPicture(data: Intent?, callBack: (usernameStatus: NetworkState) -> Unit) {
+    fun pushPicture(pictureUri: Uri, callBack: (usernameStatus: NetworkState) -> Unit) {
         callBack(NetworkState.LOADING)
-        val selectedImageUri = data!!.data
-        sRefPhotos.child(selectedImageUri!!.lastPathSegment!!).putFile(selectedImageUri)
+        sRefPhotos.child(pictureUri.lastPathSegment!!).putFile(pictureUri)
             .addOnSuccessListener { taskSnapshot ->
                 val urlTask = taskSnapshot.storage.downloadUrl
                 urlTask.addOnSuccessListener { uri ->
@@ -395,8 +401,8 @@ class FirebaseRepository {
     }
 
     fun setChatRoomId(receiverId: String) {
-        val userId = mUser?.userId!!
         this.receiverId = receiverId
+        val userId = mUser?.userId ?: return
         App.receiverId = receiverId
         chatRoomId = if (receiverId > userId) "${receiverId}_$userId" else "${userId}_$receiverId"
         detachChatRoomListener()

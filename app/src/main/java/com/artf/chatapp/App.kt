@@ -2,6 +2,7 @@ package com.artf.chatapp
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -17,17 +18,30 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class App : Application(), LifecycleObserver {
 
     companion object {
+        const val AUTHORITY = "com.artf.chatapp.provider"
         lateinit var app: Application
         lateinit var fileName: String
         lateinit var workManager: WorkManager
         lateinit var repository: FirebaseRepository
+        var currentPhotoPath = ""
         var tempReceiverId = ""
         var receiverId = ""
+
+        /** Use external media if it is available, our app's file directory otherwise */
+        fun getOutputDirectory(context: Context, folderName: String): File {
+            val appContext = context.applicationContext
+            val rootPath = appContext.resources.getString(R.string.app_name) + "/" + folderName
+            val mediaDir = appContext.externalMediaDirs.firstOrNull()?.let {
+                File(it, rootPath).apply { mkdirs() }
+            }
+            return if (mediaDir != null && mediaDir.exists()) mediaDir else appContext.filesDir
+        }
     }
 
     override fun onCreate() {
@@ -60,9 +74,14 @@ class App : Application(), LifecycleObserver {
             .build()
 
         val repeatingRequest =
-                PeriodicWorkRequestBuilder<NotificationWorker>(900, TimeUnit.SECONDS, 300, TimeUnit.SECONDS)
-            .setConstraints(constraints)
-            .build()
+            PeriodicWorkRequestBuilder<NotificationWorker>(
+                900,
+                TimeUnit.SECONDS,
+                300,
+                TimeUnit.SECONDS
+            )
+                .setConstraints(constraints)
+                .build()
 
         repeatingRequest.workSpec.intervalDuration = 15000
         repeatingRequest.workSpec.flexDuration = 5000
@@ -71,7 +90,8 @@ class App : Application(), LifecycleObserver {
         WorkManager.getInstance(app).enqueueUniquePeriodicWork(
             NotificationWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
-            repeatingRequest)
+            repeatingRequest
+        )
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)

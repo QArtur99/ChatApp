@@ -28,12 +28,15 @@ import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.extension.afterTextChanged
 import com.artf.chatapp.utils.extension.getVm
 import java.io.IOException
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 class ChatFragment : Fragment() {
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
+        private const val DATE_FORMAT_PIC = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private const val PHOTO_EXTENSION = ".jpg"
         const val RC_RECORD_AUDIO = 200
         const val LOADING = "loading"
     }
@@ -83,13 +86,18 @@ class ChatFragment : Fragment() {
         binding.progressBar.visibility = ProgressBar.INVISIBLE
 
         binding.photoPickerButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/jpeg"
-            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-            activity!!.startActivityForResult(
-                Intent.createChooser(intent, "Complete action using"),
-                FirebaseRepository.RC_PHOTO_PICKER
-            )
+            val intentGallery = Intent(Intent.ACTION_PICK)
+            intentGallery.type = "image/jpeg, image/png"
+            intentGallery.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+
+            val chooserIntent = Intent.createChooser(intentGallery, "Select picture")
+            val photoFile = Utility.createImageFile(context!!, DATE_FORMAT_PIC, PHOTO_EXTENSION)
+            photoFile?.let {
+                val cameraIntent = Utility.getCameraIntent(context!!, photoFile)
+                App.currentPhotoPath = photoFile.absolutePath
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+            }
+            activity!!.startActivityForResult(chooserIntent, FirebaseRepository.RC_PHOTO_PICKER)
         }
 
         binding.messageEditText.afterTextChanged { text ->
