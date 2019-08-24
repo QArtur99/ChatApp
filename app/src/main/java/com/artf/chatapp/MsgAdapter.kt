@@ -105,5 +105,6 @@ class MsgAdapter(
         fun onStartTrackingTouch(seekBar: SeekBar, item: Message)
         fun onStopTrackingTouch(seekBar: SeekBar, item: Message)
         fun getVm(): FirebaseViewModel
+        fun showPic(view: View, message: Message)
     }
 }

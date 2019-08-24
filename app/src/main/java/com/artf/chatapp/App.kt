@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 class App : Application(), LifecycleObserver {
 
     companion object {
-        const val AUTHORITY = BuildConfig.APPLICATION_ID + "provider"
+        const val AUTHORITY = BuildConfig.APPLICATION_ID + ".provider"
         const val DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         const val PHOTO_EXT = ".jpg"
         const val PHOTO_PREFIX = "JPG"

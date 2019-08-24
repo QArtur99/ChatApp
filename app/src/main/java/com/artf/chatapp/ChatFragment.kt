@@ -59,6 +59,11 @@ class ChatFragment : Fragment() {
         isOwner = true
     ).apply { setAudioDownloaded(false) }
 
+    private val fakeMsg = Message(
+        photoUrl = LOADING,
+        isOwner = true
+    )
+
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
     private lateinit var binding: FragmentChatBinding
     private lateinit var adapter: MsgAdapter
@@ -166,11 +171,6 @@ class ChatFragment : Fragment() {
     }
 
     private fun pushPhotoStateListener() {
-        val fakeMsg = Message(
-            photoUrl = LOADING,
-            isOwner = true
-        )
-
         firebaseVm.pushImgStatus.observe(viewLifecycleOwner, Observer {
             when (it) {
                 NetworkState.LOADING -> {
@@ -267,6 +267,11 @@ class ChatFragment : Fragment() {
 
     private fun getMsgAdapterInt(): MsgAdapter.MsgAdapterInt {
         return object : MsgAdapter.MsgAdapterInt {
+            override fun showPic(view: View, message: Message) {
+                val reviewDialog = PhotoDialog(message.photoUrl!!)
+                reviewDialog.show(requireFragmentManager(), PhotoDialog::class.simpleName)
+            }
+
             override fun getVm(): FirebaseViewModel {
                 return firebaseVm
             }
