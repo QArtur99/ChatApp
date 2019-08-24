@@ -35,12 +35,18 @@ class Utility {
         }
 
         @SuppressLint("SimpleDateFormat")
-        fun createImageFile(context: Context, dateFormat: String, photoExt: String): File? {
+        fun createMediaFile(
+            context: Context,
+            folderName: String,
+            dateFormat: String,
+            prefix: String,
+            extension: String
+        ): File? {
             var photoFile: File? = null
             try {
                 val timeStamp: String = SimpleDateFormat(dateFormat).format(Date())
-                val storageDir = App.getOutputDirectory(context, "Pics")
-                photoFile = File(storageDir, "JPG_$timeStamp" + photoExt)
+                val storageDir = App.getOutputDirectory(context, folderName)
+                photoFile = File(storageDir, "${prefix}_${timeStamp}$extension")
             } catch (e: IOException) {
                 e.printStackTrace()
             }

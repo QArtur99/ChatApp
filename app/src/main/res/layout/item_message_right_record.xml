@@ -135,7 +135,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            app:fakeAudioProgress="@{message.audioUrl}"
+                            app:fakeAudioProgress="@{message.audioDownloaded}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"

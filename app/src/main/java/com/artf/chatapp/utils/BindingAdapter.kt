@@ -7,7 +7,10 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.*
+import com.artf.chatapp.ChatListAdapter
+import com.artf.chatapp.MsgAdapter
+import com.artf.chatapp.R
+import com.artf.chatapp.SearchAdapter
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
@@ -16,7 +19,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 @BindingAdapter("msgList")
 fun bindMsgRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
@@ -135,8 +138,8 @@ fun bindingAudioTime(textView: TextView, audioFile: Long?) {
 }
 
 @BindingAdapter("fakeAudioProgress")
-fun bindingFakeAudioProgress(view: View, audioFile: String?) {
-    view.visibility = if (audioFile == ChatFragment.LOADING) View.VISIBLE else View.GONE
+fun bindingFakeAudioProgress(view: View, audioDownloaded: Boolean?) {
+    view.visibility = if (audioDownloaded != true) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("onlineTint")

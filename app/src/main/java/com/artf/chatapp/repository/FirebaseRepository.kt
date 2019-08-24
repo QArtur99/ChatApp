@@ -7,7 +7,6 @@ import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
-import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.extension.saveTo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -23,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class FirebaseRepository {
@@ -206,10 +206,10 @@ class FirebaseRepository {
     }
 
     private fun getAudio(msg: Message) {
-        nonUiScope.launch {
-            msg.audioDownloaded = false
-            msg.audioUrl?.saveTo(App.fileName.format(msg.audioFile))
-            msg.audioDownloaded = true
+        uiScope.launch {
+            msg.setAudioDownloaded(false)
+            withContext(nonUiContext) { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }
+            msg.setAudioDownloaded(true)
         }
     }
 
@@ -260,15 +260,14 @@ class FirebaseRepository {
         callBack: (usernameStatus: NetworkState) -> Unit
     ) {
         callBack(NetworkState.LOADING)
-        val audioFileName = "${mUser?.userId!!}_${Utility.getTimeStamp()}"
         val selectedImageUri = Uri.fromFile(File(audioPath))
-        sRefRecords.child(audioFileName).putFile(selectedImageUri)
+        sRefRecords.child(selectedImageUri.lastPathSegment!!).putFile(selectedImageUri)
             .addOnSuccessListener { taskSnapshot ->
                 val urlTask = taskSnapshot.storage.downloadUrl
                 urlTask.addOnSuccessListener { uri ->
                     pushMsg(
                         audioUrl = uri.toString(),
-                        audioFile = audioFileName,
+                        audioFile = audioPath,
                         audioDuration = audioDuration
                     ) { callBack(it) }
                 }.addOnFailureListener {

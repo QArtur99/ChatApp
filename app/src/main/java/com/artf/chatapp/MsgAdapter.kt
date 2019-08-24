@@ -5,19 +5,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.databinding.*
+import com.artf.chatapp.databinding.ItemMessageLeftImgBinding
+import com.artf.chatapp.databinding.ItemMessageLeftRecordBinding
+import com.artf.chatapp.databinding.ItemMessageLeftTextBinding
+import com.artf.chatapp.databinding.ItemMessageRightImgBinding
+import com.artf.chatapp.databinding.ItemMessageRightRecordBinding
+import com.artf.chatapp.databinding.ItemMessageRightTextBinding
 import com.artf.chatapp.model.Message
 
 class MsgAdapter(
+    private val viewLifecycleOwner: LifecycleOwner,
     private val msgAdapterInt: MsgAdapterInt
 ) : ListAdapter<Message, RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = getItem(position)
-        (holder as MsgViewHolder<*>).bind(msgAdapterInt, msg)
+        (holder as MsgViewHolder<*>).bind(viewLifecycleOwner, msgAdapterInt, msg)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -63,7 +70,8 @@ class MsgAdapter(
 
     class MsgViewHolder<T : ViewDataBinding> constructor(val binding: T) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(msgAdapterInt: MsgAdapterInt, item: Message) {
+        fun bind(viewLifecycleOwner: LifecycleOwner, msgAdapterInt: MsgAdapterInt, item: Message) {
+            binding.lifecycleOwner = viewLifecycleOwner
             binding.setVariable(BR.message, item)
             binding.setVariable(BR.msgAdapterInt, msgAdapterInt)
             binding.executePendingBindings()

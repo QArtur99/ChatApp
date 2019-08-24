@@ -35,13 +35,11 @@ class ChatFragment : Fragment() {
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
-        private const val DATE_FORMAT_PIC = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val PHOTO_EXTENSION = ".jpg"
         const val RC_RECORD_AUDIO = 200
         const val LOADING = "loading"
     }
 
-    private val recordFileName: String by lazy { "${activity!!.externalCacheDir?.absolutePath}/audiorecordtest.3gp" }
+    private var recordFileName: String? = null
     private var playFileName: String? = null
     private var permissionToRecord = false
     private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
@@ -59,7 +57,7 @@ class ChatFragment : Fragment() {
         audioUrl = LOADING,
         audioFile = LOADING,
         isOwner = true
-    )
+    ).apply { setAudioDownloaded(false) }
 
     private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
     private lateinit var binding: FragmentChatBinding
@@ -75,7 +73,7 @@ class ChatFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
-        adapter = MsgAdapter(getMsgAdapterInt())
+        adapter = MsgAdapter(viewLifecycleOwner, getMsgAdapterInt())
         binding.recyclerView.layoutAnimation = null
         binding.recyclerView.itemAnimator = null
         binding.recyclerView.adapter = adapter
@@ -91,8 +89,13 @@ class ChatFragment : Fragment() {
             intentGallery.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
 
             val chooserIntent = Intent.createChooser(intentGallery, "Select picture")
-            val photoFile = Utility.createImageFile(context!!, DATE_FORMAT_PIC, PHOTO_EXTENSION)
-            photoFile?.let {
+            Utility.createMediaFile(
+                context!!,
+                App.PHOTOS_FOLDER_NAME,
+                App.DATE_FORMAT,
+                App.PHOTO_PREFIX,
+                App.PHOTO_EXT
+            )?.let { photoFile ->
                 val cameraIntent = Utility.getCameraIntent(context!!, photoFile)
                 App.currentPhotoPath = photoFile.absolutePath
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
@@ -147,6 +150,7 @@ class ChatFragment : Fragment() {
                 }
                 MotionEvent.ACTION_UP -> {
                     stopRecording()
+                    val recordFileName = recordFileName ?: return false
                     val recorderDuration = recorderDuration ?: 0
                     if (recorderDuration > 1000) {
                         fakeMsgAudio.apply {
@@ -180,28 +184,28 @@ class ChatFragment : Fragment() {
                     }
                     adapter.notifyDataSetChanged()
                 }
-                NetworkState.LOADED -> {
-                    val newList = mutableListOf<Message>()
-                    newList.addAll(adapter.currentList)
-                    newList.remove(fakeMsg)
-                    adapter.submitList(newList) {
-                        binding.recyclerView.layoutManager?.scrollToPosition(
-                            adapter.itemCount - 1
-                        )
-                    }
-                    adapter.notifyDataSetChanged()
-                }
-                NetworkState.FAILED -> {
-                    val newList = mutableListOf<Message>()
-                    newList.addAll(adapter.currentList)
-                    newList.remove(fakeMsg)
-                    adapter.submitList(newList) {
-                        binding.recyclerView.layoutManager?.scrollToPosition(
-                            adapter.itemCount - 1
-                        )
-                    }
-                    adapter.notifyDataSetChanged()
-                }
+                // NetworkState.LOADED -> {
+                //     val newList = mutableListOf<Message>()
+                //     newList.addAll(adapter.currentList)
+                //     newList.remove(fakeMsg)
+                //     adapter.submitList(newList) {
+                //         binding.recyclerView.layoutManager?.scrollToPosition(
+                //             adapter.itemCount - 1
+                //         )
+                //     }
+                //     adapter.notifyDataSetChanged()
+                // }
+                // NetworkState.FAILED -> {
+                //     val newList = mutableListOf<Message>()
+                //     newList.addAll(adapter.currentList)
+                //     newList.remove(fakeMsg)
+                //     adapter.submitList(newList) {
+                //         binding.recyclerView.layoutManager?.scrollToPosition(
+                //             adapter.itemCount - 1
+                //         )
+                //     }
+                //     adapter.notifyDataSetChanged()
+                // }
                 else -> {
                 }
             }
@@ -222,28 +226,28 @@ class ChatFragment : Fragment() {
                     }
                     adapter.notifyDataSetChanged()
                 }
-                NetworkState.LOADED -> {
-                    val newList = mutableListOf<Message>()
-                    newList.addAll(adapter.currentList)
-                    newList.remove(fakeMsgAudio)
-                    adapter.submitList(newList) {
-                        binding.recyclerView.layoutManager?.scrollToPosition(
-                            adapter.itemCount - 1
-                        )
-                    }
-                    adapter.notifyDataSetChanged()
-                }
-                NetworkState.FAILED -> {
-                    val newList = mutableListOf<Message>()
-                    newList.addAll(adapter.currentList)
-                    newList.remove(fakeMsgAudio)
-                    adapter.submitList(newList) {
-                        binding.recyclerView.layoutManager?.scrollToPosition(
-                            adapter.itemCount - 1
-                        )
-                    }
-                    adapter.notifyDataSetChanged()
-                }
+                // NetworkState.LOADED -> {
+                //     val newList = mutableListOf<Message>()
+                //     newList.addAll(adapter.currentList)
+                //     newList.remove(fakeMsgAudio)
+                //     adapter.submitList(newList) {
+                //         binding.recyclerView.layoutManager?.scrollToPosition(
+                //             adapter.itemCount - 1
+                //         )
+                //     }
+                //     adapter.notifyDataSetChanged()
+                // }
+                // NetworkState.FAILED -> {
+                //     val newList = mutableListOf<Message>()
+                //     newList.addAll(adapter.currentList)
+                //     newList.remove(fakeMsgAudio)
+                //     adapter.submitList(newList) {
+                //         binding.recyclerView.layoutManager?.scrollToPosition(
+                //             adapter.itemCount - 1
+                //         )
+                //     }
+                //     adapter.notifyDataSetChanged()
+                // }
                 else -> {
                 }
             }
@@ -290,7 +294,7 @@ class ChatFragment : Fragment() {
             }
 
             override fun onAudioClick(view: View, message: Message) {
-                if (message.audioUrl == LOADING) return
+                if (message.audioDownloaded.value != true) return
                 if (playButton != view) {
                     pauseTime = player?.currentPosition
                     stopPlaying()
@@ -299,10 +303,10 @@ class ChatFragment : Fragment() {
 
                 if (view.isActivated.not()) {
                     playButton = view
-                    seekBar = (view.parent as ConstraintLayout).findViewById<SeekBar>(R.id.seekBar)
+                    seekBar = (view.parent as ConstraintLayout).findViewById(R.id.seekBar)
                     audioTimeTextView =
-                        (view.parent as ConstraintLayout).findViewById<TextView>(R.id.audioTimeTextView)
-                    playFileName = App.fileName.format(message.audioFile)
+                        (view.parent as ConstraintLayout).findViewById(R.id.audioTimeTextView)
+                    playFileName = message.audioFile
                     stopPlaying()
                     startPlaying { getTime() }
                     view.isActivated = true
@@ -387,6 +391,14 @@ class ChatFragment : Fragment() {
     }
 
     private fun startRecording() {
+        recordFileName = Utility.createMediaFile(
+            context!!,
+            App.RECORDS_FOLDER_NAME,
+            App.DATE_FORMAT,
+            App.RECORD_PREFIX,
+            App.RECORD_EXT
+        )?.absolutePath
+
         recorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)

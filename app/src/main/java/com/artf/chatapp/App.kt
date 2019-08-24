@@ -24,7 +24,14 @@ import java.util.concurrent.TimeUnit
 class App : Application(), LifecycleObserver {
 
     companion object {
-        const val AUTHORITY = "com.artf.chatapp.provider"
+        const val AUTHORITY = BuildConfig.APPLICATION_ID + "provider"
+        const val DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        const val PHOTO_EXT = ".jpg"
+        const val PHOTO_PREFIX = "JPG"
+        const val PHOTOS_FOLDER_NAME = "Pics"
+        const val RECORD_EXT = ".3gp"
+        const val RECORD_PREFIX = "AUDIO"
+        const val RECORDS_FOLDER_NAME = "Records"
         lateinit var app: Application
         lateinit var fileName: String
         lateinit var workManager: WorkManager
@@ -47,7 +54,7 @@ class App : Application(), LifecycleObserver {
     override fun onCreate() {
         super.onCreate()
         app = this
-        fileName = "${this.externalCacheDir?.absolutePath}/%1s.3gp"
+        fileName = "${this.externalCacheDir?.absolutePath}/%1s$RECORD_EXT"
 
         workManager = WorkManager.getInstance(this)
         workManager.cancelAllWork()
