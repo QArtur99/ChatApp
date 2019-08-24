@@ -1,90 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
-                name="firebaseVm"
-                type="com.artf.chatapp.FirebaseViewModel"/>
+            name="firebaseVm"
+            type="com.artf.chatapp.FirebaseViewModel" />
     </data>
 
     <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context="com.artf.chatapp.MainActivity">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.artf.chatapp.MainActivity">
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_above="@+id/divider"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:padding="8dp"
-                tools:listitem="@layout/item_message_left_base"
-                app:stackFromEnd="true"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:msgList="@{firebaseVm.msgList}"
-        />
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/divider"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:msgList="@{firebaseVm.msgList}"
+            app:stackFromEnd="true"
+            tools:listitem="@layout/item_message_left_base" />
 
 
         <View
-                android:id="@+id/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_above="@id/linearLayout"
-                android:background="?android:attr/listDivider"/>
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@id/linearLayout"
+            android:background="?android:attr/listDivider" />
 
         <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:elevation="4dp"
-                android:background="@color/colorWhite"
-                android:orientation="horizontal">
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorWhite"
+            android:elevation="4dp"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
             <ImageButton
-                    android:id="@+id/photoPickerButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="8dp"
-                    android:padding="8dp"
-                    android:background="@drawable/ic_camera_alt_black_24dp"/>
+                android:id="@+id/photoPickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_camera_alt_black_24dp"
+                android:padding="8dp" />
 
             <EditText
-                    android:id="@+id/messageEditText"
-                    android:layout_width="0dp"
-                    android:hint="@string/type_a_message"
-                    android:background="@color/transparent"
-                    android:maxLength="@{firebaseVm.msgLength}"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"/>
+                android:id="@+id/messageEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:hint="@string/type_a_message"
+                android:maxLength="@{firebaseVm.msgLength}" />
 
             <ImageButton
-                    android:id="@+id/sendButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="8dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:background="@drawable/selector_button_send"
-            />
+                android:id="@+id/sendButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/selector_button_send"
+                android:padding="8dp" />
         </LinearLayout>
 
         <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"/>
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 </layout>

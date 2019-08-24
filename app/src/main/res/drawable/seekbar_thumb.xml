@@ -1,4 +1,6 @@
 <animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:drawable="@drawable/ic_thumb_pressed"/>
-    <item android:drawable="@drawable/ic_thumb_unpressed"/>
+    <item
+        android:state_pressed="true"
+        android:drawable="@drawable/ic_thumb_pressed" />
+    <item android:drawable="@drawable/ic_thumb_unpressed" />
 </animated-selector>

@@ -1,41 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-                name="message"
-                type="com.artf.chatapp.model.Message"/>
 
         <variable
-                name="msgAdapterInt"
-                type="com.artf.chatapp.MsgAdapter.MsgAdapterInt"/>
+            name="message"
+            type="com.artf.chatapp.model.Message" />
+
+        <variable
+            name="msgAdapterInt"
+            type="com.artf.chatapp.MsgAdapter.MsgAdapterInt" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintWidth_percent="0.8"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.8">
 
             <include
-                    layout="@layout/item_message_left_base"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="4dp"
-                    app:msgAdapterInt="@{msgAdapterInt}"
-                    app:message="@{message}"/>
+                layout="@layout/item_message_left_base"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
+                app:message="@{message}"
+                app:msgAdapterInt="@{msgAdapterInt}" />
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

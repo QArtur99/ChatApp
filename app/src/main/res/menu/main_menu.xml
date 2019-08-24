@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-            android:id="@+id/search"
-            android:icon="@drawable/ic_search_white_36dp"
-            android:orderInCategory="1"
-            android:title="@string/search"
-            app:actionViewClass="androidx.appcompat.widget.SearchView"
-            app:showAsAction="ifRoom|collapseActionView"/>
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search_white_36dp"
+        android:orderInCategory="1"
+        android:title="@string/search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
 
     <item
-            android:id="@+id/sign_out_menu"
-            android:title="@string/sign_out"
-            app:showAsAction="never"/>
+        android:id="@+id/sign_out_menu"
+        android:title="@string/sign_out"
+        app:showAsAction="never" />
     <item
-            android:id="@+id/change_username"
-            android:title="@string/change_username"
-            app:showAsAction="never"/>
+        android:id="@+id/change_username"
+        android:title="@string/change_username"
+        app:showAsAction="never" />
 </menu>

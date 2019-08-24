@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path name="media" path="Android/media/com.artf.chatapp/ChatApp"/>
-    <external-path name="data" path="Android/data/com.artf.chatapp/ChatApp"/>
-    <files-path name="files" path="."/>
+    <external-path
+        name="media"
+        path="Android/media/com.artf.chatapp/ChatApp" />
+    <external-path
+        name="data"
+        path="Android/data/com.artf.chatapp/ChatApp" />
+    <files-path
+        name="files"
+        path="." />
 </paths>

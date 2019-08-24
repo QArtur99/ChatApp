@@ -10,8 +10,8 @@
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowAnimationStyle">@null</item>
     </style>
-    <style name="SeekBar" parent="Widget.AppCompat.SeekBar">
-    </style>
+
+    <style name="SeekBar" parent="Widget.AppCompat.SeekBar"></style>
 
     <style name="LoginTheme" parent="FirebaseUI">
         <item name="colorPrimary">@color/colorPrimary</item>

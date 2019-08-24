@@ -1,110 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-                name="chat"
-                type="com.artf.chatapp.model.Chat"/>
 
         <variable
-                name="clickListener"
-                type="com.artf.chatapp.ChatListAdapter.OnClickListener"/>
+            name="chat"
+            type="com.artf.chatapp.model.Chat" />
+
+        <variable
+            name="clickListener"
+            type="com.artf.chatapp.ChatListAdapter.OnClickListener" />
     </data>
 
     <LinearLayout
-            android:foreground="?android:attr/selectableItemBackground"
-            android:stateListAnimator="@animator/raise"
-            android:onClick="@{(v) -> clickListener.onClick(v, chat)}"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_item_message_left"
-            android:elevation="2dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/shape_item_message_left"
+        android:elevation="2dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="@{(v) -> clickListener.onClick(v, chat)}"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:stateListAnimator="@animator/raise">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="56dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="2dp"
-                android:layout_height="wrap_content">
+            android:layout_width="56dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="2dp">
 
             <ImageView
-                    android:id="@+id/photoImageView"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    app:profileImgUrl="@{chat.user.photoUrl}"
-                    app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                android:id="@+id/photoImageView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:profileImgUrl="@{chat.user.photoUrl}" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:id="@+id/nameTextView"
-                    android:textColor="@color/colorChatUsername"
-                    android:fontFamily="sans-serif-light"
-                    android:textStyle="bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    app:textOrGone="@{chat.user.username}"
-                    tools:text="Name" android:padding="0dp"/>
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:fontFamily="sans-serif-light"
+                android:padding="0dp"
+                android:textColor="@color/colorChatUsername"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:textOrGone="@{chat.user.username}"
+                tools:text="Name" />
 
             <TextView
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@id/nameTextView"
-                    android:id="@+id/messageTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    app:lastMsg="@{chat.message}"
-                    tools:text="Message"/>
+                android:id="@+id/messageTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/nameTextView"
+                android:layout_alignParentStart="true"
+                android:textSize="16sp"
+                app:lastMsg="@{chat.message}"
+                tools:text="Message" />
 
             <ImageView
-                    android:id="@+id/onlineDot"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_online_dot"
-                    android:tint="@color/colorDisable"
-                    android:layout_alignParentTop="true"
-                    android:layout_toStartOf="@+id/timeTextView"
-                    app:onlineTint="@{chat.user.isOnline}"
-            />
+                android:id="@+id/onlineDot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/timeTextView"
+                android:src="@drawable/ic_online_dot"
+                android:tint="@color/colorDisable"
+                app:onlineTint="@{chat.user.isOnline}" />
 
             <TextView
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/timeTextView"
-                    android:textColor="@color/colorMsgTimeLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textSize="14sp"
-                    android:layout_gravity="end"
-                    app:hourTime="@{chat.message.timestamp}"
-                    tools:text="Name"/>
+                android:id="@+id/timeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/colorMsgTimeLeft"
+                android:textSize="14sp"
+                app:hourTime="@{chat.message.timestamp}"
+                tools:text="Name" />
         </RelativeLayout>
     </LinearLayout>
 

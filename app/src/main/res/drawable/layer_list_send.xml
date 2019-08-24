@@ -2,17 +2,17 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <solid android:color="@color/colorPrimary"/>
-            <corners android:radius="999dp"/>
+            <solid android:color="@color/colorPrimary" />
+            <corners android:radius="999dp" />
         </shape>
     </item>
     <item>
         <inset
-                android:gravity="center"
-                android:drawable="@drawable/ic_mic_black_24dp"
-                android:insetTop="8dp"
-                android:insetRight="8dp"
-                android:insetBottom="8dp"
-                android:insetLeft="8dp" />
+            android:gravity="center"
+            android:drawable="@drawable/ic_mic_black_24dp"
+            android:insetTop="8dp"
+            android:insetRight="8dp"
+            android:insetBottom="8dp"
+            android:insetLeft="8dp" />
     </item>
 </layer-list>

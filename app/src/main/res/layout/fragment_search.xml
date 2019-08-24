@@ -1,65 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
-                name="firebaseVm"
-                type="com.artf.chatapp.FirebaseViewModel"/>
+            name="firebaseVm"
+            type="com.artf.chatapp.FirebaseViewModel" />
     </data>
 
     <LinearLayout
-            android:background="@color/transparent"
-            android:orientation="vertical"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <LinearLayout
-                android:id="@+id/searchView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/colorWhite"
-                android:elevation="4dp"
-                android:padding="8dp"
-                android:orientation="vertical"
-                app:preventSearchBlinking="@{firebaseVm.userList}">
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/colorWhite"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:preventSearchBlinking="@{firebaseVm.userList}">
 
             <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    tools:listitem="@layout/item_message_left_base"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:userSearchList="@{firebaseVm.userList}"/>
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:userSearchList="@{firebaseVm.userList}"
+                tools:listitem="@layout/item_message_left_base" />
 
             <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="74dp"
-                    android:padding="12dp"
-                    android:layout_gravity="center"/>
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="74dp"
+                android:layout_gravity="center"
+                android:padding="12dp" />
 
             <LinearLayout
-                    android:id="@+id/info"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="74dp"
-                    android:orientation="vertical">
+                android:id="@+id/info"
+                android:layout_width="match_parent"
+                android:layout_height="74dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
                 <TextView
-                        android:text="@string/no_results"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/no_results" />
+
                 <TextView
-                        android:text="@string/change_a_bit_your_query"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/change_a_bit_your_query" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

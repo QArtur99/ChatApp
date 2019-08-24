@@ -1,77 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-                name="user"
-                type="com.artf.chatapp.model.User"/>
 
         <variable
-                name="clickListener"
-                type="com.artf.chatapp.SearchAdapter.OnClickListener"/>
+            name="user"
+            type="com.artf.chatapp.model.User" />
+
+        <variable
+            name="clickListener"
+            type="com.artf.chatapp.SearchAdapter.OnClickListener" />
     </data>
 
     <LinearLayout
-            android:foreground="?android:attr/selectableItemBackground"
-            android:stateListAnimator="@animator/raise"
-            android:onClick="@{(v) -> clickListener.onClick(v, user)}"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_item_message_left"
-            android:elevation="2dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/shape_item_message_left"
+        android:elevation="2dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="@{(v) -> clickListener.onClick(v, user)}"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:stateListAnimator="@animator/raise">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="48dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="2dp"
-                android:layout_height="wrap_content">
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="2dp">
 
             <ImageView
-                    android:id="@+id/photoImageView"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    app:profileImgUrl="@{user.photoUrl}"
-                    app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                android:id="@+id/photoImageView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:profileImgUrl="@{user.photoUrl}" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/nameTextView"
-                    android:textColor="@color/colorChatUsername"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-light"
-                    android:textStyle="bold"
-                    app:textOrGone="@{user.username}"
-                    tools:text="Name"/>
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorChatUsername"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:textOrGone="@{user.username}"
+                tools:text="Name" />
         </RelativeLayout>
     </LinearLayout>
 

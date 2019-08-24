@@ -1,35 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/navigation"
-            app:startDestination="@id/fragment_start">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation"
+    app:startDestination="@id/fragment_start">
 
     <fragment
-            android:id="@+id/fragment_start"
-            android:name="com.artf.chatapp.StartFragment"
-            android:label="StartFragment">
-        <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_start"/>
+        android:id="@+id/fragment_start"
+        android:name="com.artf.chatapp.StartFragment"
+        android:label="StartFragment">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="atr:fragment_start" />
     </fragment>
 
     <fragment
-            android:id="@+id/fragment_username"
-            android:name="com.artf.chatapp.UsernameFragment"
-            android:label="UsernameFragment">
-        <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_username"/>
+        android:id="@+id/fragment_username"
+        android:name="com.artf.chatapp.UsernameFragment"
+        android:label="UsernameFragment">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="atr:fragment_username" />
     </fragment>
 
     <fragment
-            android:id="@+id/fragment_chat"
-            android:name="com.artf.chatapp.ChatFragment"
-            android:label="ChatFragment">
-        <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_chat"/>
+        android:id="@+id/fragment_chat"
+        android:name="com.artf.chatapp.ChatFragment"
+        android:label="ChatFragment">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="atr:fragment_chat" />
     </fragment>
 
     <fragment
-            android:id="@+id/fragment_search"
-            android:name="com.artf.chatapp.SearchFragment"
-            android:label="SearchFragment">
-        <deepLink android:id="@+id/deepLink" app:uri="atr:fragment_search"/>
+        android:id="@+id/fragment_search"
+        android:name="com.artf.chatapp.SearchFragment"
+        android:label="SearchFragment">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="atr:fragment_search" />
     </fragment>
 
     <include app:graph="@navigation/navigation_search" />
