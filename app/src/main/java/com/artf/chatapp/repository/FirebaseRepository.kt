@@ -189,7 +189,7 @@ class FirebaseRepository {
                         val msg = documentSnapshot.toObject(Message::class.java) ?: continue
                         msg.setMessageId()
                         msg.isOwner = msg.senderId!! == mUser?.userId.toString()
-                        msg.audioUrl?.let { getAudio(msg) }
+                        if(msg.audioUrl != null) getAudio(msg)
                         msgList.add(msg)
                         if (documentSnapshot.metadata.isFromCache) continue
                         if (documentSnapshot.metadata.hasPendingWrites()) continue
