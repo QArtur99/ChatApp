@@ -1,15 +1,18 @@
 package com.artf.chatapp
 
+import android.graphics.Matrix
+import android.graphics.PointF
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.ScaleGestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import com.artf.chatapp.databinding.DialogPhotoBinding
 import com.artf.chatapp.utils.bindImage
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
 class PhotoDialog() : DialogFragment() {
     constructor(photoUrl: String) : this() {
@@ -18,13 +21,25 @@ class PhotoDialog() : DialogFragment() {
 
     companion object {
         const val DRAWABLE_KEY = "DrawablePhoto"
+        private const val NONE = 0
+        private const val DRAG = 1
+        private const val ZOOM = 2
     }
 
     lateinit var photoUrl: String
     lateinit var binding: DialogPhotoBinding
 
-    private var mScaleGestureDetector: ScaleGestureDetector? = null
-    private var mScaleFactor = 1.0f
+    private var mode = NONE
+
+    private val matrix = Matrix()
+    private val savedMatrix = Matrix()
+
+    private val mid = PointF()
+    private val start = PointF()
+    private var d = 0f
+    private var newRot = 0f
+    private var lastEvent: FloatArray? = null
+    private var oldDist = 1f
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,12 +51,12 @@ class PhotoDialog() : DialogFragment() {
             photoUrl = savedInstanceState.getString(DRAWABLE_KEY)!!
         }
         bindImage(binding.imageView, photoUrl)
-        mScaleGestureDetector = ScaleGestureDetector(context, ScaleListener())
-        dialog!!.window?.decorView?.setOnTouchListener { view, motionEvent ->
-            mScaleGestureDetector!!.onTouchEvent(motionEvent)
+
+        dialog!!.window?.decorView?.setOnTouchListener { _, motionEvent ->
+            binding.imageView.bringToFront()
+            viewTransformation(binding.imageView, motionEvent)
             true
         }
-        // Utility.onCreateDialog(activity!!, dialog!!, binding.root, 400, 400)
         return binding.root
     }
 
@@ -54,13 +69,72 @@ class PhotoDialog() : DialogFragment() {
         super.onSaveInstanceState(outState)
     }
 
-    private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-        override fun onScale(scaleGestureDetector: ScaleGestureDetector): Boolean {
-            mScaleFactor *= scaleGestureDetector.scaleFactor
-            mScaleFactor = max(0.1f, min(mScaleFactor, 10.0f))
-            binding.imageView.scaleX = mScaleFactor
-            binding.imageView.scaleY = mScaleFactor
-            return true
+    private fun viewTransformation(view: ImageView, event: MotionEvent) {
+        when (event.action and MotionEvent.ACTION_MASK) {
+            MotionEvent.ACTION_DOWN -> {
+                savedMatrix.set(matrix)
+                start.set(event.x, event.y)
+                mode = DRAG
+                lastEvent = null
+            }
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                oldDist = spacing(event)
+                if (oldDist > 10f) {
+                    savedMatrix.set(matrix)
+                    midPoint(mid, event)
+                    mode = ZOOM
+                }
+                lastEvent = FloatArray(4).also {
+                    it[0] = event.getX(0)
+                    it[1] = event.getX(1)
+                    it[2] = event.getY(0)
+                    it[3] = event.getY(1)
+                }
+                d = rotation(event)
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+                mode = NONE
+                lastEvent = null
+            }
+            MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
+                // ...
+                matrix.set(savedMatrix)
+                matrix.postTranslate(event.x - start.x, event.y - start.y)
+            } else if (mode == ZOOM && event.pointerCount == 2) {
+                val newDist = spacing(event)
+                matrix.set(savedMatrix)
+                if (newDist > 10f) {
+                    val scale = newDist / oldDist
+                    matrix.postScale(scale, scale, mid.x, mid.y)
+                }
+                if (lastEvent != null) {
+                    newRot = rotation(event)
+                    val r = (newRot - d)
+                    matrix.postRotate(
+                        r, (view.measuredWidth / 2).toFloat(), (view.measuredHeight / 2).toFloat()
+                    )
+                }
+            }
         }
+        view.imageMatrix = matrix
+    }
+
+    private fun rotation(event: MotionEvent): Float {
+        val deltaX = (event.getX(0) - event.getX(1)).toDouble()
+        val deltaY = (event.getY(0) - event.getY(1)).toDouble()
+        val radians = atan2(deltaY, deltaX)
+        return Math.toDegrees(radians).toFloat()
+    }
+
+    private fun spacing(event: MotionEvent): Float {
+        val x = event.getX(0) - event.getX(1)
+        val y = event.getY(0) - event.getY(1)
+        return sqrt(x * x + y * y)
+    }
+
+    private fun midPoint(point: PointF, event: MotionEvent) {
+        val x = event.getX(0) + event.getX(1)
+        val y = event.getY(0) + event.getY(1)
+        point.set(x / 2, y / 2)
     }
 }
