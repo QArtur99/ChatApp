@@ -1,9 +1,7 @@
 package com.artf.chatapp
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -17,7 +15,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.artf.chatapp.databinding.FragmentChatBinding
@@ -35,14 +32,11 @@ class ChatFragment : Fragment() {
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
-        const val RC_RECORD_AUDIO = 200
         const val LOADING = "loading"
     }
 
     private var recordFileName: String? = null
     private var playFileName: String? = null
-    private var permissionToRecord = false
-    private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
 
     private var pauseTime: Int? = null
     private var playButton: View? = null
@@ -141,29 +135,20 @@ class ChatFragment : Fragment() {
     }
 
     private fun onMicButtonClick(motionEvent: MotionEvent): Boolean {
-        val permissionCheck = checkSelfPermission(activity!!, permissions[0])
-        permissionToRecord = permissionCheck == PackageManager.PERMISSION_GRANTED
-        if (permissionToRecord.not()) {
-            requestPermissions(permissions, RC_RECORD_AUDIO)
-            return true
-        }
-
-        if (permissionToRecord) {
-            when (motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    startRecording()
-                }
-                MotionEvent.ACTION_UP -> {
-                    stopRecording()
-                    val recordFileName = recordFileName ?: return false
-                    val recorderDuration = recorderDuration ?: 0
-                    if (recorderDuration > 1000) {
-                        fakeMsgAudio.apply {
-                            audioFile = recordFileName
-                            audioDuration = recorderDuration
-                        }
-                        firebaseVm.pushAudio(recordFileName, recorderDuration)
+        when (motionEvent.action) {
+            MotionEvent.ACTION_DOWN -> {
+                startRecording()
+            }
+            MotionEvent.ACTION_UP -> {
+                stopRecording()
+                val recordFileName = recordFileName ?: return false
+                val recorderDuration = recorderDuration ?: 0
+                if (recorderDuration > 1000) {
+                    fakeMsgAudio.apply {
+                        audioFile = recordFileName
+                        audioDuration = recorderDuration
                     }
+                    firebaseVm.pushAudio(recordFileName, recorderDuration)
                 }
             }
         }
@@ -252,17 +237,6 @@ class ChatFragment : Fragment() {
                 }
             }
         })
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionToRecord = if (requestCode == RC_RECORD_AUDIO && grantResults.isNotEmpty()) {
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        } else false
     }
 
     private fun getMsgAdapterInt(): MsgAdapter.MsgAdapterInt {

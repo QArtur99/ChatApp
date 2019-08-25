@@ -29,6 +29,9 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
     private var isUsernameAvailableJob: Job? = null
     private var searchForUserJob: Job? = null
 
+    private val _signIn = MutableLiveData<Boolean>()
+    val signIn: LiveData<Boolean> = _signIn
+
     private val _userList = MutableLiveData<List<User>>()
     val userList: LiveData<List<User>> = _userList
 
@@ -90,6 +93,7 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
 
     private fun setOnSignInListener() {
         firebaseRepository.onSignIn = {
+            _signIn.value = true
         }
     }
 

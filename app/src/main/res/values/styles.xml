@@ -1,5 +1,12 @@
 <resources>
 
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@drawable/layer_list_splash</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -7,11 +14,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@drawable/clouds_1923545_v7</item>
-        <item name="android:windowDisablePreview">true</item>
-        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <style name="SeekBar" parent="Widget.AppCompat.SeekBar"></style>
+    <style name="SeekBar" parent="Widget.AppCompat.SeekBar"/>
 
     <style name="LoginTheme" parent="FirebaseUI">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -25,12 +30,10 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="android:windowBackground">@drawable/clouds_1923545_v7</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
+<!--        <item name="windowActionBar">false</item>-->
+<!--        <item name="windowNoTitle">true</item>-->
         <item name="android:textColorHint">@android:color/white</item>
-        <item name="android:windowDisablePreview">true</item>
-        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="FirebaseUI.Text">

@@ -45,8 +45,14 @@ class MainActivity : AppCompatActivity() {
                 firebaseVm.setStartSignInActivity(null)
             }
         })
+
+        firebaseVm.signIn.observe(this, Observer {
+            supportActionBar?.show()
+            //binding.splash.visibility = View.GONE
+        })
         setFragmentStateListener()
         checkNotificationIntent()
+        supportActionBar?.hide()
     }
 
     private fun checkNotificationIntent() {
