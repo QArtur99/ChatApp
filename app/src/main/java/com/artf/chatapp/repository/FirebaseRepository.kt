@@ -38,7 +38,7 @@ class FirebaseRepository {
 
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-    private val nonUiContext = Dispatchers.IO
+    private val nonUiContext = Dispatchers.Default
     private val nonUiScope = CoroutineScope(viewModelJob + nonUiContext)
 
     private var mUser: User? = null
