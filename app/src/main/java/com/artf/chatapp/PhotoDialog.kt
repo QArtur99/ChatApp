@@ -2,6 +2,7 @@ package com.artf.chatapp
 
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.graphics.RectF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -70,6 +71,7 @@ class PhotoDialog() : DialogFragment() {
     }
 
     private fun viewTransformation(view: ImageView, event: MotionEvent) {
+        if (view.scaleType == ImageView.ScaleType.FIT_XY) swapFixXyToMatrix(view, matrix)
         when (event.action and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
                 savedMatrix.set(matrix)
@@ -117,6 +119,17 @@ class PhotoDialog() : DialogFragment() {
             }
         }
         view.imageMatrix = matrix
+    }
+
+    private fun swapFixXyToMatrix(image: ImageView, matrix: Matrix) {
+        val imageWidth = image.drawable.intrinsicWidth.toFloat()
+        val imageHeight = image.drawable.intrinsicHeight.toFloat()
+        val drawableRect = RectF(0f, 0f, imageWidth, imageHeight)
+        val viewRect = RectF(0f, 0f, image.width.toFloat(), image.height.toFloat())
+        val newMatrix = Matrix()
+        newMatrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER)
+        image.scaleType = ImageView.ScaleType.MATRIX
+        matrix.set(newMatrix)
     }
 
     private fun rotation(event: MotionEvent): Float {
