@@ -7,13 +7,13 @@
 
         <variable
             name="firebaseVm"
-            type="com.artf.chatapp.FirebaseViewModel" />
+            type="com.artf.chatapp.view.FirebaseViewModel" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.artf.chatapp.MainActivity">
+        tools:context="com.artf.chatapp.view.MainActivity">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

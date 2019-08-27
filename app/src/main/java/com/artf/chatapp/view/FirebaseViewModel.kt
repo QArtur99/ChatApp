@@ -1,4 +1,4 @@
-package com.artf.chatapp
+package com.artf.chatapp.view
 
 import android.net.Uri
 import androidx.lifecycle.LiveData

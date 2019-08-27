@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/fragment_start"
-        android:name="com.artf.chatapp.StartFragment"
+        android:name="com.artf.chatapp.view.chatRooms.StartFragment"
         android:label="StartFragment">
         <deepLink
             android:id="@+id/deepLink"
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/fragment_username"
-        android:name="com.artf.chatapp.UsernameFragment"
+        android:name="com.artf.chatapp.view.userProfile.UsernameFragment"
         android:label="UsernameFragment">
         <deepLink
             android:id="@+id/deepLink"
@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/fragment_chat"
-        android:name="com.artf.chatapp.ChatFragment"
+        android:name="com.artf.chatapp.view.chatRoom.ChatFragment"
         android:label="ChatFragment">
         <deepLink
             android:id="@+id/deepLink"
@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/fragment_search"
-        android:name="com.artf.chatapp.SearchFragment"
+        android:name="com.artf.chatapp.view.searchUser.SearchFragment"
         android:label="SearchFragment">
         <deepLink
             android:id="@+id/deepLink"

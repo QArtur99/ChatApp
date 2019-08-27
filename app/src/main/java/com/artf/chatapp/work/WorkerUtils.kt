@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.graphics.drawable.toBitmap
-import com.artf.chatapp.MainActivity
+import com.artf.chatapp.view.MainActivity
 import com.artf.chatapp.R
 
 fun makeStatusNotification(

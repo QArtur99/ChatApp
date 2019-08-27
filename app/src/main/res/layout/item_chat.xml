@@ -11,7 +11,7 @@
 
         <variable
             name="clickListener"
-            type="com.artf.chatapp.ChatListAdapter.OnClickListener" />
+            type="com.artf.chatapp.view.chatRooms.ChatListAdapter.OnClickListener" />
     </data>
 
     <LinearLayout

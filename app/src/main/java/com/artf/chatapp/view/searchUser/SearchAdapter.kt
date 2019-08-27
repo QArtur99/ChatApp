@@ -1,4 +1,4 @@
-package com.artf.chatapp
+package com.artf.chatapp.view.searchUser
 
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +18,13 @@ class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<Us
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MsgViewHolder {
-        return MsgViewHolder(ItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return MsgViewHolder(
+            ItemSearchBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     class MsgViewHolder constructor(val binding: ItemSearchBinding) :

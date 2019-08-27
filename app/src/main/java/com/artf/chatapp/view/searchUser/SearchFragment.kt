@@ -1,18 +1,26 @@
-package com.artf.chatapp
+package com.artf.chatapp.view.searchUser
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import com.artf.chatapp.view.FirebaseViewModel
+import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentSearchBinding
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.NetworkState
-import com.artf.chatapp.utils.extension.getVm
+import com.artf.chatapp.utils.extension.getVmFactory
 
 class SearchFragment : Fragment() {
 
-    private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
+    private val firebaseVm: FirebaseViewModel by activityViewModels { getVmFactory() }
     private lateinit var searchView: SearchView
     private lateinit var searchItem: MenuItem
     private lateinit var binding: FragmentSearchBinding
@@ -23,11 +31,12 @@ class SearchFragment : Fragment() {
         binding.firebaseVm = firebaseVm
 
         binding.recyclerView.itemAnimator = null
-        binding.recyclerView.adapter = SearchAdapter(SearchAdapter.OnClickListener { user ->
-            firebaseVm.setReceiver(user)
-            firebaseVm.setFragmentState(FragmentState.CHAT)
-            onSearchViewClose()
-        })
+        binding.recyclerView.adapter =
+            SearchAdapter(SearchAdapter.OnClickListener { user ->
+                firebaseVm.setReceiver(user)
+                firebaseVm.setFragmentState(FragmentState.CHAT)
+                onSearchViewClose()
+            })
 
         firebaseVm.userSearchStatus.observe(viewLifecycleOwner, Observer {
             binding.searchView.visibility = View.VISIBLE

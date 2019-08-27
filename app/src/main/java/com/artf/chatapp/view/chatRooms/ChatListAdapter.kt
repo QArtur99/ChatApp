@@ -1,4 +1,4 @@
-package com.artf.chatapp
+package com.artf.chatapp.view.chatRooms
 
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +19,13 @@ class ChatListAdapter(private val fragment: Fragment, private val clickListener:
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MsgViewHolder {
-        return MsgViewHolder(ItemChatBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return MsgViewHolder(
+            ItemChatBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     class MsgViewHolder constructor(val binding: ItemChatBinding) :

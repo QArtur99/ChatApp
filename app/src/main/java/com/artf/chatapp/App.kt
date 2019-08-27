@@ -86,9 +86,7 @@ class App : Application(), LifecycleObserver {
                 TimeUnit.SECONDS,
                 300,
                 TimeUnit.SECONDS
-            )
-                .setConstraints(constraints)
-                .build()
+            ).setConstraints(constraints).build()
 
         repeatingRequest.workSpec.intervalDuration = 15000
         repeatingRequest.workSpec.flexDuration = 5000

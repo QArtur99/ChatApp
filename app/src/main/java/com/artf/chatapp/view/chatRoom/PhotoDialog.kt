@@ -1,4 +1,4 @@
-package com.artf.chatapp
+package com.artf.chatapp.view.chatRoom
 
 import android.graphics.Matrix
 import android.graphics.PointF

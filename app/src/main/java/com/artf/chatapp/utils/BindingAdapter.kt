@@ -7,10 +7,10 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.ChatListAdapter
-import com.artf.chatapp.MsgAdapter
+import com.artf.chatapp.view.chatRooms.ChatListAdapter
+import com.artf.chatapp.view.chatRoom.MsgAdapter
 import com.artf.chatapp.R
-import com.artf.chatapp.SearchAdapter
+import com.artf.chatapp.view.searchUser.SearchAdapter
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User

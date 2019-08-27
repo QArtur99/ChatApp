@@ -5,7 +5,7 @@
 
         <variable
             name="firebaseVm"
-            type="com.artf.chatapp.FirebaseViewModel" />
+            type="com.artf.chatapp.view.FirebaseViewModel" />
     </data>
 
     <ScrollView

@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/fragment_search"
-        android:name="com.artf.chatapp.SearchFragment"
+        android:name="com.artf.chatapp.view.searchUser.SearchFragment"
         android:label="SearchFragment">
         <deepLink
             android:id="@+id/deepLink"

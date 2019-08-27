@@ -1,4 +1,4 @@
-package com.artf.chatapp
+package com.artf.chatapp.view
 
 import android.Manifest
 import android.content.Intent
@@ -35,7 +35,10 @@ class SplashActivity : AppCompatActivity() {
 
     private fun checkPermissions() {
         if (checkHasPermissions().not()) {
-            ActivityCompat.requestPermissions(this, INITIAL_PERMS, INITIAL_REQUEST)
+            ActivityCompat.requestPermissions(this,
+                INITIAL_PERMS,
+                INITIAL_REQUEST
+            )
         } else {
             startApp()
         }

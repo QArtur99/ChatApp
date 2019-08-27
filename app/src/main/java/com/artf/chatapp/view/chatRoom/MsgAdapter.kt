@@ -1,4 +1,4 @@
-package com.artf.chatapp
+package com.artf.chatapp.view.chatRoom
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +9,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.artf.chatapp.BR
+import com.artf.chatapp.view.FirebaseViewModel
+import com.artf.chatapp.R
 import com.artf.chatapp.databinding.ItemMessageLeftImgBinding
 import com.artf.chatapp.databinding.ItemMessageLeftRecordBinding
 import com.artf.chatapp.databinding.ItemMessageLeftTextBinding

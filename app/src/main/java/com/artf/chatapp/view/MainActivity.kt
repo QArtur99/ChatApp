@@ -1,4 +1,4 @@
-package com.artf.chatapp
+package com.artf.chatapp.view
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.MimeTypeMap
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -15,19 +16,21 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import com.artf.chatapp.App
+import com.artf.chatapp.R
 import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.convertFromString
-import com.artf.chatapp.utils.extension.getVm
+import com.artf.chatapp.utils.extension.getVmFactory
 import com.firebase.ui.auth.AuthUI
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val firebaseVm by lazy { getVm<FirebaseViewModel>() }
+    private val firebaseVm: FirebaseViewModel by viewModels { getVmFactory() }
 
     private val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
     private val uriUsername = Uri.parse("atr:fragment_username")
@@ -113,7 +116,12 @@ class MainActivity : AppCompatActivity() {
     private fun galleryAddPic(): Uri? {
         val photoFile = File(App.currentPhotoPath)
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(photoFile.extension)
-        MediaScannerConnection.scanFile(this, arrayOf(photoFile.absolutePath), arrayOf(mimeType), null)
+        MediaScannerConnection.scanFile(
+            this,
+            arrayOf(photoFile.absolutePath),
+            arrayOf(mimeType),
+            null
+        )
         return Uri.fromFile(photoFile)
     }
 
