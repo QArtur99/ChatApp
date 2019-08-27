@@ -58,7 +58,7 @@ class NotificationWorker(appContext: Context, params: WorkerParameters) : Corout
 
             val notificationId = Utility.getTimeStamp().toString().takeLast(6).toInt()
 
-            makeStatusNotification(
+            NotificationWorkerUtils.makeStatusNotification(
                 context = applicationContext,
                 notificationId = notificationId,
                 userString = convertToString(user),
