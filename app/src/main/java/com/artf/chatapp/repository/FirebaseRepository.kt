@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.io.File
 
 class FirebaseRepository {
@@ -208,7 +207,7 @@ class FirebaseRepository {
     private fun getAudio(msg: Message) {
         uiScope.launch {
             msg.setAudioDownloaded(false)
-            withContext(nonUiContext) { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }
+            nonUiScope.launch { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }.join()
             msg.setAudioDownloaded(true)
         }
     }

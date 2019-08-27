@@ -143,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                 .setLogo(R.drawable.ic_launcher)
                 .build(), FirebaseRepository.RC_SIGN_IN
         )
+        firebaseVm.setFragmentState(FragmentState.START)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -172,7 +173,6 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sign_out_menu -> {
-                // firebaseVm.setFragmentState(FragmentState.START)
                 AuthUI.getInstance().signOut(this)
                 true
             }
