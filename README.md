@@ -58,7 +58,7 @@ Awesome! If you would like to contribute with a new feature or submit a bugfix, 
 ### How to run the project in development mode
 * Clone or download repository as a zip file.
 * Open project in Android Studio.
-* Set TheMovieDb API key in build.gradle(line 41).
+* Set Facebook API key in build.gradle.
 * Run 'app' `SHIFT+F10`.
 
 #### Getting Started
