@@ -110,7 +110,7 @@ class FirebaseRepository {
 
         val defaultConfigMap = HashMap<String, Any>()
         defaultConfigMap[MSG_LENGTH_KEY] = DEFAULT_MSG_LENGTH_LIMIT
-        firebaseRemoteConfig.setDefaults(defaultConfigMap)
+        firebaseRemoteConfig.setDefaultsAsync(defaultConfigMap)
     }
 
     fun fetchConfigMsgLength(callBack: (msgLengh: Int) -> Unit) {
