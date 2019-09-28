@@ -41,4 +41,6 @@
     <color name="colorProgressBackgroundNormal">#33000000</color>
     <color name="white_disabled_material">#FFFFFF</color>
     <color name="colorControlActivated">#444444</color>
+
+    //
 </resources>

@@ -4,18 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.artf.chatapp.view.FirebaseViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.databinding.FragmentStartBinding
 import com.artf.chatapp.utils.FragmentState
-import com.artf.chatapp.utils.extension.getVmFactory
+import com.artf.chatapp.view.FirebaseViewModel
+import dagger.android.support.DaggerFragment
+import javax.inject.Inject
 
-class StartFragment : Fragment() {
+class StartFragment : DaggerFragment() {
 
-    private val firebaseVm: FirebaseViewModel by activityViewModels { getVmFactory() }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val binding = FragmentStartBinding.inflate(LayoutInflater.from(context))
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm

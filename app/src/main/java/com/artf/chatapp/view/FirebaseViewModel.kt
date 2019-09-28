@@ -21,8 +21,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel() {
+class FirebaseViewModel @Inject constructor(
+    private val firebaseRepository: FirebaseRepository
+) : ViewModel() {
 
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -86,9 +89,20 @@ class FirebaseViewModel(val firebaseRepository: FirebaseRepository) : ViewModel(
         setOnSignInListener()
         setOnSignOutListener()
         setMsgListener()
-        firebaseRepository.onMsgList = { _msgList.value = it }
+        firebaseRepository.onMsgList = {
+            _msgList.value = it
+            it.map { msg -> if (msg.audioUrl != null) getAudio(msg) }
+        }
         firebaseRepository.onChatRoomList = { _chatRoomList.value = it }
         setOnChatRoomListSort()
+    }
+
+    private fun getAudio(msg: Message) {
+        uiScope.launch {
+            msg.setAudioDownloaded(false)
+            firebaseRepository.getAudio(msg)
+            msg.setAudioDownloaded(true)
+        }
     }
 
     private fun setOnSignInListener() {

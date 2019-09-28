@@ -12,16 +12,22 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.artf.chatapp.repository.FirebaseRepository
+import com.artf.chatapp.di.DaggerAppComponent
 import com.artf.chatapp.work.NotificationWorker
 import com.google.firebase.database.FirebaseDatabase
+import dagger.android.AndroidInjector
+import dagger.android.support.DaggerApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class App : Application(), LifecycleObserver {
+class App : DaggerApplication(), LifecycleObserver {
+
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerAppComponent.factory().create(applicationContext)
+    }
 
     companion object {
         const val AUTHORITY = BuildConfig.APPLICATION_ID + ".provider"
@@ -35,7 +41,6 @@ class App : Application(), LifecycleObserver {
         lateinit var app: Application
         lateinit var fileName: String
         lateinit var workManager: WorkManager
-        lateinit var repository: FirebaseRepository
         var currentPhotoPath = ""
         var tempReceiverId = ""
         var receiverId = ""
@@ -61,8 +66,6 @@ class App : Application(), LifecycleObserver {
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-
-        repository = FirebaseRepository()
         delayedInit()
     }
 

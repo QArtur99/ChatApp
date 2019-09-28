@@ -9,10 +9,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.webkit.MimeTypeMap
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
@@ -23,14 +23,18 @@ import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.convertFromString
-import com.artf.chatapp.utils.extension.getVmFactory
 import com.firebase.ui.auth.AuthUI
+import dagger.android.support.DaggerAppCompatActivity
 import java.io.File
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binding: ActivityMainBinding
-    private val firebaseVm: FirebaseViewModel by viewModels { getVmFactory() }
+    private val firebaseVm: FirebaseViewModel by viewModels { viewModelFactory }
 
     private val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
     private val uriUsername = Uri.parse("atr:fragment_username")

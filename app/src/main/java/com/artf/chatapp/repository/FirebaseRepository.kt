@@ -23,8 +23,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
+import javax.inject.Inject
 
-class FirebaseRepository {
+class FirebaseRepository @Inject constructor() {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -36,9 +37,7 @@ class FirebaseRepository {
     }
 
     private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-    private val nonUiContext = Dispatchers.Default
-    private val nonUiScope = CoroutineScope(viewModelJob + nonUiContext)
+    private val nonUiScope = CoroutineScope(viewModelJob + Dispatchers.Default)
 
     private var mUser: User? = null
 
@@ -188,7 +187,6 @@ class FirebaseRepository {
                         val msg = documentSnapshot.toObject(Message::class.java) ?: continue
                         msg.setMessageId()
                         msg.isOwner = msg.senderId!! == mUser?.userId.toString()
-                        if(msg.audioUrl != null) getAudio(msg)
                         msgList.add(msg)
                         if (documentSnapshot.metadata.isFromCache) continue
                         if (documentSnapshot.metadata.hasPendingWrites()) continue
@@ -204,12 +202,8 @@ class FirebaseRepository {
         }
     }
 
-    private fun getAudio(msg: Message) {
-        uiScope.launch {
-            msg.setAudioDownloaded(false)
-            nonUiScope.launch { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }.join()
-            msg.setAudioDownloaded(true)
-        }
+    suspend fun getAudio(msg: Message) {
+        nonUiScope.launch { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }.join()
     }
 
     private fun detachDatabaseListeners() {

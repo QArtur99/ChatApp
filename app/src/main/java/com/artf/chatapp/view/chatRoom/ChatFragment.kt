@@ -12,11 +12,10 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.App
-import com.artf.chatapp.view.FirebaseViewModel
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.model.Message
@@ -24,9 +23,11 @@ import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.extension.afterTextChanged
-import com.artf.chatapp.utils.extension.getVmFactory
+import com.artf.chatapp.view.FirebaseViewModel
+import dagger.android.support.DaggerFragment
+import javax.inject.Inject
 
-class ChatFragment : Fragment() {
+class ChatFragment : DaggerFragment() {
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
@@ -46,7 +47,10 @@ class ChatFragment : Fragment() {
         isOwner = true
     )
 
-    private val firebaseVm: FirebaseViewModel by activityViewModels { getVmFactory() }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: FragmentChatBinding
     private lateinit var adapter: MsgAdapter
 
