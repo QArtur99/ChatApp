@@ -15,11 +15,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.artf.chatapp.App
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.repository.FirebaseRepository
+import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.extension.afterTextChanged
@@ -82,15 +82,15 @@ class ChatFragment : DaggerFragment() {
             intentGallery.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
 
             val chooserIntent = Intent.createChooser(intentGallery, "Select picture")
-            Utility.createMediaFile(
+            FileHelper.createMediaFile(
                 context!!,
-                App.PHOTOS_FOLDER_NAME,
-                App.DATE_FORMAT,
-                App.PHOTO_PREFIX,
-                App.PHOTO_EXT
+                FileHelper.PHOTOS_FOLDER_NAME,
+                FileHelper.DATE_FORMAT,
+                FileHelper.PHOTO_PREFIX,
+                FileHelper.PHOTO_EXT
             )?.let { photoFile ->
                 val cameraIntent = Utility.getCameraIntent(context!!, photoFile)
-                App.currentPhotoPath = photoFile.absolutePath
+                FileHelper.currentPhotoPath = photoFile.absolutePath
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
             }
             activity!!.startActivityForResult(chooserIntent, FirebaseRepository.RC_PHOTO_PICKER)

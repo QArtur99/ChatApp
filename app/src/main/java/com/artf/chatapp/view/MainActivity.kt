@@ -21,6 +21,7 @@ import com.artf.chatapp.R
 import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
+import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.convertFromString
 import com.firebase.ui.auth.AuthUI
@@ -53,10 +54,7 @@ class MainActivity : DaggerAppCompatActivity() {
             }
         })
 
-        firebaseVm.signIn.observe(this, Observer {
-            supportActionBar?.show()
-            //binding.splash.visibility = View.GONE
-        })
+        firebaseVm.signIn.observe(this, Observer { supportActionBar?.show() })
         setFragmentStateListener()
         checkNotificationIntent()
         supportActionBar?.hide()
@@ -118,7 +116,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun galleryAddPic(): Uri? {
-        val photoFile = File(App.currentPhotoPath)
+        val photoFile = File(FileHelper.currentPhotoPath)
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(photoFile.extension)
         MediaScannerConnection.scanFile(
             this,

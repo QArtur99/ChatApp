@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.artf.chatapp.di
+package com.artf.chatapp.di.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.view.FirebaseViewModel
-import com.artf.chatapp.view.ViewModelFactory
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

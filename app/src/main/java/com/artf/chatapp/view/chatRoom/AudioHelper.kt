@@ -9,15 +9,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.artf.chatapp.App
 import com.artf.chatapp.R
 import com.artf.chatapp.model.Message
+import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import java.io.IOException
 import java.util.Timer
 import java.util.TimerTask
 
-class AudioHelper(val activity: AppCompatActivity) {
+class AudioHelper(private val activity: AppCompatActivity) {
 
     private var playButton: View? = null
     private var seekBar: SeekBar? = null
@@ -123,12 +123,12 @@ class AudioHelper(val activity: AppCompatActivity) {
     }
 
     fun startRecording() {
-        recordFileName = Utility.createMediaFile(
+        recordFileName = FileHelper.createMediaFile(
             activity,
-            App.RECORDS_FOLDER_NAME,
-            App.DATE_FORMAT,
-            App.RECORD_PREFIX,
-            App.RECORD_EXT
+            FileHelper.RECORDS_FOLDER_NAME,
+            FileHelper.DATE_FORMAT,
+            FileHelper.RECORD_PREFIX,
+            FileHelper.RECORD_EXT
         )?.absolutePath
 
         recorder = MediaRecorder().apply {

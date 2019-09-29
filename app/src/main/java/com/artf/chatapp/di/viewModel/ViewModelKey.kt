@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.artf.chatapp.di
+package com.artf.chatapp.di.viewModel
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

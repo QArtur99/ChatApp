@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.artf.chatapp.view
+package com.artf.chatapp.di.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
