@@ -19,13 +19,14 @@ ChatApp is a free messaging app inspired by messaging & social media apps. Writt
 * [Firebase](https://firebase.google.com/docs) - Tools to develop high-quality apps.
   - [Authentication](https://firebase.google.com/docs) - Allows an app to securely save user data in the cloud.
   - [Cloud Firestore](https://firebase.google.com/docs/firestore) - Flexible, scalable NoSQL cloud database to store and sync data.
-  - [Cloud Storage](https://firebase.google.com/docs/storage) - Store and serve user-generated content.
   - [Cloud Functions](https://firebase.google.com/docs/functions) - Automatically run backend code in response to events triggered by Firebase 
   - [Cloud Messaging](https://firebase.google.com/docs/cloud-messaging) - Notify a client app.
+  - [Cloud Storage](https://firebase.google.com/docs/storage) - Store and serve user-generated content.
   - [Remote Config](https://firebase.google.com/docs/remote-config) - Change the settings of app without requiring users to download an app update.
-* [Retrofit 2](https://github.com/square/retrofit) - Handle REST api communication.
-* [Moshi](https://github.com/square/moshi) - Serialize Kotlin objects and deserialize JSON objects.
+* [Dagger 2](https://github.com/google/dagger) - Compile-time framework for dependency injection.
 * [Glide](https://github.com/bumptech/glide) - Load and cache images by URL.
+* [Moshi](https://github.com/square/moshi) - Serialize Kotlin objects and deserialize JSON objects.
+* [Retrofit 2](https://github.com/square/retrofit) - Handle REST api communication.
 * [Test](https://developer.android.com/training/testing/) - An Android testing framework for unit and runtime UI tests.
 * [ktlint](https://ktlint.github.io/) - Enforce Kotlin coding styles.
 
@@ -34,10 +35,10 @@ ChatApp is a free messaging app inspired by messaging & social media apps. Writt
 * Firebase: 
   - Authentication (Email, Facebook, Google, Phone)
   - Cloud Firestore
-  - Storage
-  - Functions
   - Cloud Messaging
+  - Functions
   - Remote Config
+  - Storage
 * Create user profile (Username).
 * Search users by Username
 * Send text, graphic, audio messages.
