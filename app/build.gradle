@@ -84,7 +84,8 @@ dependencies {
 
     //Lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
-
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
 
     //Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutine"

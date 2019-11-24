@@ -5,10 +5,9 @@ import com.artf.chatapp.App
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
-import com.artf.chatapp.utils.FragmentState
-import com.artf.chatapp.utils.NetworkState
 import com.artf.chatapp.utils.extension.saveTo
-import com.google.firebase.auth.FirebaseAuth
+import com.artf.chatapp.utils.states.FragmentState
+import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -41,7 +40,6 @@ class FirebaseRepository @Inject constructor() {
 
     private var mUser: User? = null
 
-    private val firebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
@@ -54,7 +52,6 @@ class FirebaseRepository @Inject constructor() {
 
     private lateinit var chatRoomId: String
 
-    private var authStateListener: FirebaseAuth.AuthStateListener? = null
     private var chatRoomListner: ListenerRegistration? = null
     private var userChatRoomsListner: ListenerRegistration? = null
 
@@ -63,8 +60,6 @@ class FirebaseRepository @Inject constructor() {
     private var receiverId: String? = null
 
     var onChatRoomListSort: (() -> Unit)? = null
-    var onSignIn: (() -> Unit)? = null
-    var onSignOut: (() -> Unit)? = null
     var onFragmentStateChanged: ((state: FragmentState) -> Unit)? = null
     var onChatRoomList: ((chatRoomList: List<Chat>) -> Unit)? = null
     var onMsgList: ((msgList: List<Message>) -> Unit)? = null
@@ -72,31 +67,20 @@ class FirebaseRepository @Inject constructor() {
     var onChildChanged: ((message: Message) -> Unit)? = null
 
     fun startListening() {
-        authStateListener = getAuthStateListener()
-        firebaseAuth.addAuthStateListener(authStateListener!!)
         fetchConfig()
     }
 
-    private fun getAuthStateListener(): FirebaseAuth.AuthStateListener {
-        return FirebaseAuth.AuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            if (user != null) onSignedIn(user.uid) else onSignedOut()
-        }
-    }
-
-    private fun onSignedIn(userId: String) {
+    fun onSignedIn(userId: String) {
         mUser = User(userId)
         getUser(userId)
         updateUser(userId, true)
         attachUserChatRoomsListener()
-        onSignIn?.invoke()
         receiverId?.let { setChatRoomId(it) }
     }
 
-    private fun onSignedOut() {
+    fun onSignedOut() {
         mUser?.userId?.let { updateUser(it, false) }
         detachDatabaseListeners()
-        onSignOut?.invoke()
         this.mUser = null
         this.receiverId = null
     }
@@ -406,7 +390,6 @@ class FirebaseRepository @Inject constructor() {
     fun stopListening() {
         mUser?.userId?.let { updateUser(it, false) }
         viewModelJob.cancel()
-        if (authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener!!)
         detachDatabaseListeners()
     }
 }

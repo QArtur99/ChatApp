@@ -30,7 +30,7 @@ buildscript {
     versions.firebase_ui_auth = "5.0.0"
     versions.fragment = '1.2.0-alpha04'
     versions.glide = '4.10.0'
-    versions.google_gms = "4.3.0"
+    versions.google_gms = "4.3.2"
     versions.hamcrest = "1.3"
     versions.junit = "4.13-beta-3"
     versions.kotlin = '1.3.50'

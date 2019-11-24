@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.artf.chatapp.utils
+package com.artf.chatapp.utils.states
 
 enum class Status {
     RUNNING,
@@ -28,9 +28,15 @@ data class NetworkState private constructor(
     val msg: String? = null
 ) {
     companion object {
-        val LOADED = NetworkState(Status.SUCCESS)
-        val LOADING = NetworkState(Status.RUNNING)
-        val FAILED = NetworkState(Status.FAILED)
-        fun error(msg: String?) = NetworkState(Status.FAILED, msg)
+        val LOADED =
+            NetworkState(Status.SUCCESS)
+        val LOADING =
+            NetworkState(Status.RUNNING)
+        val FAILED =
+            NetworkState(Status.FAILED)
+        fun error(msg: String?) = NetworkState(
+            Status.FAILED,
+            msg
+        )
     }
 }

@@ -20,7 +20,7 @@ import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FileHelper
-import com.artf.chatapp.utils.NetworkState
+import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.extension.afterTextChanged
 import com.artf.chatapp.view.FirebaseViewModel

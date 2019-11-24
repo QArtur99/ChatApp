@@ -1,4 +1,4 @@
-package com.artf.chatapp.utils
+package com.artf.chatapp.utils.states
 
 enum class FragmentState {
     USERNAME,

@@ -4,18 +4,21 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
-import com.artf.chatapp.utils.FragmentState
-import com.artf.chatapp.utils.NetworkState
+import com.artf.chatapp.repository.FirebaseUserLiveData
 import com.artf.chatapp.utils.extension.add
 import com.artf.chatapp.utils.extension.clear
 import com.artf.chatapp.utils.extension.clearChatRoomList
 import com.artf.chatapp.utils.extension.count
 import com.artf.chatapp.utils.extension.get
 import com.artf.chatapp.utils.extension.remove
+import com.artf.chatapp.utils.states.AuthenticationState
+import com.artf.chatapp.utils.states.FragmentState
+import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,9 +34,7 @@ class FirebaseViewModel @Inject constructor(
     private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     private var isUsernameAvailableJob: Job? = null
     private var searchForUserJob: Job? = null
-
-    private val _signIn = MutableLiveData<Boolean>()
-    val signIn: LiveData<Boolean> = _signIn
+    private var mUser: User? = null
 
     private val _userList = MutableLiveData<List<User>>()
     val userList: LiveData<List<User>> = _userList
@@ -52,9 +53,6 @@ class FirebaseViewModel @Inject constructor(
 
     private val _msgList = MutableLiveData<List<Message>>()
     val msgList: LiveData<List<Message>> = _msgList
-    fun setMsgList(msgList: List<Message>) {
-        _msgList.value = msgList
-    }
 
     private val _msgLength = MutableLiveData<Int>()
     val msgLength: LiveData<Int> = _msgLength
@@ -62,32 +60,17 @@ class FirebaseViewModel @Inject constructor(
     private val _usernameStatus = MutableLiveData<NetworkState>()
     val usernameStatus: LiveData<NetworkState> = _usernameStatus
 
-    private val _startSignInActivity = MutableLiveData<Boolean>()
-    val startSignInActivity: LiveData<Boolean> = _startSignInActivity
-    fun setStartSignInActivity(start: Boolean?) {
-        _startSignInActivity.value = start
-    }
-
     private val _fragmentState = MutableLiveData<FragmentState>()
     val fragmentState: LiveData<FragmentState> = _fragmentState
-    fun setFragmentState(fragmentState: FragmentState?) {
-        _fragmentState.value = fragmentState
-    }
 
     private val _receiver = MutableLiveData<User>()
     val receiver: LiveData<User> = _receiver
-    fun setReceiver(user: User?) {
-        _receiver.value = user
-        user?.let { firebaseRepository.setChatRoomId(user.userId!!) }
-    }
 
     init {
         firebaseRepository.startListening()
         _msgList.value = arrayListOf()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
         firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
-        setOnSignInListener()
-        setOnSignOutListener()
         setMsgListener()
         firebaseRepository.onMsgList = {
             _msgList.value = it
@@ -95,6 +78,31 @@ class FirebaseViewModel @Inject constructor(
         }
         firebaseRepository.onChatRoomList = { _chatRoomList.value = it }
         setOnChatRoomListSort()
+    }
+
+    val authenticationState = FirebaseUserLiveData().map { user ->
+        if (user != null) {
+            firebaseRepository.onSignedIn(user.uid)
+            onSignIn()
+            AuthenticationState.AUTHENTICATED
+        } else {
+            firebaseRepository.onSignedOut()
+            onSignOut()
+            AuthenticationState.UNAUTHENTICATED
+        }
+    }
+
+    fun setMsgList(msgList: List<Message>) {
+        _msgList.value = msgList
+    }
+
+    fun setFragmentState(fragmentState: FragmentState?) {
+        _fragmentState.value = fragmentState
+    }
+
+    fun setReceiver(user: User?) {
+        _receiver.value = user
+        user?.let { firebaseRepository.setChatRoomId(user.userId!!) }
     }
 
     private fun getAudio(msg: Message) {
@@ -105,18 +113,12 @@ class FirebaseViewModel @Inject constructor(
         }
     }
 
-    private fun setOnSignInListener() {
-        firebaseRepository.onSignIn = {
-            _signIn.value = true
-        }
+    private fun onSignIn() {
     }
 
-    private fun setOnSignOutListener() {
-        firebaseRepository.onSignOut = {
+    private fun onSignOut() {
             _msgList.clear()
             _chatRoomList.clearChatRoomList()
-            setStartSignInActivity(true)
-        }
     }
 
     private fun setOnChatRoomListSort() {

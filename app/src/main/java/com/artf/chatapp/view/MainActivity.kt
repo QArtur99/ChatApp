@@ -22,8 +22,9 @@ import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.model.User
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FileHelper
-import com.artf.chatapp.utils.FragmentState
 import com.artf.chatapp.utils.convertFromString
+import com.artf.chatapp.utils.states.AuthenticationState
+import com.artf.chatapp.utils.states.FragmentState
 import com.firebase.ui.auth.AuthUI
 import dagger.android.support.DaggerAppCompatActivity
 import java.io.File
@@ -46,17 +47,26 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        firebaseVm.startSignInActivity.observe(this, Observer {
-            it?.let {
-                startSignInActivity()
-                supportActionBar?.hide()
-                firebaseVm.setStartSignInActivity(null)
+
+        firebaseVm.authenticationState.observe(this, Observer {
+            when (it) {
+                AuthenticationState.AUTHENTICATED -> onAuthenticated()
+                AuthenticationState.UNAUTHENTICATED -> onUnathenticated()
+                AuthenticationState.INVALID_AUTHENTICATION -> TODO()
             }
         })
 
-        firebaseVm.signIn.observe(this, Observer { supportActionBar?.show() })
         setFragmentStateListener()
         checkNotificationIntent()
+        supportActionBar?.hide()
+    }
+
+    private fun onAuthenticated() {
+        supportActionBar?.show()
+    }
+
+    private fun onUnathenticated() {
+        startSignInActivity()
         supportActionBar?.hide()
     }
 
