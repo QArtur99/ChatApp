@@ -73,6 +73,7 @@ dependencies {
     implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
     implementation "com.firebaseui:firebase-ui-auth:$versions.firebase_ui_auth"
     implementation "com.facebook.android:facebook-android-sdk:$versions.facebook"
+    implementation 'com.google.guava:guava:28.2-jre'
 
     //Glide
     implementation "com.github.bumptech.glide:glide:$versions.glide"
