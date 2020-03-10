@@ -9,7 +9,8 @@ data class User(
     @field:JvmField var isOnline: Boolean? = null,
     var lastSeenTimestamp: Any? = null,
     var photoUrl: String? = null,
-    var usernameList: List<String>? = null
+    var usernameList: List<String>? = null,
+    var fcmTokenList: MutableList<String>? = null
 ) {
     companion object {
         fun nameToArray(username: String): List<String> {

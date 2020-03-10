@@ -14,7 +14,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.artf.chatapp.R
 import com.artf.chatapp.view.MainActivity
 
-class NotificationWorkerUtils {
+class NotificationUtils {
 
     companion object {
         private val VERBOSE_CHANNEL_NAME: CharSequence = "Verbose WorkManager Notifications"

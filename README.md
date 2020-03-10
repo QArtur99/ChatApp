@@ -65,20 +65,7 @@ Awesome! If you would like to contribute with a new feature or submit a bugfix, 
 #### Getting Started
 * Create Firebase project.
 * In Firebase console enable all Firebase services listed in section Features.
-* To turn on notifications deploy following function to Firebase functions service. 
-```
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp(functions.config().firebase);
-const db = admin.firestore();
-
-exports.sendNotification = functions.firestore
-  .document('chatRooms/{chatRoomId}/chatRoom/{messageId}')
-  .onCreate((snap, context) => {
-    const message = snap.data();
-    return db.collection("users").doc(message.receiverId).collection("notifications").doc().set(message);
-  });
-```
+* To turn on notifications deploy following [function](https://github.com/QArtur99/ChatApp/tree/master/chatFun/functions/index.js) to Firebase functions service. 
 
 #### Android Studio IDE setup 
 ChatApp uses [ktlint](https://ktlint.github.io/) to enforce Kotlin coding styles.

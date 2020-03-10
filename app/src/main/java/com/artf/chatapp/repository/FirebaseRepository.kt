@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
@@ -281,6 +282,7 @@ class FirebaseRepository @Inject constructor() {
         val usernameLowerCase = username.toLowerCase()
         mUser?.username = usernameLowerCase
         mUser?.usernameList = User.nameToArray(usernameLowerCase)
+        mUser?.fcmTokenList = arrayListOf()
         dbRefUsernames.document(usernameLowerCase).set(mUser!!)
             .addOnSuccessListener {
                 addUser { callBack(it) }
@@ -303,10 +305,23 @@ class FirebaseRepository @Inject constructor() {
     }
 
     private fun updateUser(userId: String, isOnline: Boolean) {
-        val map = mutableMapOf<String, Any>()
-        map["isOnline"] = isOnline
-        map["lastSeenTimestamp"] = FieldValue.serverTimestamp()
-        dbRefUsers.document(userId).update(map)
+        nonUiScope.launch {
+            val map = mutableMapOf<String, Any>()
+            updateFcmToken(map, isOnline)
+            map["isOnline"] = isOnline
+            map["lastSeenTimestamp"] = FieldValue.serverTimestamp()
+            dbRefUsers.document(userId).update(map)
+        }
+    }
+
+    private suspend fun updateFcmToken(map: MutableMap<String, Any>, isOnline: Boolean) {
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
+            val refreshedToken = it.result?.token ?: return@addOnCompleteListener
+            val fcmTokenList = mUser?.fcmTokenList ?: arrayListOf()
+            if (isOnline) fcmTokenList.add(refreshedToken) else fcmTokenList.remove(refreshedToken)
+            fcmTokenList.distinct()
+            map["fcmToken"] = fcmTokenList
+        }.await()
     }
 
     private fun addSenderChatRoom() {

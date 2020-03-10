@@ -13,10 +13,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import com.artf.chatapp.App
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.model.User
@@ -36,18 +32,21 @@ class MainActivity : DaggerAppCompatActivity() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binding: ActivityMainBinding
+    private val navigationManager by lazy { NavigationManager(this, binding) }
     private val firebaseVm: FirebaseViewModel by viewModels { viewModelFactory }
-
-    private val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-    private val uriUsername = Uri.parse("atr:fragment_username")
-    private val uriChat = Uri.parse("atr:fragment_chat")
-    private val uriSearch = Uri.parse("atr:fragment_search")
-    private val uriStart = Uri.parse("atr:fragment_start")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+        observeAuthState()
+        observeFragmentState()
+
+        checkNotificationIntent()
+        supportActionBar?.hide()
+    }
+
+    private fun observeAuthState() {
         firebaseVm.authenticationState.observe(this, Observer {
             when (it) {
                 AuthenticationState.AUTHENTICATED -> onAuthenticated()
@@ -55,10 +54,12 @@ class MainActivity : DaggerAppCompatActivity() {
                 AuthenticationState.INVALID_AUTHENTICATION -> TODO()
             }
         })
+    }
 
-        setFragmentStateListener()
-        checkNotificationIntent()
-        supportActionBar?.hide()
+    private fun observeFragmentState() {
+        firebaseVm.fragmentState.observe(this, Observer {
+            it?.let { navigationManager.onFtagmentStateChange(it) }
+        })
     }
 
     private fun onAuthenticated() {
@@ -79,45 +80,12 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun setFragmentStateListener() {
-        Navigation.setViewNavController(binding.root, findNavController(R.id.nav_host_fragment))
-
-        binding.root.findNavController()
-            .addOnDestinationChangedListener { controller, destination, arguments ->
-                when (destination.label) {
-                    "ChatFragment" -> {
-                    }
-                    else -> App.receiverId = ""
-                }
-            }
-
-        firebaseVm.fragmentState.observe(this, Observer {
-            it?.let {
-                when (it) {
-                    FragmentState.USERNAME -> binding.root.findNavController().navigate(
-                        uriUsername,
-                        navOptions
-                    )
-                    FragmentState.START -> binding.root.findNavController().navigate(
-                        uriStart,
-                        navOptions
-                    )
-                    FragmentState.CHAT -> binding.root.findNavController().navigate(
-                        uriChat,
-                        navOptions
-                    )
-                }
-            }
-        })
-    }
-
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FirebaseRepository.RC_SIGN_IN) {
-            if (resultCode == Activity.RESULT_OK) {
-                supportActionBar?.show()
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                finish()
+            when (resultCode) {
+                Activity.RESULT_OK -> supportActionBar?.show()
+                Activity.RESULT_CANCELED -> finish()
             }
         } else if (requestCode == FirebaseRepository.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {
             val picUri = if (data != null) data.data!! else galleryAddPic()
@@ -138,13 +106,12 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun startSignInActivity() {
-        val providers =
-            mutableListOf(
-                AuthUI.IdpConfig.EmailBuilder().build(),
-                AuthUI.IdpConfig.FacebookBuilder().build(),
-                AuthUI.IdpConfig.GoogleBuilder().build(),
-                AuthUI.IdpConfig.PhoneBuilder().build()
-            )
+        val providers = mutableListOf(
+            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.FacebookBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.PhoneBuilder().build()
+        )
 
         startActivityForResult(
             AuthUI.getInstance()
@@ -171,7 +138,6 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun setSearchViewListener(searchView: SearchView) {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                // callSearch(query)
                 return true
             }
 
