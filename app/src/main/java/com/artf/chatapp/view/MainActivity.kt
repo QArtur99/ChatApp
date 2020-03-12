@@ -58,7 +58,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private fun observeFragmentState() {
         firebaseVm.fragmentState.observe(this, Observer {
-            it?.let { navigationManager.onFtagmentStateChange(it) }
+            it?.let { navigationManager.onFragmentStateChange(it) }
         })
     }
 

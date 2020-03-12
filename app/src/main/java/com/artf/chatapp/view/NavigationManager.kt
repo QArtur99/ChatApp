@@ -39,7 +39,7 @@ class NavigationManager(activity: AppCompatActivity, val binding: ActivityMainBi
         addOnDestinationChangedListener(binding.root.findNavController())
     }
 
-    fun onFtagmentStateChange(fragmentState: FragmentState) = when (fragmentState) {
+    fun onFragmentStateChange(fragmentState: FragmentState) = when (fragmentState) {
         FragmentState.USERNAME -> navigateTo(uriUsername, navOptions)
         FragmentState.START -> navigateTo(uriStart, navOptions)
         FragmentState.CHAT -> navigateTo(uriChat, navOptions)
