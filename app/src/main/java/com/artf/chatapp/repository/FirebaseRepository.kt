@@ -17,15 +17,13 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
-class FirebaseRepository @Inject constructor() {
+class FirebaseRepository @Inject constructor(private val ioDispatcher: CoroutineDispatcher) {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -35,9 +33,6 @@ class FirebaseRepository @Inject constructor() {
         const val MSG_LENGTH_KEY = "friendly_msg_length"
         val TAG = FirebaseRepository::class.java.simpleName
     }
-
-    private var viewModelJob = Job()
-    private val nonUiScope = CoroutineScope(viewModelJob + Dispatchers.Default)
 
     private var mUser: User? = null
 
@@ -71,15 +66,14 @@ class FirebaseRepository @Inject constructor() {
         fetchConfig()
     }
 
-    fun onSignedIn(userId: String) {
-        mUser = User(userId)
-        getUser(userId)
+    suspend fun onSignedIn(userId: String) {
+        mUser = getUser(userId)
         updateUser(userId, true)
         attachUserChatRoomsListener()
         receiverId?.let { setChatRoomId(it) }
     }
 
-    fun onSignedOut() {
+    suspend fun onSignedOut() {
         mUser?.userId?.let { updateUser(it, false) }
         detachDatabaseListeners()
         this.mUser = null
@@ -188,7 +182,7 @@ class FirebaseRepository @Inject constructor() {
     }
 
     suspend fun getAudio(msg: Message) {
-        nonUiScope.launch { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }.join()
+        withContext(ioDispatcher) { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }
     }
 
     private fun detachDatabaseListeners() {
@@ -292,26 +286,23 @@ class FirebaseRepository @Inject constructor() {
             }
     }
 
-    private fun getUser(userId: String) {
-        dbRefUsers.document(userId).get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    this.mUser = document.toObject(User::class.java)
-                } else onFragmentStateChanged?.invoke(FragmentState.USERNAME)
-            }
-            .addOnFailureListener {
-                onFragmentStateChanged?.invoke(FragmentState.USERNAME)
-            }
+    private suspend fun getUser(userId: String): User? {
+        var user = User(userId)
+        try {
+            val documentSnapshot = dbRefUsers.document(userId).get().await()
+            user = documentSnapshot.toObject(User::class.java)!!
+        } catch (e: FirebaseFirestoreException) {
+            onFragmentStateChanged?.invoke(FragmentState.USERNAME)
+        }
+        return user
     }
 
-    private fun updateUser(userId: String, isOnline: Boolean) {
-        nonUiScope.launch {
-            val map = mutableMapOf<String, Any>()
-            updateFcmToken(map, isOnline)
-            map["isOnline"] = isOnline
-            map["lastSeenTimestamp"] = FieldValue.serverTimestamp()
-            dbRefUsers.document(userId).update(map)
-        }
+    private suspend fun updateUser(userId: String, isOnline: Boolean) {
+        val map = mutableMapOf<String, Any>()
+        updateFcmToken(map, isOnline)
+        map["isOnline"] = isOnline
+        map["lastSeenTimestamp"] = FieldValue.serverTimestamp()
+        dbRefUsers.document(userId).update(map)
     }
 
     private suspend fun updateFcmToken(map: MutableMap<String, Any>, isOnline: Boolean) {
@@ -403,8 +394,6 @@ class FirebaseRepository @Inject constructor() {
     }
 
     fun stopListening() {
-        mUser?.userId?.let { updateUser(it, false) }
-        viewModelJob.cancel()
         detachDatabaseListeners()
     }
 }

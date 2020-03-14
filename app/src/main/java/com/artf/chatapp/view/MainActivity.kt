@@ -49,9 +49,9 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun observeAuthState() {
         firebaseVm.authenticationState.observe(this, Observer {
             when (it) {
-                AuthenticationState.AUTHENTICATED -> onAuthenticated()
-                AuthenticationState.UNAUTHENTICATED -> onUnathenticated()
-                AuthenticationState.INVALID_AUTHENTICATION -> TODO()
+                is AuthenticationState.Authenticated -> onAuthenticated()
+                is AuthenticationState.Unauthenticated -> onUnathenticated()
+                is AuthenticationState.InvalidAuthentication -> TODO()
             }
         })
     }

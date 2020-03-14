@@ -1,5 +1,7 @@
 package com.artf.chatapp.utils.states
 
-enum class AuthenticationState {
-    AUTHENTICATED, UNAUTHENTICATED, INVALID_AUTHENTICATION
+sealed class AuthenticationState {
+    class Authenticated(val userId: String) : AuthenticationState()
+    object Unauthenticated : AuthenticationState()
+    object InvalidAuthentication : AuthenticationState()
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
@@ -20,8 +21,6 @@ import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.Timestamp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,11 +29,8 @@ class FirebaseViewModel @Inject constructor(
     private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
 
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
     private var isUsernameAvailableJob: Job? = null
     private var searchForUserJob: Job? = null
-    private var mUser: User? = null
 
     private val _userList = MutableLiveData<List<User>>()
     val userList: LiveData<List<User>> = _userList
@@ -82,13 +78,13 @@ class FirebaseViewModel @Inject constructor(
 
     val authenticationState = FirebaseUserLiveData().map { user ->
         if (user != null) {
-            firebaseRepository.onSignedIn(user.uid)
+            viewModelScope.launch { firebaseRepository.onSignedIn(user.uid) }
             onSignIn()
-            AuthenticationState.AUTHENTICATED
+            AuthenticationState.Authenticated(user.uid)
         } else {
-            firebaseRepository.onSignedOut()
+            viewModelScope.launch { firebaseRepository.onSignedOut() }
             onSignOut()
-            AuthenticationState.UNAUTHENTICATED
+            AuthenticationState.Unauthenticated
         }
     }
 
@@ -106,7 +102,7 @@ class FirebaseViewModel @Inject constructor(
     }
 
     private fun getAudio(msg: Message) {
-        uiScope.launch {
+        viewModelScope.launch {
             msg.setAudioDownloaded(false)
             firebaseRepository.getAudio(msg)
             msg.setAudioDownloaded(true)
@@ -117,8 +113,8 @@ class FirebaseViewModel @Inject constructor(
     }
 
     private fun onSignOut() {
-            _msgList.clear()
-            _chatRoomList.clearChatRoomList()
+        _msgList.clear()
+        _chatRoomList.clearChatRoomList()
     }
 
     private fun setOnChatRoomListSort() {
@@ -141,7 +137,7 @@ class FirebaseViewModel @Inject constructor(
 
     fun onSearchTextChange(newText: String) {
         searchForUserJob?.cancel()
-        searchForUserJob = uiScope.launch {
+        searchForUserJob = viewModelScope.launch {
             firebaseRepository.searchForUser(newText) { networkState, userList ->
                 _userList.value = userList
                 _userSearchStatus.value = networkState
@@ -151,7 +147,7 @@ class FirebaseViewModel @Inject constructor(
 
     fun isUsernameAvailable(username: String) {
         isUsernameAvailableJob?.cancel()
-        isUsernameAvailableJob = uiScope.launch {
+        isUsernameAvailableJob = viewModelScope.launch {
             firebaseRepository.isUsernameAvailable(username) {
                 _usernameStatus.value = it
             }
@@ -182,7 +178,6 @@ class FirebaseViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        viewModelJob.cancel()
         _chatRoomList.clearChatRoomList()
         firebaseRepository.stopListening()
     }
