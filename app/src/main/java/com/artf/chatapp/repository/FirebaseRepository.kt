@@ -116,8 +116,8 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
 
     private fun loadChatRooms(chatRoomList: List<Chat>): List<Chat> {
         for (chat in chatRoomList) {
-            val receiverId =
-                (if (chat.receiverId != mUser?.userId) chat.receiverId else chat.senderId)
+            val isReceiver = chat.receiverId != mUser?.userId
+            val receiverId = if (isReceiver) chat.receiverId else chat.senderId
             receiverId?.let { chat.userLr = getReceiver(chat, receiverId) }
             chat.chatId?.let { chat.msgLr = setSingleMsgListener(chat) }
         }
