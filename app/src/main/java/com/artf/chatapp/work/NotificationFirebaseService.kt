@@ -29,7 +29,9 @@ class NotificationFirebaseService : FirebaseMessagingService() {
 
     override fun onNewToken(newToken: String) {
         super.onNewToken(newToken)
-        val refreshedToken = FirebaseInstanceId.getInstance().instanceId.result?.token
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
+            val refreshedToken = it.result?.token ?: return@addOnCompleteListener
+        }
     }
 
     private suspend fun createNotifications(message: Message) {

@@ -5,11 +5,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
+import com.artf.chatapp.utils.Utility
 
 class SplashActivity : AppCompatActivity() {
 
@@ -35,10 +35,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun checkPermissions() {
         if (checkHasPermissions().not()) {
-            ActivityCompat.requestPermissions(this,
-                INITIAL_PERMS,
-                INITIAL_REQUEST
-            )
+            ActivityCompat.requestPermissions(this, INITIAL_PERMS, INITIAL_REQUEST)
         } else {
             startApp()
         }
@@ -47,11 +44,13 @@ class SplashActivity : AppCompatActivity() {
     private fun checkHasPermissions(): Boolean {
         var result = false
         for (i in INITIAL_PERMS) {
-            val granted =
-                ContextCompat.checkSelfPermission(this, i) == PackageManager.PERMISSION_GRANTED
-            result = if (granted) true else return false
+            result = if (isPermissionGranted(i)) true else return false
         }
         return result
+    }
+
+    private fun isPermissionGranted(i: String): Boolean {
+        return checkSelfPermission(this, i) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
@@ -59,7 +58,7 @@ class SplashActivity : AppCompatActivity() {
             INITIAL_REQUEST -> if (checkHasPermissions()) {
                 startApp()
             } else {
-                Toast.makeText(this, "Permissions are necessary", Toast.LENGTH_SHORT).show()
+                Utility.makeText(this, "Permissions are necessary")
                 Handler().postDelayed({ checkPermissions() }, 1500)
             }
         }

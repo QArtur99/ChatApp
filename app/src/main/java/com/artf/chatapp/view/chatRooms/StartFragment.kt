@@ -28,14 +28,15 @@ class StartFragment : DaggerFragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
-        binding.recyclerView.adapter = ChatListAdapter(
-            this,
-            ChatListAdapter.OnClickListener { user ->
-                firebaseVm.setReceiver(user.user.value)
-                firebaseVm.setFragmentState(FragmentState.CHAT)
-            })
-
+        binding.recyclerView.adapter = ChatListAdapter(this, getOnRoomClickListener())
         firebaseVm.setMsgList(mutableListOf())
         return binding.root
+    }
+
+    private fun getOnRoomClickListener(): ChatListAdapter.OnClickListener {
+        return ChatListAdapter.OnClickListener { user ->
+            firebaseVm.setReceiver(user.user.value)
+            firebaseVm.setFragmentState(FragmentState.CHAT)
+        }
     }
 }

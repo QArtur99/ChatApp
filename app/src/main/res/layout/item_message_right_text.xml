@@ -10,7 +10,7 @@
 
         <variable
             name="msgAdapterInt"
-            type="com.artf.chatapp.view.chatRoom.MsgAdapter.MsgAdapterInt" />
+            type="com.artf.chatapp.view.chatRoom.MsgAdapter.MsgAdapterListener" />
     </data>
 
 

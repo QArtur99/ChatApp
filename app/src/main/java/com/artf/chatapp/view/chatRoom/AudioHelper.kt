@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.artf.chatapp.R
@@ -41,12 +40,12 @@ class AudioHelper(private val activity: AppCompatActivity) {
 
         if (view.isActivated.not()) {
             playButton = view
-            seekBar = (view.parent as ConstraintLayout).findViewById(R.id.seekBar)
-            audioTimeTextView =
-                (view.parent as ConstraintLayout).findViewById(R.id.audioTimeTextView)
+            val parentView = view.parent as ConstraintLayout
+            seekBar = parentView.findViewById(R.id.seekBar)
+            audioTimeTextView = parentView.findViewById(R.id.audioTimeTextView)
             playFileName = message.audioFile
             stopPlaying()
-            startPlaying { getTime() }
+            startPlaying()
             view.isActivated = true
         } else {
             pauseTime = player?.currentPosition
@@ -55,22 +54,21 @@ class AudioHelper(private val activity: AppCompatActivity) {
         }
     }
 
-    fun setSeekBarTimer() {
-        timer = Timer()
-        timer?.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                if (player == null) {
-                    timer?.cancel()
-                    return
-                }
-                activity.runOnUiThread {
-                    if (player == null) return@runOnUiThread
-                    val audioTimeTextView = audioTimeTextView ?: return@runOnUiThread
-                    seekBar?.progress = player!!.currentPosition * 100 / player!!.duration
-                    Utility.setAudioTimeMmSs(audioTimeTextView, player!!.currentPosition.toLong())
-                }
-            }
-        }, 0, 20)
+    private fun setSeekBarTimer() {
+        timer = Timer().apply { scheduleAtFixedRate(getTimerTask(), 0, 20) }
+    }
+
+    private fun getTimerTask() = object : TimerTask() {
+        override fun run() {
+            if (player == null) timer?.cancel() else activity.runOnUiThread { setSeekBarPosition() }
+        }
+    }
+
+    private fun setSeekBarPosition() {
+        if (player == null) return
+        val audioTimeTextView = audioTimeTextView ?: return
+        seekBar?.progress = player!!.currentPosition * 100 / player!!.duration
+        Utility.setAudioTimeMmSs(audioTimeTextView, player!!.currentPosition.toLong())
     }
 
     fun setAudioTime(seekBar: SeekBar, textView: TextView, duration: Long) {
@@ -78,39 +76,34 @@ class AudioHelper(private val activity: AppCompatActivity) {
         Utility.setAudioTimeMmSs(textView, time)
     }
 
-    fun getTime(): Int {
-        val totalDuration = player?.duration
-        return totalDuration!! * seekBar?.progress!! / 100
-    }
-
-    fun startPlaying(getPosition: () -> Int) {
-        player = MediaPlayer()
-        player?.apply {
-
-            setOnCompletionListener {
-                audioTimeTextView?.let { Utility.setAudioTimeMmSs(it, duration.toLong()) }
-                stopPlaying()
-                playButton?.isActivated = false
-                seekBar?.progress = 0
-            }
-
+    fun startPlaying() {
+        player = MediaPlayer().apply {
+            setOnCompletionListener { onCompleted() }
             try {
-                setDataSource(playFileName)
-                prepare()
-                start()
-                seekTo(getPosition.invoke())
-                setSeekBarTimer()
+                setDataSource(playFileName); prepare(); start()
+                seekTo(getTime(this)); setSeekBarTimer()
             } catch (e: IOException) {
                 Log.e(ChatFragment.TAG, "prepare() failed")
             }
         }
     }
 
+    private fun MediaPlayer.onCompleted() {
+        audioTimeTextView?.let { Utility.setAudioTimeMmSs(it, duration.toLong()) }
+        stopPlaying()
+        playButton?.isActivated = false
+        seekBar?.progress = 0
+    }
+
+    private fun getTime(mediaPlayer: MediaPlayer): Int {
+        val seekBarProgress = seekBar?.progress ?: return 0
+        return mediaPlayer.duration * seekBarProgress / 100
+    }
+
     fun stopPlaying() {
         stopTimer()
         try {
-            player?.stop()
-            player?.release()
+            player?.apply { stop(); release() }
             player = null
         } catch (stopException: RuntimeException) {
             Log.e(ChatFragment.TAG, "stop() failed")
@@ -118,46 +111,41 @@ class AudioHelper(private val activity: AppCompatActivity) {
     }
 
     fun stopTimer() {
-        timer?.cancel()
-        timer = null
+        timer?.cancel(); timer = null
     }
 
     fun startRecording() {
-        recordFileName = FileHelper.createMediaFile(
-            activity,
-            FileHelper.RECORDS_FOLDER_NAME,
-            FileHelper.DATE_FORMAT,
-            FileHelper.RECORD_PREFIX,
-            FileHelper.RECORD_EXT
-        )?.absolutePath
-
         recorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            setOutputFile(recordFileName)
+            setOutputFile(getRecordFilePath())
             setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
             try {
-                prepare()
-                start()
+                prepare(); start()
                 recorderDuration = System.currentTimeMillis()
             } catch (e: IOException) {
                 Log.e(ChatFragment.TAG, "prepare() failed")
             } catch (e: IllegalStateException) {
                 Log.e(ChatFragment.TAG, "prepare() failed")
-                Toast.makeText(
-                    activity,
-                    activity.resources.getString(R.string.record_failed),
-                    Toast.LENGTH_LONG
-                ).show()
+                Utility.makeText(activity, R.string.record_failed)
             }
         }
+    }
+
+    private fun getRecordFilePath(): String? {
+        return FileHelper.createMediaFile(
+            activity,
+            FileHelper.RECORDS_FOLDER_NAME,
+            FileHelper.DATE_FORMAT,
+            FileHelper.RECORD_PREFIX,
+            FileHelper.RECORD_EXT
+        )?.absolutePath.apply { recordFileName = this }
     }
 
     fun stopRecording() {
         recorderDuration?.let { recorderDuration = System.currentTimeMillis().minus(it) }
         try {
-            recorder?.stop()
-            recorder?.release()
+            recorder?.apply { stop(); release() }
             recorder = null
         } catch (stopException: RuntimeException) {
             Log.e(ChatFragment.TAG, "stop() failed")

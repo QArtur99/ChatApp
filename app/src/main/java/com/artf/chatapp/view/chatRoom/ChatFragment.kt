@@ -20,9 +20,10 @@ import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.repository.FirebaseRepository
 import com.artf.chatapp.utils.FileHelper
-import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.utils.Utility
+import com.artf.chatapp.utils.bindingFakeAudioProgress
 import com.artf.chatapp.utils.extension.afterTextChanged
+import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -40,7 +41,7 @@ class ChatFragment : DaggerFragment() {
         audioUrl = LOADING,
         audioFile = LOADING,
         isOwner = true
-    ).apply { setAudioDownloaded(false) }
+    )
 
     private val fakeMsg = Message(
         photoUrl = LOADING,
@@ -66,178 +67,133 @@ class ChatFragment : DaggerFragment() {
 
         audioHelper = AudioHelper((activity as AppCompatActivity?)!!)
 
-        adapter = MsgAdapter(viewLifecycleOwner, getMsgAdapterInt())
+        adapter = MsgAdapter(getMsgAdapterListener())
         binding.recyclerView.layoutAnimation = null
         binding.recyclerView.itemAnimator = null
         binding.recyclerView.adapter = adapter
 
-        pushPhotoStateListener()
-        pushAudioStateListener()
-
-        binding.progressBar.visibility = ProgressBar.INVISIBLE
-
-        binding.photoPickerButton.setOnClickListener {
-            val intentGallery = Intent(Intent.ACTION_PICK)
-            intentGallery.type = "image/jpeg, image/png"
-            intentGallery.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-
-            val chooserIntent = Intent.createChooser(intentGallery, "Select picture")
-            FileHelper.createMediaFile(
-                context!!,
-                FileHelper.PHOTOS_FOLDER_NAME,
-                FileHelper.DATE_FORMAT,
-                FileHelper.PHOTO_PREFIX,
-                FileHelper.PHOTO_EXT
-            )?.let { photoFile ->
-                val cameraIntent = Utility.getCameraIntent(context!!, photoFile)
-                FileHelper.currentPhotoPath = photoFile.absolutePath
-                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
-            }
-            activity!!.startActivityForResult(chooserIntent, FirebaseRepository.RC_PHOTO_PICKER)
-        }
+        observePushPhotoState()
+        observePushAudioState()
 
         binding.messageEditText.afterTextChanged { text ->
             binding.sendButton.isActivated = text.isNotBlank()
         }
 
-        binding.sendButton.setOnTouchListener { view, motionEvent ->
+        binding.photoPickerButton.setOnClickListener { onPhotoPickerClick() }
+        binding.sendButton.setOnTouchListener(onSendButtonTouch())
+
+        binding.sendButton.isActivated = false
+        binding.progressBar.visibility = ProgressBar.INVISIBLE
+        return binding.root
+    }
+
+    private fun onPhotoPickerClick() {
+        val intentGallery = Intent(Intent.ACTION_PICK)
+        intentGallery.type = "image/jpeg, image/png"
+        intentGallery.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+
+        val chooserIntent = Intent.createChooser(intentGallery, "Select picture")
+        FileHelper.createMediaFile(
+            requireContext(),
+            FileHelper.PHOTOS_FOLDER_NAME,
+            FileHelper.DATE_FORMAT,
+            FileHelper.PHOTO_PREFIX,
+            FileHelper.PHOTO_EXT
+        )?.let { photoFile ->
+            val cameraIntent = Utility.getCameraIntent(requireContext(), photoFile)
+            FileHelper.currentPhotoPath = photoFile.absolutePath
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+        }
+
+        requireActivity().startActivityForResult(chooserIntent, FirebaseRepository.RC_PHOTO_PICKER)
+    }
+
+    private fun onSendButtonTouch() = object : View.OnTouchListener {
+        override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
             when (view.isActivated) {
                 true -> onSendButtonClick(motionEvent, view)
-                false -> if (onMicButtonClick(motionEvent)) return@setOnTouchListener true
+                false -> if (onMicButtonClick(motionEvent)) return true
             }
 
             when (motionEvent.action) {
                 MotionEvent.ACTION_UP -> view.isPressed = false
                 MotionEvent.ACTION_DOWN -> view.isPressed = true
             }
-            true
+            return true
         }
-
-        binding.sendButton.isActivated = false
-        return binding.root
     }
 
     private fun onSendButtonClick(motionEvent: MotionEvent, view: View) {
         when (motionEvent.action) {
             MotionEvent.ACTION_UP -> {
-                if (view.isActivated) {
-                    firebaseVm.pushMsg(binding.messageEditText.text.toString())
-                }
+                if (view.isActivated) pushMsg()
                 binding.messageEditText.setText("")
             }
         }
     }
 
+    private fun pushMsg() {
+        firebaseVm.pushMsg(binding.messageEditText.text.toString())
+    }
+
     private fun onMicButtonClick(motionEvent: MotionEvent): Boolean {
         when (motionEvent.action) {
-            MotionEvent.ACTION_DOWN -> {
-                audioHelper.startRecording()
-            }
+            MotionEvent.ACTION_DOWN -> audioHelper.startRecording()
             MotionEvent.ACTION_UP -> {
                 audioHelper.stopRecording()
                 val recordFileName = audioHelper.recordFileName ?: return false
                 val recorderDuration = audioHelper.recorderDuration ?: 0
-                if (recorderDuration > 1000) {
-                    fakeMsgAudio.apply {
-                        audioFile = recordFileName
-                        audioDuration = recorderDuration
-                    }
-                    firebaseVm.pushAudio(recordFileName, recorderDuration)
-                }
+                if (recorderDuration > 1000) pushAudio(recordFileName, recorderDuration)
             }
         }
         return false
     }
 
-    private fun pushPhotoStateListener() {
+    private fun pushAudio(recordFileName: String, recorderDuration: Long) {
+        fakeMsgAudio.apply {
+            audioFile = recordFileName
+            audioDuration = recorderDuration
+        }
+        firebaseVm.pushAudio(recordFileName, recorderDuration)
+    }
+
+    private fun observePushPhotoState() {
         firebaseVm.pushImgStatus.observe(viewLifecycleOwner, Observer {
             when (it) {
                 NetworkState.LOADING -> {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.add(fakeMsg)
-                    adapter.submitList(newList) {
-                        binding.recyclerView.layoutManager?.scrollToPosition(
-                            adapter.itemCount - 1
-                        )
-                    }
+                    adapter.submitList(newList) { scrollToPosition() }
                     adapter.notifyDataSetChanged()
-                }
-                // NetworkState.LOADED -> {
-                //     val newList = mutableListOf<Message>()
-                //     newList.addAll(adapter.currentList)
-                //     newList.remove(fakeMsg)
-                //     adapter.submitList(newList) {
-                //         binding.recyclerView.layoutManager?.scrollToPosition(
-                //             adapter.itemCount - 1
-                //         )
-                //     }
-                //     adapter.notifyDataSetChanged()
-                // }
-                // NetworkState.FAILED -> {
-                //     val newList = mutableListOf<Message>()
-                //     newList.addAll(adapter.currentList)
-                //     newList.remove(fakeMsg)
-                //     adapter.submitList(newList) {
-                //         binding.recyclerView.layoutManager?.scrollToPosition(
-                //             adapter.itemCount - 1
-                //         )
-                //     }
-                //     adapter.notifyDataSetChanged()
-                // }
-                else -> {
                 }
             }
         })
     }
 
-    private fun pushAudioStateListener() {
+    private fun observePushAudioState() {
         firebaseVm.pushAudioStatus.observe(viewLifecycleOwner, Observer {
             when (it) {
                 NetworkState.LOADING -> {
                     val newList = mutableListOf<Message>()
                     newList.addAll(adapter.currentList)
                     newList.add(fakeMsgAudio)
-                    adapter.submitList(newList) {
-                        binding.recyclerView.layoutManager?.scrollToPosition(
-                            adapter.itemCount - 1
-                        )
-                    }
+                    adapter.submitList(newList) { scrollToPosition() }
                     adapter.notifyDataSetChanged()
-                }
-                // NetworkState.LOADED -> {
-                //     val newList = mutableListOf<Message>()
-                //     newList.addAll(adapter.currentList)
-                //     newList.remove(fakeMsgAudio)
-                //     adapter.submitList(newList) {
-                //         binding.recyclerView.layoutManager?.scrollToPosition(
-                //             adapter.itemCount - 1
-                //         )
-                //     }
-                //     adapter.notifyDataSetChanged()
-                // }
-                // NetworkState.FAILED -> {
-                //     val newList = mutableListOf<Message>()
-                //     newList.addAll(adapter.currentList)
-                //     newList.remove(fakeMsgAudio)
-                //     adapter.submitList(newList) {
-                //         binding.recyclerView.layoutManager?.scrollToPosition(
-                //             adapter.itemCount - 1
-                //         )
-                //     }
-                //     adapter.notifyDataSetChanged()
-                // }
-                else -> {
                 }
             }
         })
     }
 
-    private fun getMsgAdapterInt(): MsgAdapter.MsgAdapterInt {
-        return object : MsgAdapter.MsgAdapterInt {
+    private fun scrollToPosition() {
+        binding.recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1)
+    }
+
+    private fun getMsgAdapterListener(): MsgAdapter.MsgAdapterListener {
+        return object : MsgAdapter.MsgAdapterListener {
             override fun showPic(view: View, message: Message) {
                 val reviewDialog = PhotoDialog(message.photoUrl!!)
-                reviewDialog.show(requireFragmentManager(), PhotoDialog::class.simpleName)
+                reviewDialog.show(parentFragmentManager, PhotoDialog::class.simpleName)
             }
 
             override fun getVm(): FirebaseViewModel {
@@ -245,30 +201,28 @@ class ChatFragment : DaggerFragment() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar, item: Message) {
-                val playButton =
-                    (seekBar.parent as ConstraintLayout).findViewById<View>(R.id.playButton)
-                if (playButton.isActivated) {
-                    audioHelper.stopTimer()
-                }
+                val parentView = seekBar.parent as ConstraintLayout
+                val playButton = parentView.findViewById<View>(R.id.playButton)
+                if (playButton.isActivated) audioHelper.stopTimer()
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar, item: Message) {
-                val playButton =
-                    (seekBar.parent as ConstraintLayout).findViewById<View>(R.id.playButton)
+                val parentView = seekBar.parent as ConstraintLayout
+                val playButton = parentView.findViewById<View>(R.id.playButton) ?: return
                 if (playButton.isActivated) {
                     audioHelper.stopTimer()
                     audioHelper.stopPlaying()
-                    playButton?.let { if (it.isActivated) audioHelper.startPlaying { audioHelper.getTime() } }
+                    audioHelper.startPlaying()
                 } else {
-                    val audioTimeTextView =
-                        (seekBar.parent as ConstraintLayout).findViewById<TextView>(R.id.audioTimeTextView)
-                    item.audioDuration?.let { audioHelper.setAudioTime(seekBar, audioTimeTextView, it) }
+                    val audioTimeView = parentView.findViewById<TextView>(R.id.audioTimeTextView)
+                    val audioDuration = item.audioDuration ?: return
+                    audioHelper.setAudioTime(seekBar, audioTimeView, audioDuration)
                 }
             }
 
             override fun onAudioClick(view: View, message: Message) {
-                if (message.audioDownloaded.value != true) return
-                audioHelper.setupAudioHelper(view, message)
+                if (message.audioDownloaded.not()) bindingFakeAudioProgress(view, message)
+                else audioHelper.setupAudioHelper(view, message)
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.artf.chatapp.view.chatRooms
 
-import android.view.LayoutInflater
+import android.view.LayoutInflater.from
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.databinding.ItemChatBinding
 import com.artf.chatapp.model.Chat
 
-class ChatListAdapter(private val fragment: Fragment, private val clickListener: OnClickListener) : ListAdapter<Chat,
+class ChatListAdapter(private val fragment: Fragment, private val clickListener: OnClickListener) :
+    ListAdapter<Chat,
         RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -19,13 +20,17 @@ class ChatListAdapter(private val fragment: Fragment, private val clickListener:
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MsgViewHolder {
-        return MsgViewHolder(
-            ItemChatBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
+        return MsgViewHolder(ItemChatBinding.inflate(from(parent.context), parent, false))
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        (holder as MsgViewHolder).binding.lifecycleOwner = fragment
+        super.onViewAttachedToWindow(holder)
+    }
+
+    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+        (holder as MsgViewHolder).binding.lifecycleOwner = null
+        super.onViewDetachedFromWindow(holder)
     }
 
     class MsgViewHolder constructor(val binding: ItemChatBinding) :

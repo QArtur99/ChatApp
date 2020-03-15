@@ -1,7 +1,5 @@
 package com.artf.chatapp.model
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 
@@ -25,13 +23,8 @@ data class Message(
     var readTimestamp: Any? = null
 ) {
 
-    private val _audioDownloaded = MutableLiveData<Boolean>()
     @get:Exclude
-    val audioDownloaded: LiveData<Boolean> = _audioDownloaded
-
-    fun setAudioDownloaded(audioDownloaded: Boolean) {
-        _audioDownloaded.value = audioDownloaded
-    }
+    var audioDownloaded = false
 
     fun setMessageId() {
         val timestamp = this.timestamp

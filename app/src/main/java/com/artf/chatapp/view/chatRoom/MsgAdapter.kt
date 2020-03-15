@@ -5,12 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.BR
-import com.artf.chatapp.view.FirebaseViewModel
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.ItemMessageLeftImgBinding
 import com.artf.chatapp.databinding.ItemMessageLeftRecordBinding
@@ -19,39 +17,39 @@ import com.artf.chatapp.databinding.ItemMessageRightImgBinding
 import com.artf.chatapp.databinding.ItemMessageRightRecordBinding
 import com.artf.chatapp.databinding.ItemMessageRightTextBinding
 import com.artf.chatapp.model.Message
+import com.artf.chatapp.view.FirebaseViewModel
 
 class MsgAdapter(
-    private val viewLifecycleOwner: LifecycleOwner,
-    private val msgAdapterInt: MsgAdapterInt
+    private val msgAdapterListener: MsgAdapterListener
 ) : ListAdapter<Message, RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = getItem(position)
-        (holder as MsgViewHolder<*>).bind(viewLifecycleOwner, msgAdapterInt, msg)
+        (holder as MsgViewHolder<*>).bind(msgAdapterListener, msg)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.item_message_left_text -> MsgViewHolder(
-                ItemMessageLeftTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_left_text -> ItemMessageLeftTextBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
-            R.layout.item_message_right_text -> MsgViewHolder(
-                ItemMessageRightTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_right_text -> ItemMessageRightTextBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
-            R.layout.item_message_left_img -> MsgViewHolder(
-                ItemMessageLeftImgBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_left_img -> ItemMessageLeftImgBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
-            R.layout.item_message_right_img -> MsgViewHolder(
-                ItemMessageRightImgBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_right_img -> ItemMessageRightImgBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
-            R.layout.item_message_left_record -> MsgViewHolder(
-                ItemMessageLeftRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_left_record -> ItemMessageLeftRecordBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
-            R.layout.item_message_right_record -> MsgViewHolder(
-                ItemMessageRightRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            R.layout.item_message_right_record -> ItemMessageRightRecordBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
             else -> throw IllegalArgumentException("unknown view type $viewType")
-        }
+        }.let { MsgViewHolder(it) }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -71,25 +69,33 @@ class MsgAdapter(
         }
     }
 
-    class MsgViewHolder<T : ViewDataBinding> constructor(val binding: T) : RecyclerView.ViewHolder(binding.root) {
+    class MsgViewHolder<T : ViewDataBinding> constructor(val binding: T) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(viewLifecycleOwner: LifecycleOwner, msgAdapterInt: MsgAdapterInt, item: Message) {
-            binding.lifecycleOwner = viewLifecycleOwner
+        fun bind(msgAdapterListener: MsgAdapterListener, item: Message) {
             binding.setVariable(BR.message, item)
-            binding.setVariable(BR.msgAdapterInt, msgAdapterInt)
+            binding.setVariable(BR.msgAdapterInt, msgAdapterListener)
             binding.executePendingBindings()
             val seekBar = binding.root.findViewById<SeekBar>(R.id.seekBar)
-            seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
+            seekBar?.setOnSeekBarChangeListener(getSeekBarChangeListener(msgAdapterListener, item))
+        }
+
+        private fun getSeekBarChangeListener(
+            msgAdapterListener: MsgAdapterListener,
+            item: Message
+        ): SeekBar.OnSeekBarChangeListener {
+            return object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {
-                    msgAdapterInt.onStartTrackingTouch(seekBar, item)
+                    msgAdapterListener.onStartTrackingTouch(seekBar, item)
                 }
 
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
-                    msgAdapterInt.onStopTrackingTouch(seekBar, item)
+                    msgAdapterListener.onStopTrackingTouch(seekBar, item)
                 }
-            })
+            }
         }
     }
 
@@ -103,7 +109,7 @@ class MsgAdapter(
         }
     }
 
-    interface MsgAdapterInt {
+    interface MsgAdapterListener {
         fun onAudioClick(view: View, message: Message)
         fun onStartTrackingTouch(seekBar: SeekBar, item: Message)
         fun onStopTrackingTouch(seekBar: SeekBar, item: Message)

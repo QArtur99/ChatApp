@@ -7,22 +7,27 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.view.chatRooms.ChatListAdapter
-import com.artf.chatapp.view.chatRoom.MsgAdapter
 import com.artf.chatapp.R
-import com.artf.chatapp.view.searchUser.SearchAdapter
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
+import com.artf.chatapp.utils.extension.saveTo
 import com.artf.chatapp.utils.extension.toDp
+import com.artf.chatapp.view.chatRoom.MsgAdapter
+import com.artf.chatapp.view.chatRooms.ChatListAdapter
+import com.artf.chatapp.view.searchUser.SearchAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @BindingAdapter("msgList")
-fun bindMsgRecyclerView(recyclerView: RecyclerView, data: List<Message>) {
+fun bindMsgRecyclerView(recyclerView: RecyclerView, data: List<Message>?) {
     val adapter = recyclerView.adapter as MsgAdapter
     adapter.submitList(data) { recyclerView.layoutManager?.scrollToPosition(adapter.itemCount - 1) }
     adapter.notifyDataSetChanged()
@@ -138,8 +143,18 @@ fun bindingAudioTime(textView: TextView, audioFile: Long?) {
 }
 
 @BindingAdapter("fakeAudioProgress")
-fun bindingFakeAudioProgress(view: View, audioDownloaded: Boolean?) {
-    view.visibility = if (audioDownloaded != true) View.VISIBLE else View.GONE
+fun bindingFakeAudioProgress(view: View, msg: Message?) {
+    if (msg == null) return
+    CoroutineScope(Dispatchers.Main).launch {
+        try {
+            view.visibility = View.VISIBLE
+            getAudio(msg)
+            msg.audioDownloaded = true
+            view.visibility = View.GONE
+        } catch (e: Exception) {
+            view.visibility = View.GONE
+        }
+    }
 }
 
 @BindingAdapter("onlineTint")
@@ -172,4 +187,8 @@ fun bindPreventSearchBlinking(linearLayout: LinearLayout, data: List<User>?) {
         val newHeight = if (customHeight > parentHeight) parentHeight else customHeight
         linearLayout.layoutParams.height = if (it.isEmpty()) 90.toDp() else newHeight
     }
+}
+
+suspend fun getAudio(msg: Message) {
+    withContext(Dispatchers.IO) { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }
 }

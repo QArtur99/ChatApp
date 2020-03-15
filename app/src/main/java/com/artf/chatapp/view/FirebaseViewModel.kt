@@ -64,14 +64,10 @@ class FirebaseViewModel @Inject constructor(
 
     init {
         firebaseRepository.startListening()
-        _msgList.value = arrayListOf()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
         firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
         setMsgListener()
-        firebaseRepository.onMsgList = {
-            _msgList.value = it
-            it.map { msg -> if (msg.audioUrl != null) getAudio(msg) }
-        }
+        firebaseRepository.onMsgList = { _msgList.value = it }
         firebaseRepository.onChatRoomList = { _chatRoomList.value = it }
         setOnChatRoomListSort()
     }
@@ -99,14 +95,6 @@ class FirebaseViewModel @Inject constructor(
     fun setReceiver(user: User?) {
         _receiver.value = user
         user?.let { firebaseRepository.setChatRoomId(user.userId!!) }
-    }
-
-    private fun getAudio(msg: Message) {
-        viewModelScope.launch {
-            msg.setAudioDownloaded(false)
-            firebaseRepository.getAudio(msg)
-            msg.setAudioDownloaded(true)
-        }
     }
 
     private fun onSignIn() {

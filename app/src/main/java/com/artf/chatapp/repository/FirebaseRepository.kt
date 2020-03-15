@@ -5,7 +5,6 @@ import com.artf.chatapp.App
 import com.artf.chatapp.model.Chat
 import com.artf.chatapp.model.Message
 import com.artf.chatapp.model.User
-import com.artf.chatapp.utils.extension.saveTo
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.firestore.FieldValue
@@ -19,7 +18,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
@@ -179,10 +177,6 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
                     msgList.let { onMsgList?.invoke(msgList) }
                 }
         }
-    }
-
-    suspend fun getAudio(msg: Message) {
-        withContext(ioDispatcher) { msg.audioFile?.let { msg.audioUrl?.saveTo(it) } }
     }
 
     private fun detachDatabaseListeners() {
