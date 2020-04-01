@@ -17,8 +17,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentChatBinding
-import com.artf.chatapp.model.Message
-import com.artf.chatapp.repository.FirebaseRepository
+import com.artf.chatapp.data.model.Message
+import com.artf.chatapp.data.repository.FirebaseRepository
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.bindingFakeAudioProgress

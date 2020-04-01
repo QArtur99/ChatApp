@@ -1,4 +1,4 @@
-package com.artf.chatapp.model
+package com.artf.chatapp.data.model
 
 import com.squareup.moshi.JsonClass
 

@@ -7,7 +7,7 @@
 
         <variable
             name="message"
-            type="com.artf.chatapp.model.Message" />
+            type="com.artf.chatapp.data.model.Message" />
 
         <variable
             name="msgAdapterInt"

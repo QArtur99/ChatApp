@@ -1,10 +1,10 @@
-package com.artf.chatapp.repository
+package com.artf.chatapp.data.repository
 
 import android.net.Uri
 import com.artf.chatapp.App
-import com.artf.chatapp.model.Chat
-import com.artf.chatapp.model.Message
-import com.artf.chatapp.model.User
+import com.artf.chatapp.data.model.Chat
+import com.artf.chatapp.data.model.Message
+import com.artf.chatapp.data.model.User
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.firestore.FieldValue

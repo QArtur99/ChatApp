@@ -16,7 +16,7 @@ import com.artf.chatapp.databinding.ItemMessageLeftTextBinding
 import com.artf.chatapp.databinding.ItemMessageRightImgBinding
 import com.artf.chatapp.databinding.ItemMessageRightRecordBinding
 import com.artf.chatapp.databinding.ItemMessageRightTextBinding
-import com.artf.chatapp.model.Message
+import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.view.FirebaseViewModel
 
 class MsgAdapter(

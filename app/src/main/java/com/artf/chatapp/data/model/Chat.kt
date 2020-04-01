@@ -1,4 +1,4 @@
-package com.artf.chatapp.model
+package com.artf.chatapp.data.model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -15,8 +15,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.ActivityMainBinding
-import com.artf.chatapp.model.User
-import com.artf.chatapp.repository.FirebaseRepository
+import com.artf.chatapp.data.model.User
+import com.artf.chatapp.data.repository.FirebaseRepository
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.convertFromString
 import com.artf.chatapp.utils.states.AuthenticationState

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.databinding.ItemSearchBinding
-import com.artf.chatapp.model.User
+import com.artf.chatapp.data.model.User
 
 class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<User,
         RecyclerView.ViewHolder>(GridViewDiffCallback) {

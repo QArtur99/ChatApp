@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.databinding.ItemChatBinding
-import com.artf.chatapp.model.Chat
+import com.artf.chatapp.data.model.Chat
 
 class ChatListAdapter(private val fragment: Fragment, private val clickListener: OnClickListener) :
     ListAdapter<Chat,

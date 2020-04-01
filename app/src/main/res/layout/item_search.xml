@@ -7,7 +7,7 @@
 
         <variable
             name="user"
-            type="com.artf.chatapp.model.User" />
+            type="com.artf.chatapp.data.model.User" />
 
         <variable
             name="clickListener"

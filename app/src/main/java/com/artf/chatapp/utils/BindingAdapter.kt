@@ -8,9 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.artf.chatapp.R
-import com.artf.chatapp.model.Chat
-import com.artf.chatapp.model.Message
-import com.artf.chatapp.model.User
+import com.artf.chatapp.data.model.Chat
+import com.artf.chatapp.data.model.Message
+import com.artf.chatapp.data.model.User
 import com.artf.chatapp.utils.extension.saveTo
 import com.artf.chatapp.utils.extension.toDp
 import com.artf.chatapp.view.chatRoom.MsgAdapter

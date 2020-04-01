@@ -1,6 +1,6 @@
 package com.artf.chatapp.utils.mapper
 
-import com.artf.chatapp.model.Message
+import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.utils.mapper.core.Mapper
 
 object RemoteMessageMapper : Mapper<Map<String, String>, Message> {

@@ -1,4 +1,4 @@
-package com.artf.chatapp.model
+package com.artf.chatapp.data.model
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude

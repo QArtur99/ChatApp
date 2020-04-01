@@ -6,11 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.artf.chatapp.model.Chat
-import com.artf.chatapp.model.Message
-import com.artf.chatapp.model.User
-import com.artf.chatapp.repository.FirebaseRepository
-import com.artf.chatapp.repository.FirebaseUserLiveData
+import com.artf.chatapp.data.model.Chat
+import com.artf.chatapp.data.model.Message
+import com.artf.chatapp.data.model.User
+import com.artf.chatapp.data.repository.FirebaseRepository
+import com.artf.chatapp.data.repository.FirebaseUserLiveData
 import com.artf.chatapp.utils.extension.add
 import com.artf.chatapp.utils.extension.clear
 import com.artf.chatapp.utils.extension.clearChatRoomList

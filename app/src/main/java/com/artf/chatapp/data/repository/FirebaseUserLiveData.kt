@@ -1,4 +1,4 @@
-package com.artf.chatapp.repository
+package com.artf.chatapp.data.repository
 
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth

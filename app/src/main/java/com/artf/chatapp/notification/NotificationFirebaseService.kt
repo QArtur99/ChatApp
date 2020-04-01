@@ -1,10 +1,11 @@
-package com.artf.chatapp.work
+package com.artf.chatapp.notification
 
 import com.artf.chatapp.App
-import com.artf.chatapp.model.Message
-import com.artf.chatapp.model.User
+import com.artf.chatapp.data.model.Message
+import com.artf.chatapp.data.model.User
 import com.artf.chatapp.utils.convertToString
 import com.artf.chatapp.utils.mapper.RemoteMessageMapper
+import com.artf.chatapp.notification.data.NewMessageNotification
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -40,14 +41,14 @@ class NotificationFirebaseService : FirebaseMessagingService() {
         val documentSnapshot = dbRefUsers.document(senderId).get().await()
         val user = documentSnapshot.toObject(User::class.java) ?: return
 
-        NotificationUtils.makeStatusNotification(
-            context = applicationContext,
+        val newMessageNotification = NewMessageNotification(
             notificationId = senderId.hashCode(),
             userString = convertToString(user),
             senderName = user.username,
             senderPhotoUrl = user.photoUrl,
             message = getNotificationText(message)
         )
+        NotificationUtils.makeStatusNotification(applicationContext, newMessageNotification)
     }
 
     private fun getNotificationText(message: Message): String {

@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.artf.chatapp.R
-import com.artf.chatapp.model.Message
+import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import java.io.IOException
