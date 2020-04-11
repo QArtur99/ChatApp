@@ -1,8 +1,6 @@
 package com.artf.chatapp.data.repository
 
-import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.model.User
-import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,11 +30,7 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
     private val dbRefUsernames by lazy { firebaseFirestore.collection("usernames") }
     private val dbRefUsers by lazy { firebaseFirestore.collection("users") }
 
-    var onFragmentStateChanged: ((state: FragmentState) -> Unit)? = null
-    var onChildAdded: ((message: Message) -> Unit)? = null
-    var onChildChanged: ((message: Message) -> Unit)? = null
-
-    fun startListening() {
+    init {
         fetchConfig()
     }
 
@@ -97,12 +91,12 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
     }
 
     private suspend fun getUser(userId: String): User? {
-        var user = User(userId)
+        val user: User
         try {
             val documentSnapshot = dbRefUsers.document(userId).get().await()
             user = documentSnapshot.toObject(User::class.java)!!
         } catch (e: FirebaseFirestoreException) {
-            onFragmentStateChanged?.invoke(FragmentState.USERNAME)
+            return null
         }
         return user
     }

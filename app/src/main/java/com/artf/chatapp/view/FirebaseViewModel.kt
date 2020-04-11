@@ -14,11 +14,7 @@ import com.artf.chatapp.data.repository.ChatRoomListLiveData
 import com.artf.chatapp.data.repository.ChatRoomLiveData
 import com.artf.chatapp.data.repository.FirebaseRepository
 import com.artf.chatapp.data.repository.FirebaseUserLiveData
-import com.artf.chatapp.utils.extension.add
 import com.artf.chatapp.utils.extension.clear
-import com.artf.chatapp.utils.extension.count
-import com.artf.chatapp.utils.extension.get
-import com.artf.chatapp.utils.extension.remove
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
@@ -68,22 +64,18 @@ class FirebaseViewModel @Inject constructor(
     private val _fragmentState = MutableLiveData<Pair<FragmentState, Boolean>>()
     val fragmentState: LiveData<Pair<FragmentState, Boolean>> = _fragmentState
 
-    private val _receiver = MutableLiveData<User>()
-    val receiver: LiveData<User> = _receiver
-
     init {
-        firebaseRepository.startListening()
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
-        firebaseRepository.onFragmentStateChanged = { setFragmentState(it) }
-        setMsgListener()
     }
 
     val authenticationState = FirebaseUserLiveData().map { user ->
         if (user != null) {
             viewModelScope.launch {
                 firebaseRepository.onSignedIn(user.uid)
-                _chatRoomListRaw.setNewDocRef(firebaseRepository.mUser!!)
-                _msgListRaw.user = firebaseRepository.mUser!!
+                firebaseRepository.mUser?.let { user ->
+                    _chatRoomListRaw.setNewDocRef(user)
+                    _msgListRaw.user = user
+                } ?: setFragmentState(FragmentState.USERNAME)
             }
             onSignIn()
             AuthenticationState.Authenticated(user.uid)
@@ -103,7 +95,6 @@ class FirebaseViewModel @Inject constructor(
     }
 
     fun setReceiver(user: User?) {
-        _receiver.value = user
         user?.userId?.let { _msgListRaw.receiverId = it }
     }
 
@@ -113,14 +104,6 @@ class FirebaseViewModel @Inject constructor(
     private fun onSignOut() {
         _msgList.clear()
         _chatRoomList.clear()
-    }
-
-    private fun setMsgListener() {
-        firebaseRepository.onChildAdded = { _msgList.add(it) }
-        firebaseRepository.onChildChanged = {
-            _msgList.remove(_msgList.get(_msgList.count() - 1))
-            _msgList.add(it)
-        }
     }
 
     fun onSearchTextChange(newText: String) {
