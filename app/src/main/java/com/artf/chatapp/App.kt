@@ -16,8 +16,8 @@ class App : DaggerApplication(), LifecycleObserver {
     }
 
     companion object {
-        var tempReceiverId = ""
-        var receiverId = ""
+        var tempReceiverId: String? = null
+        var receiverId: String? = null
     }
 
     override fun onCreate() {
@@ -34,6 +34,6 @@ class App : DaggerApplication(), LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onMoveToBackground() {
         tempReceiverId = receiverId
-        receiverId = ""
+        receiverId = null
     }
 }

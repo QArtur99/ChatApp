@@ -36,13 +36,13 @@ class UsernameFragment : DaggerFragment() {
                 binding.usernameButton.isEnabled = false
                 binding.usernameEditText.isSelected = false
                 binding.usernameErrorTextView.text = getString(R.string.usernameHint)
-                binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(context!!,
+                binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(requireContext(),
                     R.color.colorText
                 ))
             }
         }
 
-        firebaseVm.usernameStatus.observe(this, Observer {
+        firebaseVm.usernameStatus.observe(viewLifecycleOwner, Observer {
             when (it.status) {
                 Status.RUNNING -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -50,7 +50,7 @@ class UsernameFragment : DaggerFragment() {
                 }
                 Status.SUCCESS -> {
                     binding.usernameErrorTextView.text = getString(R.string.usernameHint)
-                    binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(context!!,
+                    binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(requireContext(),
                         R.color.colorText
                     ))
                     binding.progressBar.visibility = View.GONE
@@ -64,7 +64,7 @@ class UsernameFragment : DaggerFragment() {
                     binding.usernameButton.isEnabled = false
                     binding.usernameEditText.isSelected = true
                     binding.usernameErrorTextView.text = getString(R.string.usernameError)
-                    binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(activity!!,
+                    binding.usernameErrorTextView.setTextColor(ContextCompat.getColor(requireActivity(),
                         R.color.colorError
                     ))
                 }

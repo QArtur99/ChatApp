@@ -27,6 +27,7 @@ class StartFragment : DaggerFragment() {
         val binding = FragmentStartBinding.inflate(LayoutInflater.from(context))
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
+        firebaseVm.setFragmentState(FragmentState.START, false)
 
         binding.recyclerView.adapter = ChatListAdapter(this, getOnRoomClickListener())
         firebaseVm.setMsgList(mutableListOf())
@@ -35,7 +36,7 @@ class StartFragment : DaggerFragment() {
 
     private fun getOnRoomClickListener(): ChatListAdapter.OnClickListener {
         return ChatListAdapter.OnClickListener { user ->
-            firebaseVm.setReceiver(user.user.value)
+            firebaseVm.setReceiver(user.user?.value)
             firebaseVm.setFragmentState(FragmentState.CHAT)
         }
     }

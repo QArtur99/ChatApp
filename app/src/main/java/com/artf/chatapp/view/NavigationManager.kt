@@ -58,7 +58,7 @@ class NavigationManager(activity: AppCompatActivity, val binding: ActivityMainBi
 
     private fun onDestinationChanged(destination: NavDestination) = when (destination.label) {
         FragmentLabel.CHAT -> doNothing
-        else -> App.receiverId = ""
+        else -> App.receiverId = null
     }
 
     private fun navigateTo(uri: Uri, navOptions: NavOptions) {
