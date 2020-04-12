@@ -3,9 +3,9 @@ package com.artf.chatapp.notification
 import com.artf.chatapp.App
 import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.model.User
+import com.artf.chatapp.notification.data.NewMessageNotification
 import com.artf.chatapp.utils.convertToString
 import com.artf.chatapp.utils.mapper.RemoteMessageMapper
-import com.artf.chatapp.notification.data.NewMessageNotification
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -53,9 +53,9 @@ class NotificationFirebaseService : FirebaseMessagingService() {
 
     private fun getNotificationText(message: Message): String {
         var text = ""
-        message.audioUrl?.let { text = "\uD83C\uDFA4 Record" }
-        message.photoUrl?.let { text = "\uD83D\uDCF7 Photo" }
-        message.text?.let { text = it }
+        message.text?.let { if (it.isNotEmpty()) text = it }
+        message.audioUrl?.let { if (it.isNotEmpty()) text = "\uD83C\uDFA4 Record" }
+        message.photoUrl?.let { if (it.isNotEmpty()) text = "\uD83D\uDCF7 Photo" }
         return text
     }
 }
