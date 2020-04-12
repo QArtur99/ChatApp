@@ -37,7 +37,7 @@ class ChatRoomListLiveData : MutableLiveData<List<Chat>>() {
         ) {
             firebaseFirestoreException?.let { return@onEvent }
             val chatRoomList = querySnapshot?.toObjects(Chat::class.java)
-            loadChatRooms(chatRoomList as List<Chat>)
+            loadChatRooms(chatRoomList as MutableList<Chat>)
             value = chatRoomList
         }
     }
@@ -53,7 +53,7 @@ class ChatRoomListLiveData : MutableLiveData<List<Chat>>() {
         return dbRefUsers.document(user?.userId!!).collection("chatRooms")
     }
 
-    fun loadChatRooms(chatRoomList: List<Chat>) {
+    fun loadChatRooms(chatRoomList: MutableList<Chat>) {
         for (chat in chatRoomList) {
             val isReceiver = chat.receiverId != user?.userId
             val receiverId = if (isReceiver) chat.receiverId else chat.senderId
@@ -78,7 +78,7 @@ class ChatRoomListLiveData : MutableLiveData<List<Chat>>() {
         val sortedList = value?.sortedByDescending {
             val timestamp = it.message?.value?.timestamp
             if (timestamp is Timestamp) timestamp.seconds else 0
-        }
+        }?.toMutableList()
         value = sortedList
     }
 
