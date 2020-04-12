@@ -1,4 +1,4 @@
-package com.artf.chatapp.data.repository
+package com.artf.chatapp.data.source.firebase
 
 import androidx.lifecycle.LiveData
 import com.artf.chatapp.data.model.User
@@ -29,7 +29,7 @@ class UserLiveData : LiveData<Pair<User?, AuthenticationState>>() {
     private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         firebaseAuth.currentUser?.uid?.let { userId ->
             uiScope?.launch {
-                val user = getUser(userId)
+                val user = getUser(userId) ?: User().apply { this.userId = userId }
                 value = Pair(user, AuthenticationState.Authenticated(userId))
                 updateUser(userId, true)
             }
@@ -39,10 +39,10 @@ class UserLiveData : LiveData<Pair<User?, AuthenticationState>>() {
     }
 
     private suspend fun getUser(userId: String): User? {
-        val user: User
+        val user: User?
         try {
             val documentSnapshot = dbRefUsers.document(userId).get().await()
-            user = documentSnapshot.toObject(User::class.java)!!
+            user = documentSnapshot.toObject(User::class.java)
         } catch (e: FirebaseFirestoreException) {
             return null
         }
@@ -65,6 +65,15 @@ class UserLiveData : LiveData<Pair<User?, AuthenticationState>>() {
             fcmTokenList.distinct()
             map["fcmToken"] = fcmTokenList
         }.await()
+    }
+
+    fun setNewUser(user: User) {
+        user.userId?.let { userId ->
+            value = Pair(user, AuthenticationState.Authenticated(userId))
+            uiScope?.launch {
+                updateUser(userId, true)
+            }
+        }
     }
 
     override fun onActive() {

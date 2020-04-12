@@ -29,18 +29,21 @@ class SearchFragment : DaggerFragment() {
     private lateinit var searchItem: MenuItem
     private lateinit var binding: FragmentSearchBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = FragmentSearchBinding.inflate(LayoutInflater.from(context))
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
         binding.recyclerView.itemAnimator = null
-        binding.recyclerView.adapter =
-            SearchAdapter(SearchAdapter.OnClickListener { user ->
-                firebaseVm.setReceiver(user)
-                firebaseVm.setFragmentState(FragmentState.CHAT)
-                onSearchViewClose()
-            })
+        binding.recyclerView.adapter = SearchAdapter(SearchAdapter.OnClickListener { user ->
+            firebaseVm.setReceiver(user)
+            firebaseVm.setFragmentState(FragmentState.CHAT)
+            onSearchViewClose()
+        })
 
         firebaseVm.userSearchStatus.observe(viewLifecycleOwner, Observer {
             binding.searchView.visibility = View.VISIBLE
@@ -60,7 +63,8 @@ class SearchFragment : DaggerFragment() {
                     binding.recyclerView.visibility = View.GONE
                     binding.info.visibility = View.VISIBLE
                 }
-                else -> {}
+                else -> {
+                }
             }
         })
 
@@ -78,7 +82,7 @@ class SearchFragment : DaggerFragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        searchItem = menu.findItem(R.id.search)
+        searchItem = menu.findItem(R.id.search) ?: return
         searchView = searchItem.actionView as SearchView
         setOnQueryTextFocusChangeListener()
         super.onCreateOptionsMenu(menu, inflater)
@@ -93,4 +97,6 @@ class SearchFragment : DaggerFragment() {
             }
         }
     }
+
+
 }

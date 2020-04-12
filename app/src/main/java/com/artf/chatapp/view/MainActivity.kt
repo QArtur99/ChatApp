@@ -14,9 +14,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
-import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.data.model.User
-import com.artf.chatapp.data.repository.FirebaseRepository
+import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
+import com.artf.chatapp.databinding.ActivityMainBinding
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.convertFromString
 import com.artf.chatapp.utils.states.AuthenticationState
@@ -34,6 +34,8 @@ class MainActivity : DaggerAppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val navigationManager by lazy { NavigationManager(this, binding) }
     private val firebaseVm: FirebaseViewModel by viewModels { viewModelFactory }
+
+    private var waitForResultFromSignIn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,19 +61,24 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun observeFragmentState() {
         firebaseVm.fragmentState.observe(this, Observer {
             it?.let {
-                if(!it.second) return@Observer
+                if (!it.second) return@Observer
                 navigationManager.onFragmentStateChange(it.first)
             }
         })
     }
 
     private fun onAuthenticated() {
+        firebaseVm.onSignIn()
         supportActionBar?.show()
     }
 
     private fun onUnathenticated() {
-        startSignInActivity()
-        supportActionBar?.hide()
+        if(waitForResultFromSignIn.not()) {
+            firebaseVm.onSignOut()
+            startSignInActivity()
+            supportActionBar?.hide()
+            waitForResultFromSignIn = true
+        }
     }
 
     private fun checkNotificationIntent() {
@@ -85,12 +92,13 @@ class MainActivity : DaggerAppCompatActivity() {
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == FirebaseRepository.RC_SIGN_IN) {
+        if (requestCode == FirebaseDaoImpl.RC_SIGN_IN) {
             when (resultCode) {
                 Activity.RESULT_OK -> supportActionBar?.show()
                 Activity.RESULT_CANCELED -> finish()
             }
-        } else if (requestCode == FirebaseRepository.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {
+            waitForResultFromSignIn = false
+        } else if (requestCode == FirebaseDaoImpl.RC_PHOTO_PICKER && resultCode == Activity.RESULT_OK) {
             val picUri = if (data != null) data.data!! else galleryAddPic()
             picUri?.let { firebaseVm.pushPicture(picUri) }
         }
@@ -123,7 +131,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 .setIsSmartLockEnabled(false)
                 .setAvailableProviders(providers)
                 .setLogo(R.drawable.ic_launcher)
-                .build(), FirebaseRepository.RC_SIGN_IN
+                .build(), FirebaseDaoImpl.RC_SIGN_IN
         )
         firebaseVm.setFragmentState(FragmentState.START)
     }

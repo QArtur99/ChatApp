@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.data.model.Message
-import com.artf.chatapp.data.repository.FirebaseRepository
+import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.bindingFakeAudioProgress
@@ -105,7 +105,7 @@ class ChatFragment : DaggerFragment() {
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
         }
 
-        requireActivity().startActivityForResult(chooserIntent, FirebaseRepository.RC_PHOTO_PICKER)
+        requireActivity().startActivityForResult(chooserIntent, FirebaseDaoImpl.RC_PHOTO_PICKER)
     }
 
     private fun onSendButtonTouch() = object : View.OnTouchListener {

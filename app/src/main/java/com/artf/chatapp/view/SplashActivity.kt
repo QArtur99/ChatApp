@@ -54,6 +54,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             INITIAL_REQUEST -> if (checkHasPermissions()) {
                 startApp()

@@ -1,7 +1,7 @@
 package com.artf.chatapp.data.model
 
-import com.artf.chatapp.data.repository.MessageLiveData
-import com.artf.chatapp.data.repository.ReceiverLiveData
+import com.artf.chatapp.data.source.firebase.MessageLiveData
+import com.artf.chatapp.data.source.firebase.ReceiverLiveData
 import com.google.firebase.firestore.Exclude
 
 data class Chat(

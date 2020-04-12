@@ -1,5 +1,6 @@
-package com.artf.chatapp.data.repository
+package com.artf.chatapp.data.source.firebase
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.artf.chatapp.data.model.Chat
@@ -43,14 +44,14 @@ class ChatRoomListLiveData : MutableLiveData<List<Chat>>() {
     }
 
     fun setNewDocRef(user: User) {
-        if (this.user == user) return
+        if (this.user?.userId == user.userId) return
         onInactive()
         this.user = user
         onActive()
     }
 
-    private fun getChatRoomListRef(): CollectionReference {
-        return dbRefUsers.document(user?.userId!!).collection("chatRooms")
+    private fun getChatRoomListRef(userId: String): CollectionReference {
+        return dbRefUsers.document(userId).collection("chatRooms")
     }
 
     fun loadChatRooms(chatRoomList: MutableList<Chat>) {
@@ -83,8 +84,8 @@ class ChatRoomListLiveData : MutableLiveData<List<Chat>>() {
     }
 
     override fun onActive() {
-        user ?: return
-        userChatRoomsLr = getChatRoomListRef().addSnapshotListener(snapshotListener)
+        val userId = user?.userId ?: return
+        userChatRoomsLr = getChatRoomListRef(userId).addSnapshotListener(snapshotListener)
     }
 
     override fun onInactive() {

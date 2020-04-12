@@ -1,17 +1,16 @@
-package com.artf.chatapp.data.repository
+package com.artf.chatapp.data.source.firebase
 
+import androidx.lifecycle.Transformations
 import com.artf.chatapp.data.model.User
 import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
-import javax.inject.Inject
 
-class FirebaseRepository @Inject constructor(private val ioDispatcher: CoroutineDispatcher) {
+class FirebaseDaoImpl {
 
     companion object {
         const val RC_SIGN_IN = 1
@@ -26,6 +25,17 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
 
     private val dbRefUsernames by lazy { firebaseFirestore.collection("usernames") }
     private val dbRefUsers by lazy { firebaseFirestore.collection("users") }
+
+    val chatRoomListLiveData = ChatRoomListLiveData()
+    val chatRoomLiveData = ChatRoomLiveData()
+    val user = UserLiveData()
+    val userLiveData = Transformations.map(user) { userWithState ->
+        userWithState.first?.let { user ->
+            chatRoomListLiveData.setNewDocRef(user)
+            chatRoomLiveData.user = user
+        }
+        userWithState
+    }
 
     init {
         fetchConfig()
@@ -53,8 +63,13 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
     }
 
     private fun addUser(user: User, callBack: (usernameStatus: NetworkState) -> Unit) {
-        dbRefUsers.document(user.userId!!).set(user)
+        val userId = userLiveData.value?.first?.userId ?: run {
+            callBack(NetworkState.FAILED)
+            return
+        }
+        dbRefUsers.document(userId).set(user.apply { this.userId = userId })
             .addOnSuccessListener {
+                this.user.setNewUser(user)
                 callBack(NetworkState.LOADED)
             }
             .addOnFailureListener {
@@ -63,10 +78,10 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
     }
 
     fun addUsername(
-        user: User,
         username: String,
         callBack: (usernameStatus: NetworkState) -> Unit
     ) {
+        val user = User()
         callBack(NetworkState.LOADING)
         val usernameLowerCase = username.toLowerCase(Locale.ROOT)
         user.username = usernameLowerCase

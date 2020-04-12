@@ -9,10 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.artf.chatapp.data.model.Chat
 import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.model.User
-import com.artf.chatapp.data.repository.ChatRoomListLiveData
-import com.artf.chatapp.data.repository.ChatRoomLiveData
-import com.artf.chatapp.data.repository.FirebaseRepository
-import com.artf.chatapp.data.repository.UserLiveData
+import com.artf.chatapp.data.repository.Repository
+import com.artf.chatapp.data.source.firebase.ChatRoomListLiveData
+import com.artf.chatapp.data.source.firebase.ChatRoomLiveData
 import com.artf.chatapp.utils.extension.clear
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
@@ -22,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FirebaseViewModel @Inject constructor(
-    private val firebaseRepository: FirebaseRepository
+    private val repository: Repository
 ) : ViewModel() {
 
     private var isUsernameAvailableJob: Job? = null
@@ -40,18 +39,10 @@ class FirebaseViewModel @Inject constructor(
     private val _pushAudioStatus = MutableLiveData<NetworkState>()
     val pushAudioStatus: LiveData<NetworkState> = _pushAudioStatus
 
-    private val _chatRoomListRaw: ChatRoomListLiveData = ChatRoomListLiveData()
-    private val _chatRoomList: MutableLiveData<List<Chat>> =
-        Transformations.switchMap(_chatRoomListRaw) {
-            MutableLiveData<List<Chat>>().apply { value = it }
-        } as MutableLiveData<List<Chat>>
+    private val _chatRoomList: ChatRoomListLiveData = repository.getChatRoomListLiveData()
     val chatRoomList: LiveData<List<Chat>> = _chatRoomList
 
-    private val _msgListRaw: ChatRoomLiveData = ChatRoomLiveData()
-    private val _msgList: MutableLiveData<List<Message>> =
-        Transformations.switchMap(_msgListRaw) {
-            MutableLiveData<List<Message>>().apply { value = it }
-        } as MutableLiveData<List<Message>>
+    private val _msgList: ChatRoomLiveData = repository.getChatRoomLiveData()
     val msgList: LiveData<List<Message>> = _msgList
 
     private val _msgLength = MutableLiveData<Int>()
@@ -64,18 +55,13 @@ class FirebaseViewModel @Inject constructor(
     val fragmentState: LiveData<Pair<FragmentState, Boolean>> = _fragmentState
 
     init {
-        firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
+        repository.fetchConfigMsgLength { _msgLength.value = it }
     }
 
-    val user = UserLiveData()
+    val user: LiveData<Pair<User?, AuthenticationState>> = repository.getUserLiveData()
     val authenticationState = Transformations.map(user) { userWithState ->
-        userWithState.first?.let { user ->
-            _chatRoomListRaw.setNewDocRef(user)
-            _msgListRaw.user = user
-        } ?: setFragmentState(FragmentState.USERNAME)
-        when (userWithState.second) {
-            is AuthenticationState.Authenticated -> onSignIn()
-            is AuthenticationState.Unauthenticated -> onSignOut()
+        if (userWithState.second is AuthenticationState.Authenticated) {
+            userWithState.first?.username ?: setFragmentState(FragmentState.USERNAME)
         }
         userWithState.second
     }
@@ -89,13 +75,13 @@ class FirebaseViewModel @Inject constructor(
     }
 
     fun setReceiver(user: User?) {
-        user?.userId?.let { _msgListRaw.receiverId = it }
+        user?.userId?.let { _msgList.receiverId = it }
     }
 
-    private fun onSignIn() {
+    fun onSignIn() {
     }
 
-    private fun onSignOut() {
+    fun onSignOut() {
         _msgList.clear()
         _chatRoomList.clear()
     }
@@ -103,7 +89,7 @@ class FirebaseViewModel @Inject constructor(
     fun onSearchTextChange(newText: String) {
         searchForUserJob?.cancel()
         searchForUserJob = viewModelScope.launch {
-            firebaseRepository.searchForUser(newText) { networkState, userList ->
+            repository.searchForUser(newText) { networkState, userList ->
                 _userList.value = userList
                 _userSearchStatus.value = networkState
             }
@@ -113,33 +99,31 @@ class FirebaseViewModel @Inject constructor(
     fun isUsernameAvailable(username: String) {
         isUsernameAvailableJob?.cancel()
         isUsernameAvailableJob = viewModelScope.launch {
-            firebaseRepository.isUsernameAvailable(username) {
+            repository.isUsernameAvailable(username) {
                 _usernameStatus.value = it
             }
         }
     }
 
     fun addUsername(username: String) {
-        user.value?.first?.let { user ->
-            firebaseRepository.addUsername(user, username) {
-                _usernameStatus.value = it
-                if (it == NetworkState.LOADED) setFragmentState(FragmentState.START)
-            }
+        repository.addUsername(username) {
+            _usernameStatus.value = it
+            if (it == NetworkState.LOADED) setFragmentState(FragmentState.START)
         }
     }
 
     fun pushAudio(audioPath: String, audioDuration: Long) {
-        _msgListRaw.pushAudio(audioPath, audioDuration) {
+        _msgList.pushAudio(audioPath, audioDuration) {
             _pushAudioStatus.value = it
         }
     }
 
     fun pushMsg(msg: String) {
-        _msgListRaw.pushMsg(msg)
+        _msgList.pushMsg(msg)
     }
 
     fun pushPicture(pictureUri: Uri) {
-        _msgListRaw.pushPicture(pictureUri) {
+        _msgList.pushPicture(pictureUri) {
             _pushImgStatus.value = it
         }
     }

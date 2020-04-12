@@ -1,4 +1,4 @@
-package com.artf.chatapp.data.repository
+package com.artf.chatapp.data.source.firebase
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
@@ -35,8 +35,8 @@ class ChatRoomLiveData : MutableLiveData<List<Message>>() {
     private var isNewSenderChatRoom: Boolean? = null
     private var isNewReceiverChatRoom: Boolean? = null
     var receiverId by Delegates.observable<String?>(null) { _, _, newValue ->
-        App.receiverId = newValue
         if (newValue != null) {
+            App.receiverId = newValue
             setChatRoomId(newValue)
             onInactive()
             onActive()
@@ -76,10 +76,9 @@ class ChatRoomLiveData : MutableLiveData<List<Message>>() {
         // TODO editable messages
         return dbRefChatRooms.document(chatRoomId).collection("chatRoom")
             .orderBy("timestamp", Query.Direction.ASCENDING)
-        // .limit(1)
     }
 
-    fun setChatRoomId(receiverId: String) {
+    private fun setChatRoomId(receiverId: String) {
         val userId = user?.userId ?: return
         val roomId = if (receiverId > userId) "${receiverId}_$userId" else "${userId}_$receiverId"
         chatRoomId = roomId
