@@ -3,41 +3,28 @@ package com.artf.chatapp.view.chatRooms
 import android.view.LayoutInflater.from
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.databinding.ItemChatBinding
 import com.artf.chatapp.data.model.Chat
+import com.artf.chatapp.databinding.ItemChatBinding
 
-class ChatListAdapter(private val fragment: Fragment, private val clickListener: OnClickListener) :
-    ListAdapter<Chat,
-        RecyclerView.ViewHolder>(GridViewDiffCallback) {
+class ChatListAdapter(private val clickListener: OnClickListener) : ListAdapter<Chat,
+    RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val product = getItem(position)
-        (holder as MsgViewHolder).bind(fragment, clickListener, product)
+        (holder as MsgViewHolder).bind(clickListener, product)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MsgViewHolder {
         return MsgViewHolder(ItemChatBinding.inflate(from(parent.context), parent, false))
     }
 
-    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
-        (holder as MsgViewHolder).binding.lifecycleOwner = fragment
-        super.onViewAttachedToWindow(holder)
-    }
-
-    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
-        (holder as MsgViewHolder).binding.lifecycleOwner = null
-        super.onViewDetachedFromWindow(holder)
-    }
-
     class MsgViewHolder constructor(val binding: ItemChatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(fragment: Fragment, clickListener: OnClickListener, item: Chat) {
-            binding.lifecycleOwner = fragment
+        fun bind(clickListener: OnClickListener, item: Chat) {
             binding.chat = item
             binding.clickListener = clickListener
             binding.executePendingBindings()

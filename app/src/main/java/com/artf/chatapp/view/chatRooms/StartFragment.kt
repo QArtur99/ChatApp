@@ -29,7 +29,7 @@ class StartFragment : DaggerFragment() {
         binding.firebaseVm = firebaseVm
         firebaseVm.setFragmentState(FragmentState.START, false)
 
-        binding.recyclerView.adapter = ChatListAdapter(this, getOnRoomClickListener())
+        binding.recyclerView.adapter = ChatListAdapter(getOnRoomClickListener())
         firebaseVm.setMsgList(mutableListOf())
         return binding.root
     }
