@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.artf.chatapp.data.model.Chat
 import com.artf.chatapp.data.model.Message
@@ -13,7 +12,7 @@ import com.artf.chatapp.data.model.User
 import com.artf.chatapp.data.repository.ChatRoomListLiveData
 import com.artf.chatapp.data.repository.ChatRoomLiveData
 import com.artf.chatapp.data.repository.FirebaseRepository
-import com.artf.chatapp.data.repository.FirebaseUserLiveData
+import com.artf.chatapp.data.repository.UserLiveData
 import com.artf.chatapp.utils.extension.clear
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
@@ -68,22 +67,17 @@ class FirebaseViewModel @Inject constructor(
         firebaseRepository.fetchConfigMsgLength { _msgLength.value = it }
     }
 
-    val authenticationState = FirebaseUserLiveData().map { user ->
-        if (user != null) {
-            viewModelScope.launch {
-                firebaseRepository.onSignedIn(user.uid)
-                firebaseRepository.mUser?.let { user ->
-                    _chatRoomListRaw.setNewDocRef(user)
-                    _msgListRaw.user = user
-                } ?: setFragmentState(FragmentState.USERNAME)
-            }
-            onSignIn()
-            AuthenticationState.Authenticated(user.uid)
-        } else {
-            viewModelScope.launch { firebaseRepository.onSignedOut() }
-            onSignOut()
-            AuthenticationState.Unauthenticated
+    val user = UserLiveData()
+    val authenticationState = Transformations.map(user) { userWithState ->
+        userWithState.first?.let { user ->
+            _chatRoomListRaw.setNewDocRef(user)
+            _msgListRaw.user = user
+        } ?: setFragmentState(FragmentState.USERNAME)
+        when (userWithState.second) {
+            is AuthenticationState.Authenticated -> onSignIn()
+            is AuthenticationState.Unauthenticated -> onSignOut()
         }
+        userWithState.second
     }
 
     fun setMsgList(msgList: List<Message>) {
@@ -126,9 +120,11 @@ class FirebaseViewModel @Inject constructor(
     }
 
     fun addUsername(username: String) {
-        firebaseRepository.addUsername(username) {
-            _usernameStatus.value = it
-            if (it == NetworkState.LOADED) setFragmentState(FragmentState.START)
+        user.value?.first?.let { user ->
+            firebaseRepository.addUsername(user, username) {
+                _usernameStatus.value = it
+                if (it == NetworkState.LOADED) setFragmentState(FragmentState.START)
+            }
         }
     }
 

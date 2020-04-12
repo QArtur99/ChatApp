@@ -2,14 +2,13 @@ package com.artf.chatapp.data.repository
 
 import com.artf.chatapp.data.model.User
 import com.artf.chatapp.utils.states.NetworkState
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 import javax.inject.Inject
 
 class FirebaseRepository @Inject constructor(private val ioDispatcher: CoroutineDispatcher) {
@@ -22,8 +21,6 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
         const val MSG_LENGTH_KEY = "friendly_msg_length"
     }
 
-    var mUser: User? = null
-
     private val firebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val firebaseRemoteConfig by lazy { FirebaseRemoteConfig.getInstance() }
 
@@ -32,16 +29,6 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
 
     init {
         fetchConfig()
-    }
-
-    suspend fun onSignedIn(userId: String) {
-        mUser = getUser(userId)
-        updateUser(userId, true)
-    }
-
-    suspend fun onSignedOut() {
-        mUser?.userId?.let { updateUser(it, false) }
-        this.mUser = null
     }
 
     private fun fetchConfig() {
@@ -65,8 +52,8 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
             }
     }
 
-    private fun addUser(callBack: (usernameStatus: NetworkState) -> Unit) {
-        dbRefUsers.document(mUser?.userId!!).set(mUser!!)
+    private fun addUser(user: User, callBack: (usernameStatus: NetworkState) -> Unit) {
+        dbRefUsers.document(user.userId!!).set(user)
             .addOnSuccessListener {
                 callBack(NetworkState.LOADED)
             }
@@ -75,48 +62,23 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
             }
     }
 
-    fun addUsername(username: String, callBack: (usernameStatus: NetworkState) -> Unit) {
+    fun addUsername(
+        user: User,
+        username: String,
+        callBack: (usernameStatus: NetworkState) -> Unit
+    ) {
         callBack(NetworkState.LOADING)
-        val usernameLowerCase = username.toLowerCase()
-        mUser?.username = usernameLowerCase
-        mUser?.usernameList = User.nameToArray(usernameLowerCase)
-        mUser?.fcmTokenList = arrayListOf()
-        dbRefUsernames.document(usernameLowerCase).set(mUser!!)
+        val usernameLowerCase = username.toLowerCase(Locale.ROOT)
+        user.username = usernameLowerCase
+        user.usernameList = User.nameToArray(usernameLowerCase)
+        user.fcmTokenList = arrayListOf()
+        dbRefUsernames.document(usernameLowerCase).set(user)
             .addOnSuccessListener {
-                addUser { callBack(it) }
+                addUser(user) { callBack(it) }
             }
             .addOnFailureListener {
                 callBack(NetworkState.FAILED)
             }
-    }
-
-    private suspend fun getUser(userId: String): User? {
-        val user: User
-        try {
-            val documentSnapshot = dbRefUsers.document(userId).get().await()
-            user = documentSnapshot.toObject(User::class.java)!!
-        } catch (e: FirebaseFirestoreException) {
-            return null
-        }
-        return user
-    }
-
-    private suspend fun updateUser(userId: String, isOnline: Boolean) {
-        val map = mutableMapOf<String, Any>()
-        updateFcmToken(map, isOnline)
-        map["isOnline"] = isOnline
-        map["lastSeenTimestamp"] = FieldValue.serverTimestamp()
-        dbRefUsers.document(userId).update(map)
-    }
-
-    private suspend fun updateFcmToken(map: MutableMap<String, Any>, isOnline: Boolean) {
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
-            val refreshedToken = it.result?.token ?: return@addOnCompleteListener
-            val fcmTokenList = mUser?.fcmTokenList ?: arrayListOf()
-            if (isOnline) fcmTokenList.add(refreshedToken) else fcmTokenList.remove(refreshedToken)
-            fcmTokenList.distinct()
-            map["fcmToken"] = fcmTokenList
-        }.await()
     }
 
     suspend fun searchForUser(
@@ -141,7 +103,7 @@ class FirebaseRepository @Inject constructor(private val ioDispatcher: Coroutine
     ) {
         try {
             callBack(NetworkState.LOADING)
-            val document = dbRefUsernames.document(username.toLowerCase()).get().await()
+            val document = dbRefUsernames.document(username.toLowerCase(Locale.ROOT)).get().await()
             callBack(if (document.exists()) NetworkState.FAILED else NetworkState.LOADED)
         } catch (e: FirebaseFirestoreException) {
             callBack(NetworkState.FAILED)
