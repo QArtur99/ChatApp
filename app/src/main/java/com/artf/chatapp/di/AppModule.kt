@@ -35,5 +35,3 @@ object AppModule {
     @Provides
     fun provideIoDispatcher() = Dispatchers.IO
 }
-
-

@@ -1,7 +1,6 @@
 package com.artf.chatapp.utils.extension
 
 import androidx.lifecycle.MutableLiveData
-import com.artf.chatapp.data.model.Chat
 
 fun <T> MutableLiveData<List<T>>.add(item: T) {
     val updatedItems = this.value as MutableList

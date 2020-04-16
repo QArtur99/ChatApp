@@ -1,6 +1,5 @@
 package com.artf.chatapp.data.source.firebase
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.artf.chatapp.data.model.Chat

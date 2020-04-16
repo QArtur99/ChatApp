@@ -73,7 +73,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun onUnathenticated() {
-        if(waitForResultFromSignIn.not()) {
+        if (waitForResultFromSignIn.not()) {
             firebaseVm.onSignOut()
             startSignInActivity()
             supportActionBar?.hide()
