@@ -52,7 +52,7 @@ class MainActivity : DaggerAppCompatActivity() {
         firebaseVm.authenticationState.observe(this, Observer {
             when (it) {
                 is AuthenticationState.Authenticated -> onAuthenticated()
-                is AuthenticationState.Unauthenticated -> onUnathenticated()
+                is AuthenticationState.Unauthenticated -> onUnauthenticated()
                 is AuthenticationState.InvalidAuthentication -> TODO()
             }
         })
@@ -72,7 +72,7 @@ class MainActivity : DaggerAppCompatActivity() {
         supportActionBar?.show()
     }
 
-    private fun onUnathenticated() {
+    private fun onUnauthenticated() {
         if (waitForResultFromSignIn.not()) {
             firebaseVm.onSignOut()
             startSignInActivity()
