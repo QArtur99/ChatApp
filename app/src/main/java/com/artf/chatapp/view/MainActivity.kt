@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.webkit.MimeTypeMap
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.doOnAttach
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -40,6 +41,7 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.root.doOnAttach { navigationManager.run {  } }
 
         observeAuthState()
         observeFragmentState()
