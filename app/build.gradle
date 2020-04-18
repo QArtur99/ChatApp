@@ -38,16 +38,12 @@ android {
             resValue "string", "facebook_login_protocol_scheme", localProp['facebook_login_protocol_scheme']
         }
     }
-    viewBinding.enabled = true
-    dataBinding.enabled = true
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    dataBinding.enabled = true
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 dependencies {
