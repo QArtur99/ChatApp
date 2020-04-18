@@ -34,7 +34,6 @@ class AudioHelper(
     private var pauseTime: Int? = null
     var recorderDuration: Long? = null
 
-
     fun setupAudioHelper(view: View, message: Message) {
         if (playButton != view) {
             pauseTime = player?.currentPosition

@@ -8,9 +8,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 
-class MessageLiveData(
-    private val query: Query
-) : LiveData<Message?>() {
+class MessageLiveData(private val query: Query) : LiveData<Message?>() {
 
     private var msgLr: ListenerRegistration? = null
 
