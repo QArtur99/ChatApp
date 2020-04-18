@@ -16,7 +16,10 @@ import java.io.IOException
 import java.util.Timer
 import java.util.TimerTask
 
-class AudioHelper(private val activity: AppCompatActivity) {
+class AudioHelper(
+    private val fileHelper: FileHelper,
+    private val activity: AppCompatActivity
+) {
 
     private var playButton: View? = null
     private var seekBar: SeekBar? = null
@@ -30,6 +33,7 @@ class AudioHelper(private val activity: AppCompatActivity) {
     private var timer: Timer? = null
     private var pauseTime: Int? = null
     var recorderDuration: Long? = null
+
 
     fun setupAudioHelper(view: View, message: Message) {
         if (playButton != view) {
@@ -133,13 +137,7 @@ class AudioHelper(private val activity: AppCompatActivity) {
     }
 
     private fun getRecordFilePath(): String? {
-        return FileHelper.createMediaFile(
-            activity,
-            FileHelper.RECORDS_FOLDER_NAME,
-            FileHelper.DATE_FORMAT,
-            FileHelper.RECORD_PREFIX,
-            FileHelper.RECORD_EXT
-        )?.absolutePath.apply { recordFileName = this }
+        return fileHelper.createAudioMediaFile()?.absolutePath.apply { recordFileName = this }
     }
 
     fun stopRecording() {

@@ -16,9 +16,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
-import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
+import com.artf.chatapp.databinding.FragmentChatBinding
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.bindingFakeAudioProgress
@@ -51,6 +51,9 @@ class ChatFragment : DaggerFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    @Inject
+    lateinit var fileHelper: FileHelper
+
     private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
     private lateinit var binding: FragmentChatBinding
     private lateinit var adapter: MsgAdapter
@@ -65,7 +68,7 @@ class ChatFragment : DaggerFragment() {
         binding.lifecycleOwner = this
         binding.firebaseVm = firebaseVm
 
-        audioHelper = AudioHelper((activity as AppCompatActivity?)!!)
+        audioHelper = AudioHelper(fileHelper, activity as AppCompatActivity)
 
         adapter = MsgAdapter(getMsgAdapterListener())
         binding.recyclerView.layoutAnimation = null
@@ -93,13 +96,7 @@ class ChatFragment : DaggerFragment() {
         intentGallery.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
 
         val chooserIntent = Intent.createChooser(intentGallery, "Select picture")
-        FileHelper.createMediaFile(
-            requireContext(),
-            FileHelper.PHOTOS_FOLDER_NAME,
-            FileHelper.DATE_FORMAT,
-            FileHelper.PHOTO_PREFIX,
-            FileHelper.PHOTO_EXT
-        )?.let { photoFile ->
+        fileHelper.createPhotoMediaFile()?.let { photoFile ->
             val cameraIntent = Utility.getCameraIntent(requireContext(), photoFile)
             FileHelper.currentPhotoPath = photoFile.absolutePath
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
