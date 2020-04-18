@@ -65,10 +65,10 @@ class AudioHelper(private val activity: AppCompatActivity) {
     }
 
     private fun setSeekBarPosition() {
-        if (player == null) return
+        val player = player ?: return
         val audioTimeTextView = audioTimeTextView ?: return
-        seekBar?.progress = player!!.currentPosition * 100 / player!!.duration
-        Utility.setAudioTimeMmSs(audioTimeTextView, player!!.currentPosition.toLong())
+        seekBar?.progress = player.currentPosition * 100 / player.duration
+        Utility.setAudioTimeMmSs(audioTimeTextView, player.currentPosition.toLong())
     }
 
     fun setAudioTime(seekBar: SeekBar, textView: TextView, duration: Long) {

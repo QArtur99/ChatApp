@@ -196,10 +196,6 @@ class ChatFragment : DaggerFragment() {
                 reviewDialog.show(parentFragmentManager, PhotoDialog::class.simpleName)
             }
 
-            override fun getVm(): FirebaseViewModel {
-                return firebaseVm
-            }
-
             override fun onStartTrackingTouch(seekBar: SeekBar, item: Message) {
                 val parentView = seekBar.parent as ConstraintLayout
                 val playButton = parentView.findViewById<View>(R.id.playButton)
