@@ -38,11 +38,8 @@ android {
             resValue "string", "facebook_login_protocol_scheme", localProp['facebook_login_protocol_scheme']
         }
     }
-
-    dataBinding {
-        enabled = true
-    }
-
+    viewBinding.enabled = true
+    dataBinding.enabled = true
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -73,7 +70,7 @@ dependencies {
     implementation "com.google.firebase:firebase-storage:$versions.firebase_storage"
     implementation "com.firebaseui:firebase-ui-auth:$versions.firebase_ui_auth"
     implementation "com.facebook.android:facebook-android-sdk:$versions.facebook"
-    implementation 'com.google.guava:guava:28.2-jre'
+    implementation 'com.google.guava:guava:29.0-jre'
 
     //Glide
     implementation "com.github.bumptech.glide:glide:$versions.glide"
