@@ -2,12 +2,22 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-allopen'
+apply plugin: 'kotlin-noarg'
+apply plugin: 'androidx.navigation.safeargs'
 
 
 def localPropFile = rootProject.file("local.properties")
 def localProp = new Properties()
 localProp.load(new FileInputStream(localPropFile))
 
+
+allOpen {
+    annotation 'com.artf.chatapp.testing.OpenClass'
+}
+noArg {
+    annotation 'com.artf.chatapp.testing.NoArgClass'
+}
 android {
     signingConfigs {
         config {
@@ -25,6 +35,13 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        String sharedTestDir = 'src/sharedTest/java'
+        String debugDir = 'src/debug/java'
+        main.java.srcDirs += debugDir
+        test.java.srcDirs += sharedTestDir
+        androidTest.java.srcDirs += sharedTestDir
     }
     buildTypes {
         debug {
@@ -100,22 +117,39 @@ dependencies {
     implementation "com.squareup.moshi:moshi-kotlin:$versions.moshi"
     implementation "com.squareup.moshi:moshi:$versions.moshi"
 
-    // Core library
-    androidTestImplementation 'androidx.test:core:1.2.0'
-
-    // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
-
-    // Assertions
-    testImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-//    androidTestImplementation 'androidx.test.ext:truth:1.2.0'
-//    androidTestImplementation 'com.google.truth:truth:0.44'
-
     //Test
-    androidTestImplementation "androidx.test:runner:$versions.atsl_runner"
+    testImplementation "androidx.arch.core:core-testing:$versions.arch_core"
+    testImplementation "com.google.truth:truth:$versions.truth"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutine"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutine"
+    testImplementation "org.mockito:mockito-core:$versions.mockito"
+    testImplementation "org.mockito:mockito-inline:$versions.mockito"
+    testImplementation "junit:junit:$versions.junit"
+    testImplementation "org.robolectric:annotations:$versions.robolectric"
+    testImplementation "org.robolectric:robolectric:$versions.robolectric"
+
+    //Android Test
+    implementation("androidx.fragment:fragment-testing:$versions.fragment", {
+        exclude group: 'androidx.test', module: 'core'
+    })
+    implementation "androidx.fragment:fragment-ktx:$versions.fragment"
+    androidTestImplementation "com.google.truth:truth:$versions.truth"
+    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
+    androidTestImplementation "androidx.arch.core:core-testing:$versions.arch_core"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$versions.espresso"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$versions.espresso"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$versions.espresso"
+    androidTestImplementation "androidx.test:core:$versions.atsl_core"
+    androidTestImplementation "androidx.test.ext:junit:$versions.atsl_junit"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$versions.atsl_junit"
+    androidTestImplementation "androidx.test:monitor:$versions.atsl_monitor"
+    androidTestImplementation "androidx.test:rules:$versions.atsl_rules"
+    androidTestImplementation "androidx.test:runner:$versions.atsl_runner"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutine"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutine"
+    androidTestImplementation "org.mockito:mockito-android:$versions.mockito"
+    androidTestImplementation "org.mockito:mockito-core:$versions.mockito"
     androidTestImplementation "androidx.work:work-testing:$versions.work"
 }
 apply plugin: 'com.google.gms.google-services'

@@ -57,7 +57,7 @@ class FirebaseDaoImpl {
             .addOnSuccessListener {
                 callBack(firebaseRemoteConfig.getLong(MSG_LENGTH_KEY).toInt())
             }
-            .addOnFailureListener { e ->
+            .addOnFailureListener {
                 callBack(firebaseRemoteConfig.getLong(MSG_LENGTH_KEY).toInt())
             }
     }
