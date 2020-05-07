@@ -52,12 +52,7 @@ class UsernameFragment : DaggerFragment() {
                 binding.usernameButton.isEnabled = false
                 binding.usernameEditText.isSelected = false
                 binding.usernameErrorTextView.text = getString(R.string.usernameHint)
-                binding.usernameErrorTextView.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.colorText
-                    )
-                )
+                binding.usernameErrorTextView.setTextColor(getColor(R.color.colorText))
             }
         }
     }
@@ -71,12 +66,7 @@ class UsernameFragment : DaggerFragment() {
                 }
                 Status.SUCCESS -> {
                     binding.usernameErrorTextView.text = getString(R.string.usernameHint)
-                    binding.usernameErrorTextView.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.colorText
-                        )
-                    )
+                    binding.usernameErrorTextView.setTextColor(getColor(R.color.colorText))
                     binding.progressBar.visibility = View.GONE
                     binding.usernameButton.visibility = View.VISIBLE
                     binding.usernameButton.isEnabled = true
@@ -88,15 +78,14 @@ class UsernameFragment : DaggerFragment() {
                     binding.usernameButton.isEnabled = false
                     binding.usernameEditText.isSelected = true
                     binding.usernameErrorTextView.text = getString(R.string.usernameError)
-                    binding.usernameErrorTextView.setTextColor(
-                        ContextCompat.getColor(
-                            requireActivity(),
-                            R.color.colorError
-                        )
-                    )
+                    binding.usernameErrorTextView.setTextColor(getColor(R.color.colorError))
                 }
             }
         })
+    }
+
+    private fun getColor(color: Int): Int {
+        return ContextCompat.getColor(requireActivity(), color)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
