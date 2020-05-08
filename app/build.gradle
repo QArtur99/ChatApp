@@ -12,12 +12,8 @@ def localProp = new Properties()
 localProp.load(new FileInputStream(localPropFile))
 
 
-allOpen {
-    annotation 'com.artf.chatapp.testing.OpenClass'
-}
-noArg {
-    annotation 'com.artf.chatapp.testing.NoArgClass'
-}
+allOpen { annotation 'com.artf.chatapp.testing.OpenClass' }
+noArg { annotation 'com.artf.chatapp.testing.NoArgClass' }
 android {
     signingConfigs {
         config {
@@ -61,6 +57,9 @@ android {
     }
     dataBinding.enabled = true
     kotlinOptions.jvmTarget = "1.8"
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
