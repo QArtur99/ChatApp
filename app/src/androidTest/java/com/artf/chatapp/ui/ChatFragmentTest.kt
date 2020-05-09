@@ -11,7 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.artf.chatapp.util.mock
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
-import com.artf.chatapp.view.userProfile.UsernameFragment
+import com.artf.chatapp.view.chatRoom.ChatFragment
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,7 +40,7 @@ class ChatFragmentTest {
         // TODO all for this fragment
     }
 
-    class ChatFragmentTest : UsernameFragment() {
+    class ChatFragmentTest : ChatFragment() {
 
         override fun injectMembers() {
             this.viewModelFactory = ViewModelFactory(viewModel)
