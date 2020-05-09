@@ -12,6 +12,7 @@ import com.artf.chatapp.data.model.User
 import com.artf.chatapp.data.repository.Repository
 import com.artf.chatapp.data.source.firebase.ChatRoomListLiveData
 import com.artf.chatapp.data.source.firebase.ChatRoomLiveData
+import com.artf.chatapp.testing.OpenForTesting
 import com.artf.chatapp.utils.extension.clear
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OpenForTesting
 class FirebaseViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {

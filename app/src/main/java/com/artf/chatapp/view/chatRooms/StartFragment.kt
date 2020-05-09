@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.databinding.FragmentStartBinding
+import com.artf.chatapp.testing.CustomDaggerFragment
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.view.FirebaseViewModel
-import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-class StartFragment : DaggerFragment() {
+open class StartFragment : CustomDaggerFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory

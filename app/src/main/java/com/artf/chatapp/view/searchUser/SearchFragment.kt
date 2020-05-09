@@ -13,13 +13,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentSearchBinding
+import com.artf.chatapp.testing.CustomDaggerFragment
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
-import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-class SearchFragment : DaggerFragment() {
+open class SearchFragment : CustomDaggerFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory

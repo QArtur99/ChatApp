@@ -76,7 +76,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     android:background="@drawable/shape_button_username_off"
-                    android:elevation="2dp" />
+                    android:elevation="2dp"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/usernameButton"
@@ -86,6 +87,7 @@
                     android:layout_margin="16dp"
                     android:background="@drawable/selector_button_username"
                     android:text="@string/next"
+                    android:enabled="false"
                     android:textAllCaps="false"
                     android:textColor="@color/dialogButtonTextColor"
                     android:textSize="16sp"

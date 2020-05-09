@@ -19,16 +19,16 @@ import com.artf.chatapp.R
 import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
 import com.artf.chatapp.databinding.FragmentChatBinding
+import com.artf.chatapp.testing.CustomDaggerFragment
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.bindingFakeAudioProgress
 import com.artf.chatapp.utils.extension.afterTextChanged
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
-import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-class ChatFragment : DaggerFragment() {
+open class ChatFragment : CustomDaggerFragment() {
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
