@@ -13,7 +13,6 @@ import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
 import com.artf.chatapp.view.chatRoom.ChatFragment
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,11 +39,6 @@ class ChatFragmentTest {
         `when`(viewModel.pushImgStatus).thenReturn(pushImgStatus)
         `when`(viewModel.pushAudioStatus).thenReturn(pushAudioStatus)
         scenario = launchFragmentInContainer<ChatFragmentTest>()
-    }
-
-    @After
-    fun end() {
-        Thread.sleep(500)
     }
 
     @Test
