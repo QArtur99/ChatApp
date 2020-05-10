@@ -27,6 +27,7 @@ import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.Mockito.times
@@ -39,14 +40,15 @@ class UsernameFragmentTest {
         val viewModel: FirebaseViewModel = mock()
     }
 
-    private val usernameStatusLd = MutableLiveData<NetworkState>()
+    private val usernameStatus = MutableLiveData<NetworkState>()
     private lateinit var scenario: FragmentScenario<UsernameFragmentTest>
     private lateinit var appContext: Context
 
     @Before
     fun init() {
+        Mockito.reset(viewModel)
         appContext = InstrumentationRegistry.getInstrumentation().context
-        `when`(viewModel.usernameStatus).thenReturn(usernameStatusLd)
+        `when`(viewModel.usernameStatus).thenReturn(usernameStatus)
         scenario = launchFragmentInContainer<UsernameFragmentTest>()
     }
 
@@ -70,14 +72,14 @@ class UsernameFragmentTest {
 
     @Test
     fun usernameStatusRUNNING() {
-        usernameStatusLd.postValue(NetworkState.LOADING)
+        usernameStatus.postValue(NetworkState.LOADING)
         onView(withId(R.id.progressBar)).check(matches(isDisplayed()))
         onView(withId(R.id.usernameButton)).check(matches(not(isDisplayed())))
     }
 
     @Test
     fun usernameStatusSUCCESS() {
-        usernameStatusLd.postValue(NetworkState.LOADED)
+        usernameStatus.postValue(NetworkState.LOADED)
         onView(withId(R.id.usernameButton)).check(matches(isDisplayed()))
         onView(withId(R.id.usernameButton)).check(matches(isEnabled()))
         onView(withId(R.id.progressBar)).check(matches(not(isDisplayed())))
@@ -85,7 +87,7 @@ class UsernameFragmentTest {
 
     @Test
     fun usernameStatusFAILED() {
-        usernameStatusLd.postValue(NetworkState.FAILED)
+        usernameStatus.postValue(NetworkState.FAILED)
         onView(withId(R.id.usernameButton)).check(matches(isDisplayed()))
         onView(withId(R.id.usernameButton)).check(matches(not(isEnabled())))
         onView(withId(R.id.progressBar)).check(matches(not(isDisplayed())))

@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.artf.chatapp.databinding.ItemSearchBinding
 import com.artf.chatapp.data.model.User
+import com.artf.chatapp.databinding.ItemSearchBinding
 
 class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<User,
-        RecyclerView.ViewHolder>(GridViewDiffCallback) {
+    RecyclerView.ViewHolder>(GridViewDiffCallback) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val product = getItem(position)
@@ -19,11 +19,7 @@ class SearchAdapter(private val clickListener: OnClickListener) : ListAdapter<Us
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MsgViewHolder {
         return MsgViewHolder(
-            ItemSearchBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
+            ItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 

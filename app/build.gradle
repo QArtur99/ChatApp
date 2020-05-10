@@ -58,6 +58,7 @@ android {
     dataBinding.enabled = true
     kotlinOptions.jvmTarget = "1.8"
     testOptions {
+        animationsDisabled = true
         unitTests.returnDefaultValues = true
     }
 }
@@ -132,23 +133,24 @@ dependencies {
         exclude group: 'androidx.test', module: 'core'
     })
     implementation "androidx.fragment:fragment-ktx:$versions.fragment"
-    androidTestImplementation "com.google.truth:truth:$versions.truth"
-    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
     androidTestImplementation "androidx.arch.core:core-testing:$versions.arch_core"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$versions.espresso"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$versions.espresso"
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$versions.espresso"
-    androidTestImplementation "androidx.test:core:$versions.atsl_core"
-    androidTestImplementation "androidx.test.ext:junit:$versions.atsl_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$versions.espresso"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$versions.espresso"
     androidTestImplementation "androidx.test.ext:junit-ktx:$versions.atsl_junit"
+    androidTestImplementation "androidx.test.ext:junit:$versions.atsl_junit"
+    androidTestImplementation "androidx.test:core-ktx:$versions.atsl_core"
+    androidTestImplementation "androidx.test:core:$versions.atsl_core"
     androidTestImplementation "androidx.test:monitor:$versions.atsl_monitor"
     androidTestImplementation "androidx.test:rules:$versions.atsl_rules"
     androidTestImplementation "androidx.test:runner:$versions.atsl_runner"
+    androidTestImplementation "androidx.work:work-testing:$versions.work"
+    androidTestImplementation "com.google.truth:truth:$versions.truth"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutine"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutine"
     androidTestImplementation "org.mockito:mockito-android:$versions.mockito"
     androidTestImplementation "org.mockito:mockito-core:$versions.mockito"
-    androidTestImplementation "androidx.work:work-testing:$versions.work"
+    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
 }
 apply plugin: 'com.google.gms.google-services'

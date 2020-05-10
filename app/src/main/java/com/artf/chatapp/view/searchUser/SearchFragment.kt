@@ -27,7 +27,7 @@ open class SearchFragment : CustomDaggerFragment() {
     private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
     private lateinit var searchView: SearchView
     private lateinit var searchItem: MenuItem
-    private lateinit var binding: FragmentSearchBinding
+    lateinit var binding: FragmentSearchBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,7 +78,9 @@ open class SearchFragment : CustomDaggerFragment() {
 
     private fun onSearchViewClose() {
         binding.root.visibility = View.GONE
-        searchItem.collapseActionView()
+        if (this::searchItem.isInitialized) {
+            searchItem.collapseActionView()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

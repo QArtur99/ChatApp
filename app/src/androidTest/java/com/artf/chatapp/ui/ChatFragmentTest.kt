@@ -9,40 +9,72 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artf.chatapp.util.mock
+import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
 import com.artf.chatapp.view.chatRoom.ChatFragment
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 
 @RunWith(AndroidJUnit4::class)
 class ChatFragmentTest {
 
     companion object {
         val viewModel: FirebaseViewModel = mock()
+        val fileHelperMock: FileHelper = mock()
     }
 
-    private val usernameStatusLd = MutableLiveData<NetworkState>()
+    private val pushImgStatus = MutableLiveData<NetworkState>()
+    private val pushAudioStatus = MutableLiveData<NetworkState>()
     private lateinit var scenario: FragmentScenario<ChatFragmentTest>
     private lateinit var appContext: Context
 
     @Before
     fun init() {
+        Mockito.reset(viewModel)
         appContext = InstrumentationRegistry.getInstrumentation().context
-        Mockito.`when`(viewModel.usernameStatus).thenReturn(usernameStatusLd)
+        `when`(viewModel.pushImgStatus).thenReturn(pushImgStatus)
+        `when`(viewModel.pushAudioStatus).thenReturn(pushAudioStatus)
         scenario = launchFragmentInContainer<ChatFragmentTest>()
     }
 
+    @After
+    fun end() {
+        Thread.sleep(500)
+    }
+
     @Test
-    fun todo() {
-        // TODO all for this fragment
+    fun onPhotoPickerClick() {
+    }
+
+    @Test
+    fun onSendButtonTouch() {
+    }
+
+    @Test
+    fun onSendButtonClick() {
+    }
+
+    @Test
+    fun pushMsg() {
+    }
+
+    @Test
+    fun pushImg() {
+    }
+
+    @Test
+    fun pushAudio() {
     }
 
     class ChatFragmentTest : ChatFragment() {
 
         override fun injectMembers() {
+            this.fileHelper = fileHelperMock
             this.viewModelFactory = ViewModelFactory(viewModel)
         }
 
