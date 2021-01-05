@@ -24,6 +24,7 @@ ChatApp is a free messaging app inspired by messaging & social media apps. Writt
   - [Cloud Storage](https://firebase.google.com/docs/storage) - Store and serve user-generated content.
   - [Remote Config](https://firebase.google.com/docs/remote-config) - Change the settings of app without requiring users to download an app update.
 * [Dagger 2](https://github.com/google/dagger) - Compile-time framework for dependency injection.
+* [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) - Compile-time framework for dependency injection.
 * [Glide](https://github.com/bumptech/glide) - Load and cache images by URL.
 * [Moshi](https://github.com/square/moshi) - Serialize Kotlin objects and deserialize JSON objects.
 * [Retrofit 2](https://github.com/square/retrofit) - Handle REST api communication.
