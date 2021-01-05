@@ -8,23 +8,20 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentSearchBinding
-import com.artf.chatapp.testing.CustomDaggerFragment
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-open class SearchFragment : CustomDaggerFragment() {
+@AndroidEntryPoint
+open class SearchFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
+    private val firebaseVm: FirebaseViewModel by viewModels({ requireActivity() })
     private lateinit var searchView: SearchView
     private lateinit var searchItem: MenuItem
     lateinit var binding: FragmentSearchBinding

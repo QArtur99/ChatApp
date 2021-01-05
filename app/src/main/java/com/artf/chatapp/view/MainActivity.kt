@@ -9,11 +9,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.webkit.MimeTypeMap
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.doOnAttach
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.data.model.User
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
@@ -23,18 +23,15 @@ import com.artf.chatapp.utils.convertFromString
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
 import com.firebase.ui.auth.AuthUI
-import dagger.android.support.DaggerAppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
-import javax.inject.Inject
 
-class MainActivity : DaggerAppCompatActivity() {
-
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val navigationManager by lazy { NavigationManager(this, binding) }
-    private val firebaseVm: FirebaseViewModel by viewModels { viewModelFactory }
+    private val firebaseVm: FirebaseViewModel by viewModels()
 
     private var waitForResultFromSignIn = false
 

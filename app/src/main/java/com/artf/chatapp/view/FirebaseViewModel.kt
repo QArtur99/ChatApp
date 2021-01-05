@@ -1,6 +1,7 @@
 package com.artf.chatapp.view
 
 import android.net.Uri
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -19,10 +20,9 @@ import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @OpenForTesting
-class FirebaseViewModel @Inject constructor(
+class FirebaseViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 

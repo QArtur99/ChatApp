@@ -1,19 +1,28 @@
 package com.artf.chatapp.di
 
+import android.app.Application
+import android.content.Context
 import com.artf.chatapp.data.repository.Repository
 import com.artf.chatapp.data.repository.RepositoryImpl
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
-import com.artf.chatapp.di.viewModel.ViewModelModule
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
-@Module(includes = [(ViewModelModule::class)])
-object AppModule {
+@InstallIn(SingletonComponent::class)
+@Module
+class AppModule {
 
-    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideApplicationContext(application: Application): Context {
+        return application
+    }
+
     @Singleton
     @Provides
     fun provideRepository(
@@ -23,14 +32,12 @@ object AppModule {
         return RepositoryImpl(firebaseDaoImpl, ioDispatcher)
     }
 
-    @JvmStatic
     @Singleton
     @Provides
     fun provideFirebaseDaoImpl(): FirebaseDaoImpl {
         return FirebaseDaoImpl()
     }
 
-    @JvmStatic
     @Singleton
     @Provides
     fun provideIoDispatcher() = Dispatchers.IO

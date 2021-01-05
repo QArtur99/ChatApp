@@ -1,10 +1,7 @@
 package com.artf.chatapp.ui
 
 import android.content.Context
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
@@ -18,13 +15,18 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.artf.chatapp.R
+import com.artf.chatapp.ui.util.ViewModelFactory
+import com.artf.chatapp.ui.util.launchFragmentInHiltContainer
 import com.artf.chatapp.util.any
 import com.artf.chatapp.util.mock
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
 import com.artf.chatapp.view.userProfile.UsernameFragment
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -34,6 +36,7 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class UsernameFragmentTest {
 
     companion object {
@@ -41,15 +44,17 @@ class UsernameFragmentTest {
     }
 
     private val usernameStatus = MutableLiveData<NetworkState>()
-    private lateinit var scenario: FragmentScenario<UsernameFragmentTest>
     private lateinit var appContext: Context
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     @Before
     fun init() {
         Mockito.reset(viewModel)
         appContext = InstrumentationRegistry.getInstrumentation().context
         `when`(viewModel.usernameStatus).thenReturn(usernameStatus)
-        scenario = launchFragmentInContainer<UsernameFragmentTest>()
+        launchFragmentInHiltContainer<UsernameFragmentTest>()
     }
 
     @Test
@@ -94,14 +99,8 @@ class UsernameFragmentTest {
     }
 
     class UsernameFragmentTest : UsernameFragment() {
-
-        override fun injectMembers() {
-            this.viewModelFactory = ViewModelFactory(viewModel)
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        class ViewModelFactory<T>(private val mock: T) : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>) = mock as T
+        override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
+            return ViewModelFactory(viewModel)
         }
     }
 }
