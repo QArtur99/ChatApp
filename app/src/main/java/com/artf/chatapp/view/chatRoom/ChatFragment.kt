@@ -12,23 +12,24 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
 import com.artf.chatapp.databinding.FragmentChatBinding
-import com.artf.chatapp.testing.CustomDaggerFragment
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.bindingFakeAudioProgress
 import com.artf.chatapp.utils.extension.afterTextChanged
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-open class ChatFragment : CustomDaggerFragment() {
+@AndroidEntryPoint
+open class ChatFragment : Fragment() {
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
@@ -49,12 +50,9 @@ open class ChatFragment : CustomDaggerFragment() {
     )
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    @Inject
     lateinit var fileHelper: FileHelper
 
-    private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
+    private val firebaseVm: FirebaseViewModel by viewModels({ requireActivity() })
     private lateinit var binding: FragmentChatBinding
     private lateinit var adapter: MsgAdapter
 

@@ -8,24 +8,21 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentUsernameBinding
-import com.artf.chatapp.testing.CustomDaggerFragment
 import com.artf.chatapp.utils.extension.afterTextChangedLowerCase
 import com.artf.chatapp.utils.states.Status
 import com.artf.chatapp.view.FirebaseViewModel
 import com.firebase.ui.auth.AuthUI
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-open class UsernameFragment : CustomDaggerFragment() {
+@AndroidEntryPoint
+open class UsernameFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
+    private val firebaseVm: FirebaseViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,

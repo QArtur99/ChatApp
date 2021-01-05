@@ -1,19 +1,15 @@
 package com.artf.chatapp
 
+import android.app.Application
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.artf.chatapp.di.DaggerAppComponent
 import com.google.firebase.database.FirebaseDatabase
-import dagger.android.AndroidInjector
-import dagger.android.support.DaggerApplication
+import dagger.hilt.android.HiltAndroidApp
 
-class App : DaggerApplication(), LifecycleObserver {
-
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerAppComponent.factory().create(applicationContext)
-    }
+@HiltAndroidApp
+class App : Application(), LifecycleObserver {
 
     companion object {
         var tempReceiverId: String? = null

@@ -4,20 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.artf.chatapp.databinding.FragmentStartBinding
-import com.artf.chatapp.testing.CustomDaggerFragment
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.view.FirebaseViewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-open class StartFragment : CustomDaggerFragment() {
+@AndroidEntryPoint
+open class StartFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private val firebaseVm: FirebaseViewModel by activityViewModels { viewModelFactory }
+    private val firebaseVm: FirebaseViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
