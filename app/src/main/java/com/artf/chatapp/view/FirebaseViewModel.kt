@@ -1,7 +1,6 @@
 package com.artf.chatapp.view
 
 import android.net.Uri
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -18,11 +17,14 @@ import com.artf.chatapp.utils.extension.clear
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @OpenForTesting
-class FirebaseViewModel @ViewModelInject constructor(
+@HiltViewModel
+class FirebaseViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 

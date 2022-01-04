@@ -3,10 +3,10 @@
 buildscript {
 
     ext {
-        android_gradle_plugin = '4.1.1'
+        android_gradle_plugin = '7.0.4'
         apache_commons = "2.5"
         arch_core = '2.1.0'
-        atsl_core = '1.3.0'
+        atsl_core = '1.4.0'
         atsl_junit = '1.1.2'
         atsl_monitor = '1.3.0'
         atsl_rules = '1.3.0'
@@ -33,10 +33,10 @@ buildscript {
         glide = '4.11.0'
         google_gms = "4.3.2"
         hamcrest = "1.3"
-        hilt_version = '2.30.1-alpha'
+        hilt_version = '2.40.5'
         hilt_jetpack_version = '1.0.0-alpha02'
         junit = '4.13.1'
-        kotlin = '1.4.21'
+        kotlin = '1.6.10'
         ktlint = "0.33.0"
         lifecycle = '2.2.0'
         material = '1.3.0-beta01'
