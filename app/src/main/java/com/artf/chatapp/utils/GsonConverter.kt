@@ -1,7 +1,7 @@
 package com.artf.chatapp.utils
 
+import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 inline fun <reified T> convertToStringGson(gameData: T): String {
     val type = object : TypeToken<T>() {}.type

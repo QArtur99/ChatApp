@@ -7,7 +7,7 @@ import com.artf.chatapp.notification.data.NewMessageNotification
 import com.artf.chatapp.utils.convertToString
 import com.artf.chatapp.utils.mapper.RemoteMessageMapper
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.GlobalScope
@@ -30,8 +30,8 @@ class NotificationFirebaseService : FirebaseMessagingService() {
 
     override fun onNewToken(newToken: String) {
         super.onNewToken(newToken)
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
-            val refreshedToken = it.result?.token ?: return@addOnCompleteListener
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            val refreshedToken = it.result ?: return@addOnCompleteListener
         }
     }
 

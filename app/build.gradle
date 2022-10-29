@@ -23,22 +23,22 @@ android {
             storePassword localProp['storePassword']
         }
     }
-    compileSdkVersion 31
+    compileSdk 33
     defaultConfig {
         applicationId "com.artf.chatapp"
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdk 21
+        targetSdk 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "com.artf.chatapp.ui.util.CustomTestRunner"
     }
-    sourceSets {
-        String sharedTestDir = 'src/sharedTest/java'
-        String debugDir = 'src/debug/java'
-        main.java.srcDirs += debugDir
-        test.java.srcDirs += sharedTestDir
-        androidTest.java.srcDirs += sharedTestDir
-    }
+//    sourceSets {
+//        String sharedTestDir = 'src/sharedTest/java'
+//        String debugDir = 'src/debug/java'
+//        main.java.srcDirs += debugDir
+//        test.java.srcDirs += sharedTestDir
+//        androidTest.java.srcDirs += sharedTestDir
+//    }
     buildTypes {
         debug {
             resValue "string", "facebook_application_id", localProp['facebook_application_id']
@@ -52,30 +52,31 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildFeatures {
         dataBinding true
         viewBinding true
     }
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_11
     testOptions {
         animationsDisabled = true
         unitTests.returnDefaultValues = true
     }
     packagingOptions {
-        exclude "**/attach_hotspot_windows.dll"
-        exclude "META-INF/licenses/**"
-        exclude "META-INF/AL2.0"
-        exclude "META-INF/LGPL2.1"
+        jniLibs {
+            excludes += ['META-INF/licenses/**']
+        }
+        resources {
+            excludes += ['**/attach_hotspot_windows.dll', 'META-INF/licenses/**', 'META-INF/AL2.0', 'META-INF/LGPL2.1']
+        }
     }
+    namespace 'com.artf.chatapp'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin"
     implementation "androidx.appcompat:appcompat:$support"
     implementation "androidx.core:core-ktx:$core_ktx"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
@@ -83,13 +84,13 @@ dependencies {
     implementation "com.google.android.material:material:$material"
 
     //Firebase
-    implementation "com.google.firebase:firebase-auth:$firebase_auth"
-    implementation "com.google.firebase:firebase-config:$firebase_config"
-    implementation "com.google.firebase:firebase-database:$firebase_database"
-    implementation "com.google.firebase:firebase-firestore:$firebase_firestore"
-    implementation "com.google.firebase:firebase-core:$firebase_core"
-    implementation "com.google.firebase:firebase-messaging:$firebase_messaging"
-    implementation "com.google.firebase:firebase-storage:$firebase_storage"
+    implementation platform("com.google.firebase:firebase-bom:$firebase")
+    implementation "com.google.firebase:firebase-auth"
+    implementation "com.google.firebase:firebase-config"
+    implementation "com.google.firebase:firebase-database"
+    implementation "com.google.firebase:firebase-firestore"
+    implementation "com.google.firebase:firebase-messaging"
+    implementation "com.google.firebase:firebase-storage"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth"
     implementation "com.facebook.android:facebook-android-sdk:$facebook"
     implementation 'com.google.guava:guava:30.1-jre'
@@ -98,12 +99,11 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide"
 
     //Nav
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation"
 
     //Lifecycle
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_ext"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
 
@@ -114,15 +114,18 @@ dependencies {
 
     // hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_jetpack_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_jetpack_version"
+
     // hilt test
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     //Worker
     implementation "androidx.work:work-runtime-ktx:$work"
+
+    //Gson
+    implementation 'com.google.code.gson:gson:2.10'
 
     //Moshi
     implementation "com.squareup.moshi:moshi-kotlin:$moshi"
@@ -140,7 +143,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:$robolectric"
 
     //Android Test
-    debugImplementation("androidx.fragment:fragment-testing:$fragment") {
+    debugImplementation("androidx.fragment:fragment-testing:$fragment_test") {
         exclude group: 'androidx.test', module: 'core'
     }
     implementation "androidx.fragment:fragment-ktx:$fragment"
@@ -162,6 +165,5 @@ dependencies {
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine"
     androidTestImplementation "org.mockito:mockito-android:$mockito"
     androidTestImplementation "org.mockito:mockito-core:$mockito"
-    androidTestImplementation 'androidx.annotation:annotation:1.3.0'
 }
 apply plugin: 'com.google.gms.google-services'

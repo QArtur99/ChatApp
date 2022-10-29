@@ -1,5 +1,4 @@
 package com.artf.chatapp.data.source.firebase
-
 import androidx.lifecycle.LiveData
 import com.artf.chatapp.data.model.User
 import com.artf.chatapp.utils.states.AuthenticationState
@@ -7,7 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -58,8 +57,8 @@ class UserLiveData : LiveData<Pair<User?, AuthenticationState>>() {
     }
 
     private suspend fun updateFcmToken(map: MutableMap<String, Any>, isOnline: Boolean) {
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
-            val refreshedToken = it.result?.token ?: return@addOnCompleteListener
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            val refreshedToken = it.result ?: return@addOnCompleteListener
             val fcmTokenList = mUser?.fcmTokenList ?: arrayListOf()
             if (isOnline) fcmTokenList.add(refreshedToken) else fcmTokenList.remove(refreshedToken)
             fcmTokenList.distinct()
