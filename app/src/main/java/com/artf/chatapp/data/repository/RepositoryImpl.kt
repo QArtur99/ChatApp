@@ -5,11 +5,13 @@ import com.artf.chatapp.data.model.User
 import com.artf.chatapp.data.source.firebase.ChatRoomListLiveData
 import com.artf.chatapp.data.source.firebase.ChatRoomLiveData
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
+import com.artf.chatapp.testing.OpenForTesting
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.NetworkState
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
+@OpenForTesting
 class RepositoryImpl @Inject constructor(
     private val firebaseDaoImpl: FirebaseDaoImpl,
     private val ioDispatcher: CoroutineDispatcher

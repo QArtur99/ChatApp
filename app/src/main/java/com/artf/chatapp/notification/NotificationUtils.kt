@@ -1,5 +1,6 @@
 package com.artf.chatapp.notification
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,8 +15,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.graphics.drawable.toBitmap
 import com.artf.chatapp.R
-import com.artf.chatapp.view.MainActivity
 import com.artf.chatapp.notification.data.NewMessageNotification
+import com.artf.chatapp.view.MainActivity
 
 object NotificationUtils {
 
@@ -23,6 +24,7 @@ object NotificationUtils {
     private const val VERBOSE_CHANNEL_DESCRIPTION = "Shows notifications whenever work starts"
     private const val CHANNEL_ID = "VERBOSE_NOTIFICATION"
 
+    @SuppressLint("MissingPermission")
     fun makeStatusNotification(
         context: Context,
         newNotification: NewMessageNotification

@@ -13,14 +13,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentUsernameBinding
+import com.artf.chatapp.testing.OpenForTesting
 import com.artf.chatapp.utils.extension.afterTextChangedLowerCase
 import com.artf.chatapp.utils.states.Status
 import com.artf.chatapp.view.FirebaseViewModel
 import com.firebase.ui.auth.AuthUI
 import dagger.hilt.android.AndroidEntryPoint
 
+@OpenForTesting
 @AndroidEntryPoint
-open class UsernameFragment : Fragment() {
+class UsernameFragment : Fragment() {
 
     private val firebaseVm: FirebaseViewModel by viewModels({ requireActivity() })
 

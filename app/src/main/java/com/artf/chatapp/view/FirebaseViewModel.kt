@@ -3,8 +3,8 @@ package com.artf.chatapp.view
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.artf.chatapp.data.model.Chat
 import com.artf.chatapp.data.model.Message
@@ -63,7 +63,7 @@ class FirebaseViewModel @Inject constructor(
     }
 
     val user: LiveData<Pair<User?, AuthenticationState>> = repository.getUserLiveData()
-    val authenticationState = Transformations.map(user) { userWithState ->
+    val authenticationState = user.map { userWithState ->
         if (userWithState.second is AuthenticationState.Authenticated) {
             userWithState.first?.username ?: setFragmentState(FragmentState.USERNAME)
         }

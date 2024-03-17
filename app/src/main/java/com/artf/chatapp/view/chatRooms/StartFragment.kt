@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.artf.chatapp.databinding.FragmentStartBinding
+import com.artf.chatapp.testing.OpenForTesting
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.view.FirebaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+@OpenForTesting
 @AndroidEntryPoint
-open class StartFragment : Fragment() {
+class StartFragment : Fragment() {
 
     private val firebaseVm: FirebaseViewModel by viewModels({ requireActivity() })
 

@@ -3,20 +3,19 @@ package com.artf.chatapp.ui
 import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
-import com.artf.chatapp.MainCoroutineRule
 import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.model.User
 import com.artf.chatapp.data.repository.Repository
 import com.artf.chatapp.data.source.firebase.ChatRoomListLiveData
 import com.artf.chatapp.data.source.firebase.ChatRoomLiveData
-import com.artf.chatapp.util.LiveDataTestUtil.getValue
-import com.artf.chatapp.util.any
-import com.artf.chatapp.util.mock
-import com.artf.chatapp.util.nullable
-import com.artf.chatapp.util.unlockThread
 import com.artf.chatapp.utils.states.AuthenticationState
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.view.FirebaseViewModel
+import com.artf.sharedtest.util.LiveDataTestUtil.getValue
+import com.artf.sharedtest.util.any
+import com.artf.sharedtest.util.mock
+import com.artf.sharedtest.util.nullable
+import com.artf.sharedtest.util.unlockThread
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,16 +28,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 
 @ExperimentalCoroutinesApi
 class FirebaseViewModelTest {
-
-    @ExperimentalCoroutinesApi
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
 
     @ObsoleteCoroutinesApi
     private var mainThreadSurrogate = newSingleThreadContext("UI thread")

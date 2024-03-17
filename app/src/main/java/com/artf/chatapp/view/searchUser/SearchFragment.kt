@@ -13,13 +13,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.artf.chatapp.R
 import com.artf.chatapp.databinding.FragmentSearchBinding
+import com.artf.chatapp.testing.OpenForTesting
 import com.artf.chatapp.utils.states.FragmentState
 import com.artf.chatapp.utils.states.NetworkState
 import com.artf.chatapp.view.FirebaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+@OpenForTesting
 @AndroidEntryPoint
-open class SearchFragment : Fragment() {
+class SearchFragment : Fragment() {
 
     private val firebaseVm: FirebaseViewModel by viewModels({ requireActivity() })
     private lateinit var searchView: SearchView
@@ -32,7 +34,7 @@ open class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentSearchBinding.inflate(LayoutInflater.from(context))
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.firebaseVm = firebaseVm
 
         binding.recyclerView.itemAnimator = null

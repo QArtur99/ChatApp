@@ -1,6 +1,6 @@
 package com.artf.chatapp.data.source.firebase
 
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.artf.chatapp.data.model.User
 import com.artf.chatapp.utils.states.NetworkState
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,7 +29,7 @@ class FirebaseDaoImpl {
     val chatRoomListLiveData = ChatRoomListLiveData()
     val chatRoomLiveData = ChatRoomLiveData()
     val user = UserLiveData()
-    val userLiveData = Transformations.map(user) { userWithState ->
+    val userLiveData = user.map { userWithState ->
         userWithState.first?.let { user ->
             chatRoomListLiveData.setNewDocRef(user)
             chatRoomLiveData.user = user
@@ -83,7 +83,7 @@ class FirebaseDaoImpl {
     ) {
         val user = User()
         callBack(NetworkState.LOADING)
-        val usernameLowerCase = username.toLowerCase(Locale.ROOT)
+        val usernameLowerCase = username.lowercase(Locale.ROOT)
         user.username = usernameLowerCase
         user.usernameList = User.nameToArray(usernameLowerCase)
         user.fcmTokenList = arrayListOf()
@@ -118,7 +118,7 @@ class FirebaseDaoImpl {
     ) {
         try {
             callBack(NetworkState.LOADING)
-            val document = dbRefUsernames.document(username.toLowerCase(Locale.ROOT)).get().await()
+            val document = dbRefUsernames.document(username.lowercase(Locale.ROOT)).get().await()
             callBack(if (document.exists()) NetworkState.FAILED else NetworkState.LOADED)
         } catch (e: FirebaseFirestoreException) {
             callBack(NetworkState.FAILED)

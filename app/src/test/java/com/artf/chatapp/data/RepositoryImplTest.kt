@@ -1,10 +1,9 @@
 package com.artf.chatapp.data
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.artf.chatapp.MainCoroutineRule
 import com.artf.chatapp.data.repository.RepositoryImpl
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
-import com.artf.chatapp.util.any
+import com.artf.sharedtest.util.any
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -22,11 +21,6 @@ class ShoppingListRepositoryImplTest {
     @Rule
     @JvmField
     val instantExecutorRule = InstantTaskExecutorRule()
-
-    @Rule
-    @JvmField
-    @ExperimentalCoroutinesApi
-    val mainCoroutineRule = MainCoroutineRule()
 
     @Test
     fun getChatRoomListLiveData() {

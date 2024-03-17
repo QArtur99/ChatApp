@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.artf.sharedtest'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+dependencies {
+    implementation "org.mockito:mockito-core:$mockito"
+    implementation 'androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.7.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine"
+    implementation "junit:junit:$junit"
+}

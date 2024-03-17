@@ -1,10 +1,12 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'kotlin-allopen'
-apply plugin: 'kotlin-noarg'
-apply plugin: 'androidx.navigation.safeargs'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id "org.jetbrains.kotlin.kapt"
+    id 'kotlin-allopen'
+    id 'kotlin-noarg'
+    id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs'
+}
 
 
 def localPropFile = rootProject.file("local.properties")
@@ -23,22 +25,16 @@ android {
             storePassword localProp['storePassword']
         }
     }
-    compileSdk 33
+    compileSdk 34
     defaultConfig {
         applicationId "com.artf.chatapp"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "com.artf.chatapp.ui.util.CustomTestRunner"
     }
-//    sourceSets {
-//        String sharedTestDir = 'src/sharedTest/java'
-//        String debugDir = 'src/debug/java'
-//        main.java.srcDirs += debugDir
-//        test.java.srcDirs += sharedTestDir
-//        androidTest.java.srcDirs += sharedTestDir
-//    }
     buildTypes {
         debug {
             resValue "string", "facebook_application_id", localProp['facebook_application_id']
@@ -52,14 +48,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(17)
     }
     buildFeatures {
         dataBinding true
         viewBinding true
     }
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_11
     testOptions {
         animationsDisabled = true
         unitTests.returnDefaultValues = true
@@ -77,11 +75,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:$support"
-    implementation "androidx.core:core-ktx:$core_ktx"
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.core:core-ktx:1.12.0"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
-    implementation "androidx.fragment:fragment-ktx:$fragment"
-    implementation "com.google.android.material:material:$material"
+    implementation "androidx.fragment:fragment-ktx:1.6.2"
+    implementation "com.google.android.material:material:1.11.0"
 
     //Firebase
     implementation platform("com.google.firebase:firebase-bom:$firebase")
@@ -99,13 +97,13 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide"
 
     //Nav
-    implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
-    implementation "androidx.navigation:navigation-ui-ktx:$navigation"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.7.7"
+    implementation "androidx.navigation:navigation-ui-ktx:2.7.7"
 
     //Lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_ext"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.7.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0"
 
     //Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine"
@@ -114,6 +112,7 @@ dependencies {
 
     // hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.5.1'
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_jetpack_version"
 
@@ -122,48 +121,52 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     //Worker
-    implementation "androidx.work:work-runtime-ktx:$work"
+    implementation "androidx.work:work-runtime-ktx:2.9.0"
 
     //Gson
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
     //Moshi
     implementation "com.squareup.moshi:moshi-kotlin:$moshi"
     implementation "com.squareup.moshi:moshi:$moshi"
 
     //Test
-    testImplementation "androidx.arch.core:core-testing:$arch_core"
-    testImplementation "com.google.truth:truth:$truth"
+    testImplementation project(':sharedtest')
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
+    testImplementation "com.google.truth:truth:1.1.5"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine"
     testImplementation "org.mockito:mockito-core:$mockito"
-    testImplementation "org.mockito:mockito-inline:$mockito"
+    testImplementation "org.mockito:mockito-inline:5.2.0"
     testImplementation "junit:junit:$junit"
-    testImplementation "org.robolectric:annotations:$robolectric"
-    testImplementation "org.robolectric:robolectric:$robolectric"
+    testImplementation "org.robolectric:annotations:4.11.1"
+    testImplementation "org.robolectric:robolectric:4.11.1"
 
     //Android Test
-    debugImplementation("androidx.fragment:fragment-testing:$fragment_test") {
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2") {
         exclude group: 'androidx.test', module: 'core'
     }
-    implementation "androidx.fragment:fragment-ktx:$fragment"
-    androidTestImplementation "androidx.arch.core:core-testing:$arch_core"
-    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espresso"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso"
-    androidTestImplementation "androidx.test.ext:junit-ktx:$atsl_junit"
-    androidTestImplementation "androidx.test.ext:junit:$atsl_junit"
-    androidTestImplementation "androidx.test:core-ktx:$atsl_core"
-    androidTestImplementation "androidx.test:core:$atsl_core"
-    androidTestImplementation "androidx.test:monitor:$atsl_monitor"
-    androidTestImplementation "androidx.test:rules:$atsl_rules"
-    androidTestImplementation "androidx.test:runner:$atsl_runner"
-    androidTestImplementation "androidx.work:work-testing:$work"
-    androidTestImplementation "com.google.truth:truth:$truth"
+    implementation "androidx.fragment:fragment-ktx:1.6.2"
+
+    androidTestImplementation project(':sharedtest')
+    androidTestImplementation "androidx.arch.core:core-testing:2.2.0"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:3.5.1"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.5.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:3.5.1"
+    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.5"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test:core-ktx:1.5.0"
+    androidTestImplementation "androidx.test:core:1.5.0"
+    androidTestImplementation "androidx.test:monitor:1.6.1"
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "androidx.test:runner:1.5.2"
+    androidTestImplementation "androidx.work:work-testing:2.9.0"
+    androidTestImplementation "com.google.truth:truth:1.1.5"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine"
     androidTestImplementation "org.mockito:mockito-android:$mockito"
     androidTestImplementation "org.mockito:mockito-core:$mockito"
+    androidTestImplementation "org.mockito.kotlin:mockito-kotlin:5.2.1"
 }
 apply plugin: 'com.google.gms.google-services'

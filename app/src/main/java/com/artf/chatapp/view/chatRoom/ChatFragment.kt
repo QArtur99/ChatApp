@@ -19,6 +19,7 @@ import com.artf.chatapp.R
 import com.artf.chatapp.data.model.Message
 import com.artf.chatapp.data.source.firebase.FirebaseDaoImpl
 import com.artf.chatapp.databinding.FragmentChatBinding
+import com.artf.chatapp.testing.OpenForTesting
 import com.artf.chatapp.utils.FileHelper
 import com.artf.chatapp.utils.Utility
 import com.artf.chatapp.utils.bindingFakeAudioProgress
@@ -28,8 +29,9 @@ import com.artf.chatapp.view.FirebaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@OpenForTesting
 @AndroidEntryPoint
-open class ChatFragment : Fragment() {
+class ChatFragment : Fragment() {
 
     companion object {
         val TAG = ChatFragment::class.java.simpleName
