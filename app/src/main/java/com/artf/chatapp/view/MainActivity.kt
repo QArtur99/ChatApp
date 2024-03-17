@@ -48,13 +48,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeAuthState() {
-        firebaseVm.authenticationState.observe(this, Observer {
+        firebaseVm.authenticationState.observe(this) {
             when (it) {
                 is AuthenticationState.Authenticated -> onAuthenticated()
                 is AuthenticationState.Unauthenticated -> onUnauthenticated()
                 is AuthenticationState.InvalidAuthentication -> TODO()
             }
-        })
+        }
     }
 
     private fun observeFragmentState() {
